@@ -1,6 +1,5 @@
 <?php
 
-use App\Livewire\Managers\UserManagement;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -22,7 +21,8 @@ Route::middleware(['auth'])->group(function () {
 
 Route::middleware(['auth'])->prefix('dashboard')->group(function () {
     // Route::get('user-management', UserManagement::class)->name('user.management');
-    Route::view('user-management', 'managers.user-management')
+    Route::view('user-management', 'managers.users.index')
+        ->middleware('role:admin')
         ->name('user.management');
 });
 
