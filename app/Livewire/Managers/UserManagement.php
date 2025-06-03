@@ -19,7 +19,7 @@ class UserManagement extends Component
 
     public $roleOptions;
 
-    public $perPage = 5;
+    public $perPage = 10;
     public $showModal = false;
     public $userIdBeingEdited = null;
 

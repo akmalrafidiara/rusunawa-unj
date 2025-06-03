@@ -1,12 +1,4 @@
-@php
-    $tab = $tab ?? 'users';
-    $body = $body ?? 'user-management';
-@endphp
-
 <div class="flex flex-col gap-6">
-    <!-- Judul -->
-    <x-managers.ui.page-title title="Manajemen Pengguna" subtitle="Kelola data pengguna sistem Rusunawa UNJ" />
-
     <!-- Search & Filter -->
     <div class="flex flex-col sm:flex-row gap-4">
         {{-- <x-managers.ui.input wire:model.live="search" label="Cari pengguna..." placeholder="Nama atau Email" /> --}}

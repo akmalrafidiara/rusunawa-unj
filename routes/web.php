@@ -8,7 +8,7 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-Route::view('dashboard', 'dashboard')
+Route::view('dashboard', 'managers.overview')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
@@ -21,7 +21,9 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::middleware(['auth'])->prefix('dashboard')->group(function () {
-    Route::get('user-management', UserManagement::class)->name('user.management');
+    // Route::get('user-management', UserManagement::class)->name('user.management');
+    Route::view('user-management', 'managers.user-management')
+        ->name('user.management');
 });
 
 require __DIR__.'/auth.php';

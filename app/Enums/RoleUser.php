@@ -7,7 +7,6 @@ enum RoleUser: string
     case ADMIN = 'admin';
     case HEAD_OF_RUSUNAWA = 'head_of_rusunawa';
     case STAFF_OF_RUSUNAWA = 'staff_of_rusunawa';
-    case OCCUPANT = 'occupant';
 
     public static function values(): array
     {
@@ -15,7 +14,6 @@ enum RoleUser: string
             self::ADMIN->value,
             self::HEAD_OF_RUSUNAWA->value,
             self::STAFF_OF_RUSUNAWA->value,
-            self::OCCUPANT->value,
         ];
     }
 
@@ -25,7 +23,6 @@ enum RoleUser: string
             self::ADMIN => 'Admin',
             self::HEAD_OF_RUSUNAWA => 'Kepala Rusunawa',
             self::STAFF_OF_RUSUNAWA => 'Staf Rusunawa',
-            self::OCCUPANT => 'Penghuni',
         };
     }
 
@@ -46,7 +43,6 @@ enum RoleUser: string
             self::ADMIN->value,
             self::HEAD_OF_RUSUNAWA->value,
             self::STAFF_OF_RUSUNAWA->value,
-            self::OCCUPANT->value,
         ];
     }
 
@@ -56,7 +52,6 @@ enum RoleUser: string
             self::ADMIN->value => self::ADMIN->label(),
             self::HEAD_OF_RUSUNAWA->value => self::HEAD_OF_RUSUNAWA->label(),
             self::STAFF_OF_RUSUNAWA->value => self::STAFF_OF_RUSUNAWA->label(),
-            self::OCCUPANT->value => self::OCCUPANT->label(),
         ];
     }
 
@@ -74,7 +69,6 @@ enum RoleUser: string
             self::ADMIN => ['bg-red-100', 'text-red-800', 'dark:bg-red-900/30', 'dark:text-red-400'],
             self::HEAD_OF_RUSUNAWA => ['bg-purple-100', 'text-purple-800', 'dark:bg-purple-900/30', 'dark:text-purple-400'],
             self::STAFF_OF_RUSUNAWA => ['bg-yellow-100', 'text-yellow-800', 'dark:bg-yellow-900/30', 'dark:text-yellow-400'],
-            self::OCCUPANT => ['bg-green-100', 'text-green-800', 'dark:bg-green-900/30', 'dark:text-green-400'],
         };
     }
 
