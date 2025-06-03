@@ -1,5 +1,6 @@
 <?php
 
+use App\Livewire\Managers\UserManagement;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -17,6 +18,10 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
     Volt::route('settings/password', 'settings.password')->name('settings.password');
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
+});
+
+Route::middleware(['auth'])->prefix('dashboard')->group(function () {
+    Route::get('user-management', UserManagement::class)->name('user.management');
 });
 
 require __DIR__.'/auth.php';

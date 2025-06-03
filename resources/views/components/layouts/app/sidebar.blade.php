@@ -1,6 +1,6 @@
 <?php
 
-$sidebarMenu = [
+$adminSidebarMenu = [
     [
         'group' => 'Dashboard',
         'items' => [
@@ -71,8 +71,8 @@ $sidebarMenu = [
             [
                 'icon' => 'users',
                 'label' => __('Manajemen User'),
-                'route' => route('dashboard'),
-                'current' => request()->routeIs('not'),
+                'route' => route('user.management'),
+                'current' => request()->routeIs('user.management'),
                 'badge' => null,
             ],
             [
@@ -196,19 +196,9 @@ $sidebarMenu = [
                 <x-default.app-logo />
             </a>
 
-            {{-- blade-formatter-disable --}}
-            {{-- <flux:navlist variant="outline">
-                <flux:navlist.group :heading="__('Platform')" class="grid">
-                    <flux:navlist.item icon="home" :href="route('dashboard')"
-                        :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}
-                    </flux:navlist.item>
-                </flux:navlist.group>
-            </flux:navlist> --}}
-            {{-- blade-formatter-enable --}}
-
             {{-- Dynamic Sidebar Menu --}}
             <flux:navlist variant="outline" class="space-y-4">
-                @foreach ($sidebarMenu as $menu)
+                @foreach ($adminSidebarMenu as $menu)
                     <flux:navlist.group :heading="__($menu['group'])" class="grid">
                         @foreach ($menu['items'] as $item)
                             @if (isset($item['expandable']) && $item['expandable'])
@@ -232,18 +222,6 @@ $sidebarMenu = [
             </flux:navlist>
 
             <flux:spacer />
-
-            <flux:navlist variant="outline">
-                <flux:navlist.item icon="folder-git-2" href="https://github.com/laravel/livewire-starter-kit"
-                    target="_blank">
-                    {{ __('Repository') }}
-                </flux:navlist.item>
-
-                <flux:navlist.item icon="book-open-text" href="https://laravel.com/docs/starter-kits#livewire"
-                    target="_blank">
-                    {{ __('Documentation') }}
-                </flux:navlist.item>
-            </flux:navlist>
 
             <!-- Desktop User Menu -->
             <flux:dropdown position="bottom" align="start">
