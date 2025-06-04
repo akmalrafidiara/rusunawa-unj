@@ -19,27 +19,27 @@ Route::prefix('managers')->middleware(['auth', 'verified'])->group(function () {
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 
     // Dashboard
-    Route::view('/', 'managers.overview')->name('dashboard');
+    Route::view('/', 'modules.managers.overview')->name('dashboard');
 
     // Responses
-    Route::view('occupant-verification', 'managers.responses.occupant-verification')->name('occupant.verification');
-    Route::view('payment-confirmation', 'managers.responses.payment-confirmation')->name('payment.confirmation');
+    Route::view('occupant-verification', 'modules.managers.responses.occupant-verification')->name('occupant.verification');
+    Route::view('payment-confirmation', 'modules.managers.responses.payment-confirmation')->name('payment.confirmation');
 
     // Tenancy
-    Route::view('contracts', 'managers.tenancy.contracts')->name('contracts');
-    Route::view('invoices', 'managers.tenancy.invoices')->name('invoices');
-    Route::view('occupants', 'managers.tenancy.occupants')->name('occupants');
+    Route::view('contracts', 'modules.managers.tenancy.contracts')->name('contracts');
+    Route::view('invoices', 'modules.managers.tenancy.invoices')->name('invoices');
+    Route::view('occupants', 'modules.managers.tenancy.occupants')->name('occupants');
 
     // Oprations
-    Route::view('users', 'managers.oprations.users')->name('users');
-    Route::view('incomes-reports', 'managers.oprations.income-reports')->name('income.reports');
-    Route::view('reports-and-complaints', 'managers.oprations.reports-and-complaints')->name('reports.and.complaints');
-    Route::view('maintenance', 'managers.oprations.maintenance')->name('maintenance');
+    Route::view('users', 'modules.managers.oprations.users')->name('users');
+    Route::view('incomes-reports', 'modules.managers.oprations.income-reports')->name('income.reports');
+    Route::view('reports-and-complaints', 'modules.managers.oprations.reports-and-complaints')->name('reports.and.complaints');
+    Route::view('maintenance', 'modules.managers.oprations.maintenance')->name('maintenance');
     Route::prefix('units')->group(function () {
-        Route::view('/', 'managers.oprations.units.index')->name('units');
-        Route::view('types', 'managers.oprations.units.types')->name('unit.types');
-        Route::view('clusters', 'managers.oprations.units.clusters')->name('unit.clusters');
-        Route::view('rates', 'managers.oprations.units.rates')->name('unit.rates');
+        Route::view('/', 'modules.managers.oprations.units.index')->name('units');
+        Route::view('types', 'modules.managers.oprations.units.types')->name('unit.types');
+        Route::view('clusters', 'modules.managers.oprations.units.clusters')->name('unit.clusters');
+        Route::view('rates', 'modules.managers.oprations.units.rates')->name('unit.rates');
     });
 
     // Content
