@@ -20,12 +20,19 @@ class UserManagement extends Component
     public $roleOptions;
 
     public $perPage = 10;
+
+    public $orderBy = 'created_at';
+    public $sort = 'asc';
+
     public $showModal = false;
     public $userIdBeingEdited = null;
 
     protected $queryString = [
         'search' => ['except' => ''],
         'roleFilter' => ['except' => ''],
+        'perPage' => ['except' => 10],
+        'orderBy' => ['except' => 'created_at'],
+        'sort' => ['except' => 'asc'],
     ];
 
     public function mount()
@@ -42,6 +49,7 @@ class UserManagement extends Component
         ->when($this->roleFilter, function ($q) {
             $q->whereHas('roles', fn($r) => $r->where('name', $this->roleFilter));
         })
+        ->orderBy($this->orderBy, $this->sort)
         ->paginate($this->perPage);
 
         foreach ($users as $user) {

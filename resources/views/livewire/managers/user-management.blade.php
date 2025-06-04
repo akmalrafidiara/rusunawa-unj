@@ -4,7 +4,25 @@
         <x-managers.form.input wire:model.live="search" placeholder="Cari pengguna..." icon="magnifying-glass"
             class="w-full" />
 
-        <x-managers.ui.dropdown-picker wire:model.live="roleFilter" :options="$roleOptions" label="Pilih Role" />
+        <x-managers.ui.dropdown-picker wire:model.live="roleFilter" :options="$roleOptions" label="Semua Role"
+            wire:key="dropdown-role" />
+
+        <x-managers.ui.dropdown-picker wire:model.live="perPage" :options="[10, 25, 50, 100]" label="Jumlah per halaman"
+            wire:key="dropdown-per-page" disabled />
+
+        @php
+            $orderByOptions = [
+                ['value' => 'name', 'label' => 'Nama'],
+                ['value' => 'email', 'label' => 'Email'],
+                ['value' => 'created_at', 'label' => 'Tanggal'],
+            ];
+        @endphp
+
+        <x-managers.ui.dropdown-picker wire:model.live="orderBy" :options="$orderByOptions" label="Urutkan Berdasarkan"
+            wire:key="dropdown-order-by" disabled />
+
+        <x-managers.ui.dropdown-picker wire:model.live="sort" :options="['asc', 'desc']" label="Sort" wire:key="dropdown-sort"
+            disabled />
 
         <x-managers.ui.button wire:click="create" variant="primary" icon="plus" class="w-full sm:w-auto">
             Tambah Pengguna
