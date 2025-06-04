@@ -112,7 +112,6 @@ class UserManagement extends Component
 
     public function confirmDelete($id)
     {
-        // Kirim ID ke frontend via dispatch
         $this->dispatch('show-delete-confirmation', id: $id);
     }
 

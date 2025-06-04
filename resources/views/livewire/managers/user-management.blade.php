@@ -58,7 +58,7 @@
 
                                 <x-managers.ui.tooltip tooltip="Hapus Pengguna">
                                     <x-managers.ui.button wire:click="confirmDelete({{ $user->id }})"
-                                        variant="danger" size="sm">
+                                        id="delete-user" variant="danger" size="sm">
                                         <flux:icon.trash class="w-4" />
                                     </x-managers.ui.button>
                                 </x-managers.ui.tooltip>
@@ -87,13 +87,7 @@
             <x-managers.ui.input wire:model="phone" placeholder="Phone Number" type="text" required />
             {{-- <x-managers.ui.dropdown-picker wire:model="role" :options="$roleOptions" label="Role" /> --}}
 
-            <select wire:model="role"
-                class="w-full border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 py-2 px-4">
-                <option value="">Pilih Role</option>
-                @foreach ($roleOptions as $option)
-                    <option value="{{ $option['value'] }}">{{ $option['label'] }}</option>
-                @endforeach
-            </select>
+            <x-managers.form.select wireModel="role" :options="$roleOptions" label="Role" :isLabel="false" />
 
             <div class="flex justify-end gap-2">
                 <x-managers.ui.button type="button" variant="secondary"
@@ -106,36 +100,33 @@
 
 @push('scripts')
     <script>
-        document.addEventListener('livewire:init', () => {
-            Livewire.on('show-delete-confirmation', (event) => {
-                const userId = event.id;
-
-                Swal.fire({
-                    title: 'Yakin?',
-                    text: "Data pengguna akan dihapus secara permanen!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Ya, hapus!',
-                    cancelButtonText: 'Batal'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Trigger method deleteUser lewat Livewire
-                        @this.call('deleteUser', userId);
-                    }
-                });
+        Livewire.on('show-delete-confirmation', (event) => {
+            const userId = event.id;
+            Swal.fire({
+                title: 'Yakin?',
+                text: "Data pengguna akan dihapus secara permanen!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Trigger deleteUser di Livewire
+                    @this.call('deleteUser', userId);
+                }
             });
+        });
 
-            window.addEventListener('swal:success', (e) => {
-                Swal.fire({
-                    icon: 'success',
-                    title: e.detail.title,
-                    timer: 3000,
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                });
+        window.addEventListener('swal:success', (e) => {
+            Swal.fire({
+                icon: 'success',
+                title: e.detail.title,
+                timer: 3000,
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false
             });
         });
     </script>

@@ -1,8 +1,3 @@
-@php
-    $tab = $tab ?? 'users';
-    $body = $body ?? 'user-management';
-@endphp
-
 <x-layouts.app :title="__('User Management')">
     <div class="flex flex-col gap-6">
         <!-- Page Title -->
