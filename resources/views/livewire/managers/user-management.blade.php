@@ -1,8 +1,6 @@
 <div class="flex flex-col gap-6">
     <!-- Search & Filter -->
     <div class="flex flex-col sm:flex-row gap-4">
-        {{-- <x-managers.ui.input wire:model.live="search" label="Cari pengguna..." placeholder="Nama atau Email" /> --}}
-
         <x-managers.ui.input wire:model.live="search" placeholder="Cari pengguna..." icon="magnifying-glass"
             class="w-full" />
 
@@ -14,7 +12,7 @@
     </div>
 
     <!-- Tabel Data -->
-    <x-managers.ui.card>
+    <x-managers.ui.card class="p-0">
         <x-managers.ui.table :headers="['Nama', 'Email', 'No. Telepon', 'Role', 'Aksi']">
             <x-managers.ui.table.body>
                 @forelse ($users as $user)
