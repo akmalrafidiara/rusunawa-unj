@@ -4,9 +4,10 @@ use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
 // Web
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+// Route::get('/', function () {
+//     return view('welcome');
+// })->name('home');
+Route::view('/', 'modules.frontend.home')->name('home');
 
 // Managers Dashboard
 Route::prefix('managers')->middleware(['auth', 'verified'])->group(function () {

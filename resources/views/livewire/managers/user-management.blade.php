@@ -1,7 +1,7 @@
 <div class="flex flex-col gap-6">
     <!-- Search & Filter -->
     <div class="flex flex-col sm:flex-row gap-4">
-        <x-managers.ui.input wire:model.live="search" placeholder="Cari pengguna..." icon="magnifying-glass"
+        <x-managers.form.input wire:model.live="search" placeholder="Cari pengguna..." icon="magnifying-glass"
             class="w-full" />
 
         <x-managers.ui.dropdown-picker wire:model.live="roleFilter" :options="$roleOptions" label="Pilih Role" />
@@ -13,26 +13,26 @@
 
     <!-- Tabel Data -->
     <x-managers.ui.card class="p-0">
-        <x-managers.ui.table :headers="['Nama', 'Email', 'No. Telepon', 'Role', 'Aksi']">
-            <x-managers.ui.table.body>
+        <x-managers.table.table :headers="['Nama', 'Email', 'No. Telepon', 'Role', 'Aksi']">
+            <x-managers.table.body>
                 @forelse ($users as $user)
-                    <x-managers.ui.table.row wire:key="{{ $user->id }}">
+                    <x-managers.table.row wire:key="{{ $user->id }}">
                         <!-- Nama -->
-                        <x-managers.ui.table.cell>
+                        <x-managers.table.cell>
                             <span class="font-bold">{{ $user->name }}</span>
-                        </x-managers.ui.table.cell>
+                        </x-managers.table.cell>
 
                         <!-- Email -->
-                        <x-managers.ui.table.cell>{{ $user->email }}</x-managers.ui.table.cell>
+                        <x-managers.table.cell>{{ $user->email }}</x-managers.table.cell>
 
                         <!-- Telepon -->
-                        <x-managers.ui.table.cell>
+                        <x-managers.table.cell>
                             <a href="{{ $user->wa_link }}" class="text-green-500"
                                 target="_blank">{{ $user->phone ?? '-' }}</a>
-                        </x-managers.ui.table.cell>
+                        </x-managers.table.cell>
 
                         <!-- Role -->
-                        <x-managers.ui.table.cell>
+                        <x-managers.table.cell>
                             @foreach ($user->getRoleNames() as $role)
                                 @php
                                     $roleEnum = \App\Enums\RoleUser::tryFrom($role);
@@ -42,10 +42,10 @@
                                     {{ $roleEnum?->label() ?? 'Belum Memiliki Role' }}
                                 </x-managers.ui.badge>
                             @endforeach
-                        </x-managers.ui.table.cell>
+                        </x-managers.table.cell>
 
                         <!-- Aksi -->
-                        <x-managers.ui.table.cell class="text-right">
+                        <x-managers.table.cell class="text-right">
                             <div class="flex gap-2">
                                 <x-managers.ui.tooltip tooltip="Edit Data">
                                     <x-managers.ui.button wire:click="edit({{ $user->id }})" variant="secondary"
@@ -61,17 +61,17 @@
                                     </x-managers.ui.button>
                                 </x-managers.ui.tooltip>
                             </div>
-                        </x-managers.ui.table.cell>
-                    </x-managers.ui.table.row>
+                        </x-managers.table.cell>
+                    </x-managers.table.row>
                 @empty
-                    <x-managers.ui.table.row>
-                        <x-managers.ui.table.cell colspan="5" class="text-center text-gray-500">
+                    <x-managers.table.row>
+                        <x-managers.table.cell colspan="5" class="text-center text-gray-500">
                             Tidak ada data pengguna ditemukan.
-                        </x-managers.ui.table.cell>
-                    </x-managers.ui.table.row>
+                        </x-managers.table.cell>
+                    </x-managers.table.row>
                 @endforelse
-            </x-managers.ui.table.body>
-        </x-managers.ui.table>
+            </x-managers.table.body>
+        </x-managers.table.table>
 
         <!-- Pagination -->
         <x-managers.ui.pagination :paginator="$users" />
@@ -79,11 +79,10 @@
 
     <x-managers.ui.modal title="Form User" :show="$showModal">
         <form wire:submit.prevent="save" class="space-y-4">
-            <x-managers.ui.input wire:model="name" placeholder="Nama Lengkap" type="text" required />
-            <x-managers.ui.input wire:model="email" placeholder="Email" type="email" required />
-            <x-managers.ui.input wire:model="password" placeholder="Password" type="password" required />
-            <x-managers.ui.input wire:model="phone" placeholder="Phone Number" type="text" required />
-            {{-- <x-managers.ui.dropdown-picker wire:model="role" :options="$roleOptions" label="Role" /> --}}
+            <x-managers.form.input wire:model="name" placeholder="Nama Lengkap" type="text" required />
+            <x-managers.form.input wire:model="email" placeholder="Email" type="email" required />
+            <x-managers.form.input wire:model="password" placeholder="Password" type="password" required />
+            <x-managers.form.input wire:model="phone" placeholder="Phone Number" type="text" required />
 
             <x-managers.form.select wireModel="role" :options="$roleOptions" label="Role" :isLabel="false" />
 

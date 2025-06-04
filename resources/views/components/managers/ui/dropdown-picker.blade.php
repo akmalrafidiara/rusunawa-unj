@@ -12,10 +12,10 @@ cleanup(() => document.removeEventListener('click', handler));" class="relative"
 
     <!-- Tombol Trigger -->
     <button type="button" @click="open = !open"
-        class="dropdown-role min-w-[200px] px-4 py-2 border rounded-md flex justify-between items-center w-full sm:w-auto bg-white dark:bg-zinc-900 text-gray-700 dark:text-gray-300">
+        class="dropdown-role min-w-[200px] px-4 py-2 border rounded-md border-gray-500 flex justify-between items-center w-full sm:w-auto bg-transparant dark:bg-transparant text-gray-700 dark:text-gray-300">
         <span
             x-text="selectedValue ? (options.find(o => o.value === selectedValue)?.label ?? selectedValue) : '{{ $label ?? 'Pilih' }}'"
-            class="block truncate"></span>
+            class="block truncate dark:text-gray-200"></span>
 
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
             class="h-5 w-5 transition-transform duration-200" :class="{ 'rotate-180': open }">
