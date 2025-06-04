@@ -1,4 +1,4 @@
-<x-layouts.app :title="__('Dashboard')">
+<x-layouts.managers :title="__('Dashboard')">
     <div class="flex h-full w-full flex-1 flex-col gap-4 rounded-xl">
         <!-- Page Title -->
         <x-managers.ui.page-title title="Overview" subtitle="Kelola data pengguna sistem Rusunawa UNJ" />
@@ -47,4 +47,4 @@
                 class="absolute inset-0 size-full stroke-gray-900/20 dark:stroke-neutral-100/20" />
         </div>
     </div>
-</x-layouts.app>
+</x-layouts.managers>
