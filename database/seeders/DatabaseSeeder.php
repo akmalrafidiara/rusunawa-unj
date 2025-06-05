@@ -15,6 +15,11 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RoleSeeder::class,
             InitialUserSeeder::class,
+            UnitTypeSeeder::class,
+            UnitClusterSeeder::class,
+            UnitRateSeeder::class,
+            UnitSeeder::class,
+            PivotUnitRateSeeder::class,
         ]);
     }
 }
