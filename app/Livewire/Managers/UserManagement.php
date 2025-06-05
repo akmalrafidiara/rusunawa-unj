@@ -2,9 +2,6 @@
 
 namespace App\Livewire\Managers;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-uses(RefreshDatabase::class);
-
 use App\Enums\RoleUser;
 use App\Models\User;
 use Livewire\Component;
@@ -48,21 +45,21 @@ class UserManagement extends Component
         $roles = Role::all();
 
         $users = User::query()
-        ->when($this->search, fn($q) => $q->where('name', 'like', "%$this->search%"))
-        ->when($this->roleFilter, function ($q) {
-            $q->whereHas('roles', fn($r) => $r->where('name', $this->roleFilter));
-        })
-        ->orderBy($this->orderBy, $this->sort)
-        ->paginate($this->perPage);
+            ->when($this->search, fn($q) => $q->where('name', 'like', "%{$this->search}%"))
+            ->when($this->roleFilter, fn($q) => $q->whereHas('roles', fn($r) => $r->where('name', $this->roleFilter)))
+            ->orderBy($this->orderBy, $this->sort)
+            ->paginate($this->perPage);
 
-        foreach ($users as $user) {
+        // Use map to efficiently add wa_link to each user
+        $users->getCollection()->transform(function ($user) {
             if ($user->phone) {
                 $phone = preg_replace('/^(\+62|0)/', '', $user->phone);
                 $user->wa_link = 'https://wa.me/62' . $phone;
             } else {
                 $user->wa_link = null;
             }
-        }
+            return $user;
+        });
 
         return view('livewire.managers.user-management', compact('users', 'roles'));
     }
