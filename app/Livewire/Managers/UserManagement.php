@@ -2,6 +2,9 @@
 
 namespace App\Livewire\Managers;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+uses(RefreshDatabase::class);
+
 use App\Enums\RoleUser;
 use App\Models\User;
 use Livewire\Component;
