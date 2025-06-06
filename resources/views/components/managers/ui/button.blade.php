@@ -7,8 +7,9 @@
     $classes = match ($variant) {
         'primary'
             => 'bg-[var(--color-accent)] hover:bg-[var(--color-accent-content)] text-[var(--color-accent-foreground)]',
-        'secondary' => 'bg-gray-200 hover:bg-gray-300 text-gray-800',
-        'danger' => 'bg-red-600 hover:bg-red-700 text-white',
+        'secondary'
+            => 'bg-gray-200 hover:bg-gray-500 text-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white',
+        'danger' => 'bg-red-600 hover:bg-red-700 text-white dark:bg-red-500 dark:hover:bg-red-600',
         default => '',
     };
 @endphp
