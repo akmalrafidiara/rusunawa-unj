@@ -65,20 +65,34 @@ class UnitType extends Component
         $this->showModal = true;
     }
 
-    public function save()
+    public function rules()
     {
-        $rules = [
+        return [
             'name' => 'required|string|max:255',
-            'description' => 'string',
+            'description' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'facilities' => 'array',
             'facilities.*' => 'string|max:255',
         ];
+    }
 
-        if ($this->image instanceof TemporaryUploadedFile) {
-            $rules['image'] = 'image|mimes:jpeg,png,jpg,gif|max:2048';
-        }
+    public function validateUploadedFile()
+    {
+        $this->validate([
+            'image' => $this->rules()['image'],
+        ]);
 
-        $this->validate($rules);
+        return true;
+    }
+
+    public function updated($propertyName)
+    {
+        $this->validateOnly($propertyName, $this->rules());
+    }
+
+    public function save()
+    {
+        $this->validate($this->rules());
 
         $data = [
             'name' => $this->name,
