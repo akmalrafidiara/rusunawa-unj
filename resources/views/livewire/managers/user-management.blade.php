@@ -102,7 +102,7 @@
             <x-managers.form.input wire:model="password" placeholder="Password" type="password" required />
             <x-managers.form.input wire:model="phone" placeholder="Phone Number" type="text" required />
 
-            <x-managers.form.select wireModel="role" :options="$roleOptions" label="Role" :isLabel="false" />
+            <x-managers.form.select wire:model="role" :options="$roleOptions" label="Role" :isLabel="false" />
 
             <div class="flex justify-end gap-2">
                 <x-managers.ui.button type="button" variant="secondary"

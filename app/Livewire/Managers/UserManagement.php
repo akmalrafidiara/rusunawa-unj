@@ -112,14 +112,14 @@ class UserManagement extends Component
             $user->syncRoles([$this->role]);
         }
 
-        $this->resetForm();
-        $this->showModal = false;
-
         LivewireAlert::title($this->userIdBeingEdited ? 'Data berhasil diperbarui.' : 'Pengguna berhasil ditambahkan.')
         ->success()
         ->toast()
         ->position('top-end')
         ->show();
+
+        $this->resetForm();
+        $this->showModal = false;
     }
 
     public function confirmDelete($data)
