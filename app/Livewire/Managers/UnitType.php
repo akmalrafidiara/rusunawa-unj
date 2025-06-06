@@ -16,7 +16,7 @@ class UnitType extends Component
     use WithFilePond;
 
     public $search = '';
-    public $name, $description, $image;
+    public $name, $description, $image, $temporaryImage;
     public $facilities = [];
     public $newFacility = '';
 
@@ -60,6 +60,7 @@ class UnitType extends Component
         $this->name = $unitType->name;
         $this->description = $unitType->description;
         $this->image = $unitType->image;
+        $this->temporaryImage = $unitType->image;
         $this->facilities = json_decode($unitType->facilities, true) ?? [];
         $this->showModal = true;
     }
@@ -85,12 +86,20 @@ class UnitType extends Component
             'facilities' => json_encode($this->facilities),
         ];
 
+        // Jika tidak ada gambar lama di hapus
+        if ($this->image !== $this->temporaryImage && $this->temporaryImage != null) {
+            Storage::disk('public')->delete($this->temporaryImage);
+            $data['image'] = null;
+        }
+
+
+        // Jika ada gambar baru yang diupload
         if ($this->image instanceof TemporaryUploadedFile) {
+
             // Hapus gambar lama jika sedang edit
-            if ($this->unitTypeIdBeingEdited) {
-                $oldType = UnitTypeModel::find($this->unitTypeIdBeingEdited);
-                if ($oldType && $oldType->image) {
-                    Storage::disk('public')->delete($oldType->image);
+            if ($this->unitTypeIdBeingEdited && $this->temporaryImage != null) {
+                if ($this->image !== $this->temporaryImage) {
+                    Storage::disk('public')->delete($this->temporaryImage);
                 }
             }
 
@@ -104,16 +113,16 @@ class UnitType extends Component
             $data
         );
 
-        // Reset form
-        $this->resetForm();
-        $this->showModal = false;
-
         // Flash message
-        LivewireAlert::title($this->userIdBeingEdited ? 'Data berhasil diperbarui.' : 'Pengguna berhasil ditambahkan.')
+        LivewireAlert::title($this->unitTypeIdBeingEdited ? 'Data berhasil diperbarui.' : 'Tipe unit berhasil ditambahkan.')
         ->success()
         ->toast()
         ->position('top-end')
         ->show();
+
+        // Reset form
+        $this->resetForm();
+        $this->showModal = false;
     }
 
     public function confirmDelete($data)
@@ -127,10 +136,10 @@ class UnitType extends Component
             ->show();
     }
 
-    public function deleteUnitType($id)
+    public function deleteUnitType($data)
     {
+        $id = $data['id'];
         $unitType = UnitTypeModel::find($id);
-
         if ($unitType) {
             // Hapus gambar dari storage jika ada
             if ($unitType->image) {
@@ -153,6 +162,7 @@ class UnitType extends Component
         $this->name = '';
         $this->description = '';
         $this->image = '';
+        $this->temporaryImage = '';
         $this->facilities = [];
         $this->unitTypeIdBeingEdited = null;
     }

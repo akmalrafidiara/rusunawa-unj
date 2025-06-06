@@ -67,7 +67,7 @@
                                 </x-managers.ui.tooltip>
 
                                 <x-managers.ui.tooltip tooltip="Hapus Pengguna">
-                                    <x-managers.ui.button wire:click="confirmDelete({{ $unitType->id }})"
+                                    <x-managers.ui.button wire:click="confirmDelete({{ $unitType }})"
                                         id="delete-user" variant="danger" size="sm">
                                         <flux:icon.trash class="w-4" />
                                     </x-managers.ui.button>
@@ -90,7 +90,7 @@
         <form wire:submit.prevent="save" class="space-y-4">
             <!-- Nama Tipe -->
             <x-managers.form.label>Nama Tipe</x-managers.form.label>
-            <x-managers.form.input wire:model="name" placeholder="Contoh: Studio, 1 Kamar, Loft" required />
+            <x-managers.form.input wire:model="name" placeholder="Contoh: Studio, 1 Kamar, Loft" />
 
             <!-- Deskripsi -->
             <x-managers.form.label>Deskripsi Tipe</x-managers.form.label>
