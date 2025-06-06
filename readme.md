@@ -185,6 +185,45 @@ Aplikasi akan tersedia di: [http://localhost:8000](http://localhost:8000)
 
 ---
 
+## 🐚 Shortcut Bash (Opsional)
+
+Shortcut berikut dapat memudahkan pengembangan aplikasi sehari-hari:
+
+```bash
+# php artisan
+pa() { php artisan "$@"; }
+
+# composer
+com() { composer "$@"; }
+
+# Artisan shortcuts
+alias pas='pa serve'
+alias pam='pa migrate'
+alias pamf='pa migrate:fresh'
+alias pamfs='pa migrate:fresh --seed'
+alias pat='pa tinker'
+alias pac='pa config:clear'
+alias parr='pa route:cache'
+alias par='pa route:clear'
+alias pav='pa view:clear'
+alias pacc='pa config:cache'
+alias pavc='pa view:cache'
+
+# Composer shortcuts
+alias cda='com dump-autoload'
+alias cu='com update'
+alias ci='com install'
+alias crd='com run dev'
+
+# Node shortcuts
+alias ni='npm install'
+alias nrd='npm run dev'
+alias nrb='npm run build'
+alias nrt='npm run test'
+alias nrs='npm run serve'
+
+```
+
 ## 📜 Lisensi
 
 Proyek ini menggunakan lisensi MIT. Lihat file [LICENSE](LICENSE) untuk informasi lebih lanjut.
