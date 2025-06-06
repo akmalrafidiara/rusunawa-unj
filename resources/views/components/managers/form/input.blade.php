@@ -23,7 +23,7 @@
         <input type="{{ $type }}" name="{{ $name }}"
             {{ $attributes->merge(['wire:model' => $wireModel]) }} placeholder="{{ $placeholder }}"
             {{ $required ? 'required' : '' }}
-            class="block w-full border rounded-md border-gray-500 dark:placeholder-gray-200 bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 py-2 {{ $icon ? 'pl-10' : 'pl-4' }} pr-4 {{ $class }}">
+            class="block w-full border rounded-md {{ $error ? 'border-red-500' : 'border-gray-500' }} dark:placeholder-gray-200 bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 py-2 {{ $icon ? 'pl-10' : 'pl-4' }} pr-4 {{ $class }}">
     </div>
 
     @if ($error)
