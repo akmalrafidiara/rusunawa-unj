@@ -99,7 +99,7 @@ class UnitType extends Component
         }
 
         // Simpan atau update data
-        $save = UnitTypeModel::updateOrCreate(
+        UnitTypeModel::updateOrCreate(
             ['id' => $this->unitTypeIdBeingEdited],
             $data
         );
@@ -109,8 +109,11 @@ class UnitType extends Component
         $this->showModal = false;
 
         // Flash message
-        session()->flash('message', $this->unitTypeIdBeingEdited ? 'Tipe unit berhasil diperbaharui.' : 'Tipe unit berhasil ditambahkan.');
-        $this->dispatch('swal:success', title: 'Berhasil!');
+        LivewireAlert::title($this->userIdBeingEdited ? 'Data berhasil diperbarui.' : 'Pengguna berhasil ditambahkan.')
+        ->success()
+        ->toast()
+        ->position('top-end')
+        ->show();
     }
 
     public function confirmDelete($data)
@@ -137,10 +140,12 @@ class UnitType extends Component
             // Hapus unit type
             $unitType->delete();
 
-            session()->flash('message', 'Tipe unit berhasil dihapus.');
-            $this->dispatch('swal:success', title: 'Berhasil!');
-        } else {
-            session()->flash('error', 'Tipe unit tidak ditemukan.');
+            LivewireAlert::title('Berhasil Dihapus')
+                ->text($unitType->name . ' telah dihapus.')
+                ->success()
+                ->toast()
+                ->position('top-end')
+                ->show();
         }
     }
 
