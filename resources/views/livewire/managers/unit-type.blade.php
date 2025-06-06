@@ -89,15 +89,16 @@
     <x-managers.ui.modal title="Form Tipe Kamar" :show="$showModal">
         <form wire:submit.prevent="save" class="space-y-4">
             <!-- Nama Tipe -->
-            <x-managers.form.input wire:model="name" label="Nama Tipe" placeholder="Contoh: Studio, 1 Kamar, Loft"
-                required />
+            <x-managers.form.label>Nama Tipe</x-managers.form.label>
+            <x-managers.form.input wire:model="name" placeholder="Contoh: Studio, 1 Kamar, Loft" required />
 
             <!-- Deskripsi -->
-            <x-managers.form.textarea wire:model="description" label="Deskripsi Tipe" rows="3" />
+            <x-managers.form.label>Deskripsi Tipe</x-managers.form.label>
+            <x-managers.form.textarea wire:model="description" rows="3" />
 
             <!-- Facilities (Array) -->
             <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Fasilitas</label>
+                <x-managers.form.label>Fasilitas</x-managers.form.label>
                 <!-- Daftar Fasilitas -->
                 @if (!empty($facilities))
                     @foreach ($facilities as $index => $facility)
@@ -122,10 +123,12 @@
             </div>
 
             <!-- Upload Gambar -->
-            <x-managers.form.file wire:model="image" label="Gambar Tipe" help="Unggah gambar tipe kamar (opsional)" />
+            <x-managers.form.label>Gambar Tipe</x-managers.form.label>
+            {{-- <x-managers.form.file wire:model="image" help="Unggah gambar tipe kamar (opsional)" /> --}}
+            <x-filepond::upload wire:model="image" />
 
             <!-- Tombol Aksi -->
-            <div class="flex justify-end gap-2">
+            <div class="flex justify-end gap-2 mt-10">
                 <x-managers.ui.button type="button" variant="secondary"
                     wire:click="$set('showModal', false)">Batal</x-managers.ui.button>
                 <x-managers.ui.button wire:click="save()" variant="primary">
@@ -135,37 +138,3 @@
         </form>
     </x-managers.ui.modal>
 </div>
-
-@push('scripts')
-    <script>
-        Livewire.on('show-delete-confirmation', (event) => {
-            const unitTypeId = event.id;
-            Swal.fire({
-                title: 'Yakin?',
-                text: "Data pengguna akan dihapus secara permanen!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Ya, hapus!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Trigger deleteUnitType di Livewire
-                    @this.call('deleteUnitType', unitTypeId);
-                }
-            });
-        });
-
-        window.addEventListener('swal:success', (e) => {
-            Swal.fire({
-                icon: 'success',
-                title: e.detail.title,
-                timer: 3000,
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false
-            });
-        });
-    </script>
-@endpush

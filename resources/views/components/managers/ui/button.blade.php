@@ -15,7 +15,21 @@
 
 <button type="{{ $type }}"
     {{ $attributes->merge([
-        'class' => "px-4 py-2 rounded-md cursor-pointer {$classes} whitespace-nowrap",
+        'class' => "px-4 py-2 rounded-md cursor-pointer {$classes} whitespace-nowrap flex items-center justify-center gap-2",
     ]) }}>
-    {{ $slot }}
+
+    @if ($attributes->has('icon'))
+        <span class="inline-flex items-center">
+            {{-- blade-formatter-disable  --}}
+            <flux:icon :name="$attributes->get('icon')" variant="outline" class="w-4 h-4" />
+            {{-- blade-formatter-enable --}}
+        </span>
+        @if (trim($slot))
+            <span class="ml-1">
+                {{ $slot }}
+            </span>
+        @endif
+    @else
+        {{ $slot }}
+    @endif
 </button>

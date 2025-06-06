@@ -5,11 +5,15 @@ namespace App\Livewire\Managers;
 use App\Models\UnitType as UnitTypeModel;
 use Livewire\Component;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
+use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
+use Spatie\LivewireFilepond\WithFilePond;
 
 class UnitType extends Component
 {
     use WithFileUploads;
+    use WithFilePond;
 
     public $search = '';
     public $name, $description, $image;
@@ -21,7 +25,7 @@ class UnitType extends Component
 
     public $showModal = false;
     public $unitTypeIdBeingEdited = null;
-    
+
     protected $queryString = [
         'search' => ['except' => ''],
         'orderBy' => ['except' => 'created_at'],
@@ -62,13 +66,18 @@ class UnitType extends Component
 
     public function save()
     {
-        $this->validate([
+        $rules = [
             'name' => 'required|string|max:255',
             'description' => 'string',
-            'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
             'facilities' => 'array',
             'facilities.*' => 'string|max:255',
-        ]);
+        ];
+
+        if ($this->image instanceof TemporaryUploadedFile) {
+            $rules['image'] = 'image|mimes:jpeg,png,jpg,gif|max:2048';
+        }
+
+        $this->validate($rules);
 
         $data = [
             'name' => $this->name,
@@ -76,7 +85,7 @@ class UnitType extends Component
             'facilities' => json_encode($this->facilities),
         ];
 
-        if ($this->image) {
+        if ($this->image instanceof TemporaryUploadedFile) {
             // Hapus gambar lama jika sedang edit
             if ($this->unitTypeIdBeingEdited) {
                 $oldType = UnitTypeModel::find($this->unitTypeIdBeingEdited);
@@ -104,9 +113,15 @@ class UnitType extends Component
         $this->dispatch('swal:success', title: 'Berhasil!');
     }
 
-    public function confirmDelete($id)
+    public function confirmDelete($data)
     {
-        $this->dispatch('show-delete-confirmation', id: $id);
+        LivewireAlert::title('Hapus data '. $data['name'] . '?')
+            ->text('Apakah Anda yakin ingin menghapus data ini?')
+            ->question()
+            ->withCancelButton('Batalkan')
+            ->withConfirmButton('Hapus!')
+            ->onConfirm('deleteUnitType', ['id' => $data['id']])
+            ->show();
     }
 
     public function deleteUnitType($id)
