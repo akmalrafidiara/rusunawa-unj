@@ -1,4 +1,7 @@
-@props(['variant' => 'primary'])
+@props(['variant' => 'primary', 'type' => 'button'])
+
+{{-- Variant can be 'primary', 'secondary', or 'danger' --}}
+{{-- Type can be 'button', 'submit', etc. --}}
 
 @php
     $classes = match ($variant) {
@@ -10,7 +13,7 @@
     };
 @endphp
 
-<button type="button"
+<button type="{{ $type }}"
     {{ $attributes->merge([
         'class' => "px-4 py-2 rounded-md cursor-pointer {$classes} whitespace-nowrap",
     ]) }}>

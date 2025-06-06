@@ -4,6 +4,7 @@ namespace App\Livewire\Managers;
 
 use App\Enums\RoleUser;
 use App\Models\User;
+use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Spatie\Permission\Models\Role;
@@ -114,23 +115,38 @@ class UserManagement extends Component
         $this->resetForm();
         $this->showModal = false;
 
-        session()->flash('success', $this->userIdBeingEdited ? 'Data berhasil diperbarui.' : 'Pengguna berhasil ditambahkan.');
-        $this->dispatch('swal:success', title: 'Berhasil!');
+        LivewireAlert::title($this->userIdBeingEdited ? 'Data berhasil diperbarui.' : 'Pengguna berhasil ditambahkan.')
+        ->success()
+        ->toast()
+        ->position('top-end')
+        ->show();
     }
 
-    public function confirmDelete($id)
+    public function confirmDelete($data)
     {
-        $this->dispatch('show-delete-confirmation', id: $id);
+        LivewireAlert::title('Hapus data '. $data['name'] . '?')
+            ->text('Apakah Anda yakin ingin menghapus data ini?')
+            ->question()
+            ->withCancelButton('Batalkan')
+            ->withConfirmButton('Hapus!')
+            ->onConfirm('deleteUser', ['id' => $data['id']])
+            ->show();
     }
 
-    public function deleteUser($id)
+    public function deleteUser($data)
     {
+        $id = $data['id'];
         $user = User::find($id);
 
         if ($user) {
             $user->delete();
-            session()->flash('success', 'Pengguna berhasil dihapus');
-            $this->dispatch('swal:success', title: 'Berhasil Dihapus');
+
+            LivewireAlert::title('Berhasil Dihapus')
+                ->text($user->name . ' telah dihapus.')
+                ->success()
+                ->toast()
+                ->position('top-end')
+                ->show();
         }
     }
 

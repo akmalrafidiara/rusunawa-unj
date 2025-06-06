@@ -73,7 +73,7 @@
                                 </x-managers.ui.tooltip>
 
                                 <x-managers.ui.tooltip tooltip="Hapus Pengguna">
-                                    <x-managers.ui.button wire:click="confirmDelete({{ $user->id }})"
+                                    <x-managers.ui.button wire:click="confirmDelete({{ $user }})"
                                         id="delete-user" variant="danger" size="sm">
                                         <flux:icon.trash class="w-4" />
                                     </x-managers.ui.button>
@@ -107,42 +107,8 @@
             <div class="flex justify-end gap-2">
                 <x-managers.ui.button type="button" variant="secondary"
                     wire:click="$set('showModal', false)">Batal</x-managers.ui.button>
-                <x-managers.ui.button type="submit" variant="primary">Simpan</x-managers.ui.button>
+                <x-managers.ui.button wire:click="save()" type="submit" variant="primary">Simpan</x-managers.ui.button>
             </div>
         </form>
     </x-managers.ui.modal>
 </div>
-
-@push('scripts')
-    <script>
-        Livewire.on('show-delete-confirmation', (event) => {
-            const userId = event.id;
-            Swal.fire({
-                title: 'Yakin?',
-                text: "Data pengguna akan dihapus secara permanen!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Ya, hapus!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Trigger deleteUser di Livewire
-                    @this.call('deleteUser', userId);
-                }
-            });
-        });
-
-        window.addEventListener('swal:success', (e) => {
-            Swal.fire({
-                icon: 'success',
-                title: e.detail.title,
-                timer: 3000,
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false
-            });
-        });
-    </script>
-@endpush
