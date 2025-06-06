@@ -48,6 +48,7 @@ Sistem ini memberikan solusi digital dalam mengelola operasional Rusunawa UNJ de
 
 -   [Livewire Alert](https://github.com/jantinnerezo/livewire-alert) _(Untuk notifikasi SweetAlert2)_
 -   [Spatie Laravel Permission](https://spatie.be/docs/laravel-permission/v6/introduction) _(Manajemen role & permission)_
+-   [Spatie Laravel Filepond](https://github.com/spatie/livewire-filepond) _(Ui untuk upload file)_
 
 ---
 
@@ -221,7 +222,6 @@ alias nrd='npm run dev'
 alias nrb='npm run build'
 alias nrt='npm run test'
 alias nrs='npm run serve'
-
 ```
 
 ## 📜 Lisensi
