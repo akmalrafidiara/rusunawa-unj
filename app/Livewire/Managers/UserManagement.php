@@ -83,15 +83,27 @@ class UserManagement extends Component
         $this->showModal = true;
     }
 
-    public function save()
+    public function rules()
     {
-        $this->validate([
+        return [
             'name' => 'required',
             'email' => "required|email|unique:users,email,{$this->userIdBeingEdited}",
             'password' => $this->userIdBeingEdited ? 'nullable|min:6' : 'required|min:6',
             'phone' => 'nullable|string|max:15',
             'role' => 'required|exists:roles,name',
-        ]);
+        ];
+    }
+
+    public function updated($propertyName)
+    {
+        if (in_array($propertyName, array_keys($this->rules()))) {
+            $this->validateOnly($propertyName, $this->rules());
+        }
+    }
+
+    public function save()
+    {
+        $this->validate($this->rules());
 
         $data = [
             'name' => $this->name,

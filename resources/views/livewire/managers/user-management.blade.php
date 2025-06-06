@@ -16,12 +16,14 @@
                 ['value' => 'email', 'label' => 'Email'],
                 ['value' => 'created_at', 'label' => 'Tanggal'],
             ];
+
+            $sortOptions = [['value' => 'asc', 'label' => 'Menaik'], ['value' => 'desc', 'label' => 'Menurun']];
         @endphp
 
         <x-managers.ui.dropdown-picker wire:model.live="orderBy" :options="$orderByOptions" label="Urutkan Berdasarkan"
             wire:key="dropdown-order-by" disabled />
 
-        <x-managers.ui.dropdown-picker wire:model.live="sort" :options="['asc', 'desc']" label="Sort" wire:key="dropdown-sort"
+        <x-managers.ui.dropdown-picker wire:model.live="sort" :options="$sortOptions" label="Sort" wire:key="dropdown-sort"
             disabled />
 
         <x-managers.ui.button wire:click="create" variant="primary" icon="plus" class="w-full sm:w-auto">
@@ -97,12 +99,26 @@
 
     <x-managers.ui.modal title="Form User" :show="$showModal">
         <form wire:submit.prevent="save" class="space-y-4">
-            <x-managers.form.input wire:model="name" placeholder="Nama Lengkap" type="text" required />
-            <x-managers.form.input wire:model="email" placeholder="Email" type="email" required />
-            <x-managers.form.input wire:model="password" placeholder="Password" type="password" required />
-            <x-managers.form.input wire:model="phone" placeholder="Phone Number" type="text" required />
 
-            <x-managers.form.select wire:model="role" :options="$roleOptions" label="Role" />
+            {{-- Name --}}
+            <x-managers.form.label>Nama Lengkap</x-managers.form.label>
+            <x-managers.form.input wire:model.live="name" placeholder="Nama Lengkap" type="text" />
+
+            {{-- Email --}}
+            <x-managers.form.label>Email</x-managers.form.label>
+            <x-managers.form.input wire:model.live="email" placeholder="Email" type="email" />
+
+            {{-- Password --}}
+            <x-managers.form.label>Password</x-managers.form.label>
+            <x-managers.form.input wire:model.live="password" placeholder="Password" type="password" />
+
+            {{-- Phone --}}
+            <x-managers.form.label>No. Telepon</x-managers.form.label>
+            <x-managers.form.input wire:model.live="phone" placeholder="Phone Number" type="text" />
+
+            {{-- Role --}}
+            <x-managers.form.label>Role</x-managers.form.label>
+            <x-managers.form.select wire:model.live="role" :options="$roleOptions" label="Role" />
 
             <div class="flex justify-end gap-2">
                 <x-managers.ui.button type="button" variant="secondary"
