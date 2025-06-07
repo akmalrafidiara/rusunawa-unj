@@ -15,33 +15,33 @@ class UnitRateSeeder extends Seeder
     {
         $rates = [
             [
-                'amount' => 750000,
-                'tenant_type' => 'Internal',
-                'rental_type' => 'Bulanan',
+                'price' => 750000,
+                'occupant_type' => 'Internal',
+                'pricing_bases' => 'per_month',
             ],
             [
-                'amount' => 150000,
-                'tenant_type' => 'Internal',
-                'rental_type' => 'Harian',
+                'price' => 150000,
+                'occupant_type' => 'Internal',
+                'pricing_bases' => 'per_night',
             ],
             [
-                'amount' => 900000,
-                'tenant_type' => 'Eksternal',
-                'rental_type' => 'Bulanan',
+                'price' => 900000,
+                'occupant_type' => 'Eksternal',
+                'pricing_bases' => 'per_month',
             ],
             [
-                'amount' => 200000,
-                'tenant_type' => 'Eksternal',
-                'rental_type' => 'Harian',
+                'price' => 200000,
+                'occupant_type' => 'Eksternal',
+                'pricing_bases' => 'per_night',
             ],
         ];
 
         foreach ($rates as $rate) {
             UnitRate::firstOrCreate(
                 [
-                    'amount' => $rate['amount'],
-                    'tenant_type' => $rate['tenant_type'],
-                    'rental_type' => $rate['rental_type'],
+                    'price' => $rate['price'],
+                    'occupant_type' => $rate['occupant_type'],
+                    'pricing_bases' => $rate['pricing_bases'],
                 ]
             );
         }

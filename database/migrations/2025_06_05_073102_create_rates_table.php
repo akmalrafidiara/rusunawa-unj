@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('rates', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('amount');
-            $table->string('tenant_type');
-            $table->string('rental_type');
+            $table->unsignedBigInteger('price');
+            $table->string('occupant_type');
+            $table->enum('pricing_bases', ['per_night', 'per_month']);
             $table->timestamps();
         });
     }
