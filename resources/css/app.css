@@ -87,7 +87,7 @@ select:focus[data-flux-control] {
 
 @theme {
     --color-accent: var(--color-emerald-600);
-    --color-accent-content: var(--color-emerald-600);
+    --color-accent-content: var(--color-emerald-700);
     --color-accent-foreground: var(--color-white);
 }
 
