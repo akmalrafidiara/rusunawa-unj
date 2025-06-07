@@ -3,7 +3,7 @@
     <div class="flex flex-col sm:flex-row gap-4">
 
         {{-- Search Form --}}
-        <x-managers.form.input wire:model.live="search" placeholder="Cari tipe unit..." icon="magnifying-glass"
+        <x-managers.form.input wire:model.live="search" clearable placeholder="Cari tipe unit..." icon="magnifying-glass"
             class="w-full" />
 
         <div class="flex gap-4">

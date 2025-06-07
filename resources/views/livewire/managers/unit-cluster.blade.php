@@ -3,8 +3,8 @@
     <div class="flex flex-col sm:flex-row gap-4">
 
         {{-- Search Form --}}
-        <x-managers.form.input wire:model.live="search" placeholder="Cari cluster unit..." icon="magnifying-glass"
-            class="w-full" />
+        <x-managers.form.input wire:model.live="search" clearable placeholder="Cari cluster unit..."
+            icon="magnifying-glass" class="w-full" />
 
         <div class="flex gap-4">
             {{-- Add Unit Type Button --}}

@@ -31,8 +31,8 @@
         @if ($clearable && $wireModel)
             @if ($this->{$wireModel})
                 <button type="button" wire:click="$set('{{ $wireModel }}', null)"
-                    class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none z-10">
-                    &times;
+                    class="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none z-10">
+                    <flux:icon name="x-mark" />
                 </button>
             @endif
         @endif

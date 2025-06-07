@@ -1,7 +1,7 @@
 <div class="flex flex-col gap-6">
     <!-- Search & Filter -->
     <div class="flex flex-col sm:flex-row gap-4">
-        <x-managers.form.input wire:model.live="search" placeholder="Cari pengguna..." icon="magnifying-glass"
+        <x-managers.form.input wire:model.live="search" clearable placeholder="Cari pengguna..." icon="magnifying-glass"
             class="w-full" />
 
         <div class="flex gap-4">
