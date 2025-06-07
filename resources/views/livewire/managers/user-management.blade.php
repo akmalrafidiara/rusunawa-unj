@@ -4,31 +4,41 @@
         <x-managers.form.input wire:model.live="search" placeholder="Cari pengguna..." icon="magnifying-glass"
             class="w-full" />
 
-        <x-managers.ui.dropdown-picker wire:model.live="roleFilter" :options="$roleOptions" label="Semua Role"
-            wire:key="dropdown-role" />
-
-        <x-managers.ui.dropdown-picker wire:model.live="perPage" :options="[10, 25, 50, 100]" label="Jumlah per halaman"
-            wire:key="dropdown-per-page" disabled />
-
-        @php
-            $orderByOptions = [
-                ['value' => 'name', 'label' => 'Nama'],
-                ['value' => 'email', 'label' => 'Email'],
-                ['value' => 'created_at', 'label' => 'Tanggal'],
-            ];
-
-            $sortOptions = [['value' => 'asc', 'label' => 'Menaik'], ['value' => 'desc', 'label' => 'Menurun']];
-        @endphp
-
-        <x-managers.ui.dropdown-picker wire:model.live="orderBy" :options="$orderByOptions" label="Urutkan Berdasarkan"
-            wire:key="dropdown-order-by" disabled />
-
-        <x-managers.ui.dropdown-picker wire:model.live="sort" :options="$sortOptions" label="Sort" wire:key="dropdown-sort"
-            disabled />
-
         <x-managers.ui.button wire:click="create" variant="primary" icon="plus" class="w-full sm:w-auto">
             Tambah Pengguna
         </x-managers.ui.button>
+
+        <x-managers.ui.dropdown class="flex flex-col gap-2">
+            <x-slot name="trigger">
+                <flux:icon.adjustments-horizontal />
+            </x-slot>
+            @php
+                $orderByOptions = [
+                    ['value' => 'name', 'label' => 'Nama'],
+                    ['value' => 'email', 'label' => 'Email'],
+                    ['value' => 'created_at', 'label' => 'Tanggal'],
+                ];
+
+                $sortOptions = [['value' => 'asc', 'label' => 'Menaik'], ['value' => 'desc', 'label' => 'Menurun']];
+            @endphp
+            <x-managers.form.small>Filter</x-managers.form.small>
+            <div class="flex gap-2">
+                <x-managers.ui.dropdown-picker wire:model.live="roleFilter" :options="$roleOptions" label="Semua Role"
+                    wire:key="dropdown-role" />
+
+                <x-managers.ui.dropdown-picker wire:model.live="perPage" :options="[10, 25, 50, 100]" label="Jumlah per halaman"
+                    wire:key="dropdown-per-page" disabled />
+            </div>
+
+            <x-managers.form.small>Urutkan</x-managers.form.small>
+            <div class="flex gap-2">
+                <x-managers.ui.dropdown-picker wire:model.live="orderBy" :options="$orderByOptions" label="Urutkan Berdasarkan"
+                    wire:key="dropdown-order-by" disabled />
+
+                <x-managers.ui.dropdown-picker wire:model.live="sort" :options="$sortOptions" label="Sort"
+                    wire:key="dropdown-sort" disabled />
+            </div>
+        </x-managers.ui.dropdown>
     </div>
 
     <!-- Tabel Data -->
@@ -67,19 +77,16 @@
                         <!-- Aksi -->
                         <x-managers.table.cell class="text-right">
                             <div class="flex gap-2">
-                                <x-managers.ui.tooltip tooltip="Edit Data">
-                                    <x-managers.ui.button wire:click="edit({{ $user->id }})" variant="secondary"
-                                        size="sm">
-                                        <flux:icon.pencil class="w-4" />
-                                    </x-managers.ui.button>
-                                </x-managers.ui.tooltip>
 
-                                <x-managers.ui.tooltip tooltip="Hapus Pengguna">
-                                    <x-managers.ui.button wire:click="confirmDelete({{ $user }})"
-                                        id="delete-user" variant="danger" size="sm">
-                                        <flux:icon.trash class="w-4" />
-                                    </x-managers.ui.button>
-                                </x-managers.ui.tooltip>
+                                <x-managers.ui.button wire:click="edit({{ $user->id }})" variant="secondary"
+                                    size="sm">
+                                    <flux:icon.pencil class="w-4" />
+                                </x-managers.ui.button>
+
+                                <x-managers.ui.button wire:click="confirmDelete({{ $user }})" id="delete-user"
+                                    variant="danger" size="sm">
+                                    <flux:icon.trash class="w-4" />
+                                </x-managers.ui.button>
                             </div>
                         </x-managers.table.cell>
                     </x-managers.table.row>

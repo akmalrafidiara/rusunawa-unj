@@ -1,22 +1,40 @@
 <div class="flex flex-col gap-6">
-    <!-- Search & Filter -->
+    <!-- Toolbar -->
     <div class="flex flex-col sm:flex-row gap-4">
+
+        {{-- Search Form --}}
         <x-managers.form.input wire:model.live="search" placeholder="Cari tipe unit..." icon="magnifying-glass"
             class="w-full" />
 
-        @php
-            $orderByOptions = [['value' => 'name', 'label' => 'Nama'], ['value' => 'created_at', 'label' => 'Tanggal']];
-        @endphp
-
-        <x-managers.ui.dropdown-picker wire:model.live="orderBy" :options="$orderByOptions" label="Urutkan Berdasarkan"
-            wire:key="dropdown-order-by" disabled />
-
-        <x-managers.ui.dropdown-picker wire:model.live="sort" :options="['asc', 'desc']" label="Sort" wire:key="dropdown-sort"
-            disabled />
-
+        {{-- Add Unit Type Button --}}
         <x-managers.ui.button wire:click="create" variant="primary" icon="plus" class="w-full sm:w-auto">
             Tambah Tipe Unit
         </x-managers.ui.button>
+
+        {{-- Dropdown for Filters --}}
+        <x-managers.ui.dropdown class="flex flex-col gap-2">
+            <x-slot name="trigger">
+                <flux:icon.adjustments-horizontal />
+            </x-slot>
+            @php
+                $orderByOptions = [
+                    ['value' => 'name', 'label' => 'Nama'],
+                    ['value' => 'created_at', 'label' => 'Tanggal'],
+                ];
+
+                $sortOptions = [['value' => 'asc', 'label' => 'Menaik'], ['value' => 'desc', 'label' => 'Menurun']];
+            @endphp
+
+            {{-- Sort Filter --}}
+            <x-managers.form.small>Urutkan</x-managers.form.small>
+            <div class="flex gap-2">
+                <x-managers.ui.dropdown-picker wire:model.live="orderBy" :options="$orderByOptions" label="Urutkan Berdasarkan"
+                    wire:key="dropdown-order-by" disabled />
+
+                <x-managers.ui.dropdown-picker wire:model.live="sort" :options="$sortOptions" label="Sort"
+                    wire:key="dropdown-sort" disabled />
+            </div>
+        </x-managers.ui.dropdown>
     </div>
 
     <!-- Tabel Data -->
@@ -59,19 +77,17 @@
                         <!-- Aksi -->
                         <x-managers.table.cell class="text-right">
                             <div class="flex gap-2">
-                                <x-managers.ui.tooltip tooltip="Edit Data">
-                                    <x-managers.ui.button wire:click="edit({{ $unitType->id }})" variant="secondary"
-                                        size="sm">
-                                        <flux:icon.pencil class="w-4" />
-                                    </x-managers.ui.button>
-                                </x-managers.ui.tooltip>
+                                {{-- Edit Button --}}
+                                <x-managers.ui.button wire:click="edit({{ $unitType->id }})" variant="secondary"
+                                    size="sm">
+                                    <flux:icon.pencil class="w-4" />
+                                </x-managers.ui.button>
 
-                                <x-managers.ui.tooltip tooltip="Hapus Pengguna">
-                                    <x-managers.ui.button wire:click="confirmDelete({{ $unitType }})"
-                                        id="delete-user" variant="danger" size="sm">
-                                        <flux:icon.trash class="w-4" />
-                                    </x-managers.ui.button>
-                                </x-managers.ui.tooltip>
+                                {{-- Delete Button --}}
+                                <x-managers.ui.button wire:click="confirmDelete({{ $unitType }})" id="delete-user"
+                                    variant="danger" size="sm">
+                                    <flux:icon.trash class="w-4" />
+                                </x-managers.ui.button>
                             </div>
                         </x-managers.table.cell>
                     </x-managers.table.row>
@@ -86,6 +102,7 @@
         </x-managers.table.table>
     </x-managers.ui.card>
 
+    {{-- Modal Create --}}
     <x-managers.ui.modal title="Form Tipe Kamar" :show="$showModal">
         <form wire:submit.prevent="save" class="space-y-4">
             <!-- Nama Tipe -->
