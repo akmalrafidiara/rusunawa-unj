@@ -4,7 +4,7 @@
         <x-managers.ui.page-title title="Tipe Unit"
             subtitle="Kelola data referensi tipe unit untuk digunakan dalam data Unit" />
 
-        {{-- Dynamic Content - User Management --}}
+        {{-- Dynamic Content - Unit Types --}}
         <livewire:managers.unit-type />
     </div>
 </x-layouts.managers>

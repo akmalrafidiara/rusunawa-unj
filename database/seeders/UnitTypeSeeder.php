@@ -17,19 +17,19 @@ class UnitTypeSeeder extends Seeder
             [
                 'name' => 'Non AC Non Furnished',
                 'description' => 'Unit tanpa AC dan perabotan, cocok untuk penyewa yang ingin membawa perabot sendiri.',
-                'image' => 'no_image.jpg',
+                'image' => null,
                 'facilities' => ['Kamar mandi bersama', 'Dapur', 'Kipas', 'Lemari'],
             ],
             [
                 'name' => 'Ac Non Furnished',
                 'description' => 'Unit dengan AC namun tanpa perabotan, ideal untuk penyewa yang ingin membawa perabot sendiri.',
-                'image' => 'no_image.jpg',
+                'image' => null,
                 'facilities' => ['Kamar mandi dalam', 'Dapur', 'AC'],
             ],
             [
                 'name' => 'Ac Furnished',
                 'description' => 'Unit dengan AC dan perabotan lengkap, siap huni tanpa perlu membawa perabot sendiri.',
-                'image' => 'no_image.jpg',
+                'image' => null,
                 'facilities' => ['Kamar mandi dalam', 'Dapur', 'AC', 'Balkon'],
             ],
         ];
