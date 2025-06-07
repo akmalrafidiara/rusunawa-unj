@@ -8,7 +8,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Faker\Factory as Faker;
 
-class InitialUserSeeder extends Seeder
+class UserSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -81,7 +81,7 @@ class InitialUserSeeder extends Seeder
         $staffRole = Role::firstOrCreate(['name' => 'staff_of_rusunawa']);
 
         // Buat 5 user random dengan role staff_of_rusunawa
-        for ($i = 0; $i < 20; $i++) {
+        for ($i = 0; $i < 1; $i++) {
             $email = $faker->unique()->safeEmail;
 
             // Cek apakah email sudah ada

@@ -7,7 +7,6 @@ use App\Models\User;
 use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Spatie\Permission\Models\Role;
 
 class UserManagement extends Component
 {
@@ -43,8 +42,6 @@ class UserManagement extends Component
 
     public function render()
     {
-        $roles = Role::all();
-
         $users = User::query()
             ->when($this->search, fn($q) => $q->where('name', 'like', "%{$this->search}%"))
             ->when($this->roleFilter, fn($q) => $q->whereHas('roles', fn($r) => $r->where('name', $this->roleFilter)))
@@ -62,7 +59,7 @@ class UserManagement extends Component
             return $user;
         });
 
-        return view('livewire.managers.user-management', compact('users', 'roles'));
+        return view('livewire.managers.user-management', compact('users'));
     }
 
     public function create()
