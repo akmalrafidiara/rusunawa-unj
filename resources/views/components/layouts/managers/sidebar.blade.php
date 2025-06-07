@@ -183,7 +183,7 @@ $adminSidebarMenu = [
 <flux:sidebar sticky stashable class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 w-full">
     <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
 
-    <a href="{{ route('dashboard') }}" class="me-5 flex items-center space-x-2 rtl:space-x-reverse" wire:navigate>
+    <a href="{{ route('dashboard') }}" class="me-5 flex items-center space-x-2 rtl:space-x-reverse" wire:navigate.hover>
         <x-default.app-logo />
     </a>
 
@@ -196,14 +196,14 @@ $adminSidebarMenu = [
                         <flux:navlist.group :heading="$item['label']" expandable :expanded="false">
                             @foreach ($item['items'] as $subItem)
                                 <flux:navlist.item :href="$subItem['route']" :current="$subItem['current']"
-                                    wire:navigate>
+                                    wire:navigate.hover>
                                     {{ $subItem['label'] }}
                                 </flux:navlist.item>
                             @endforeach
                         </flux:navlist.group>
                     @else
                         <flux:navlist.item :icon="$item['icon']" :href="$item['route']" :current="$item['current']"
-                            wire:navigate :badge="$item['badge']" badge-color="red">
+                            wire:navigate.hover :badge="$item['badge']" badge-color="red">
                             {{ $item['label'] }}
                         </flux:navlist.item>
                     @endif
@@ -242,7 +242,7 @@ $adminSidebarMenu = [
             <flux:menu.separator />
 
             <flux:menu.radio.group>
-                <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>
+                <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate.hover>
                     {{ __('Settings') }}</flux:menu.item>
             </flux:menu.radio.group>
 
