@@ -70,7 +70,9 @@ class UnitType extends Component
         return [
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => $this->unitTypeIdBeingEdited && $this->image === $this->temporaryImage
+                ? 'nullable'
+                : 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'facilities' => 'array',
             'facilities.*' => 'string|max:255',
         ];
