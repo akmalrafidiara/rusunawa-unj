@@ -9,6 +9,8 @@ class UnitCluster extends Model
     protected $fillable = [
         'name',
         'address',
+        'image',
+        'description',
         'staff_id',
     ];
 
