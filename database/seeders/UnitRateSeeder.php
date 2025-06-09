@@ -17,22 +17,22 @@ class UnitRateSeeder extends Seeder
             [
                 'price' => 750000,
                 'occupant_type' => 'Internal',
-                'pricing_bases' => 'per_month',
+                'pricing_basis' => 'per_month',
             ],
             [
                 'price' => 150000,
                 'occupant_type' => 'Internal',
-                'pricing_bases' => 'per_night',
+                'pricing_basis' => 'per_night',
             ],
             [
                 'price' => 900000,
                 'occupant_type' => 'Eksternal',
-                'pricing_bases' => 'per_month',
+                'pricing_basis' => 'per_month',
             ],
             [
                 'price' => 200000,
                 'occupant_type' => 'Eksternal',
-                'pricing_bases' => 'per_night',
+                'pricing_basis' => 'per_night',
             ],
         ];
 
@@ -41,7 +41,7 @@ class UnitRateSeeder extends Seeder
                 [
                     'price' => $rate['price'],
                     'occupant_type' => $rate['occupant_type'],
-                    'pricing_bases' => $rate['pricing_bases'],
+                    'pricing_basis' => $rate['pricing_basis'],
                 ]
             );
         }
