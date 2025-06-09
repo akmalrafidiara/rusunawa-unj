@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('price');
             $table->string('occupant_type');
-            $table->enum('pricing_bases', ['per_night', 'per_month']);
+            $table->enum('pricing_basis', ['per_night', 'per_month']);
             $table->timestamps();
         });
     }
