@@ -20,6 +20,11 @@ class UnitRate extends Model
         return $this->belongsToMany(Unit::class, 'unit_rate', 'unit_rate_id', 'unit_id');
     }
 
+    public function getFormattedPriceAttribute()
+    {
+        return 'Rp' . number_format($this->price, 0, ',', '.');
+    }
+
     protected $casts = [
         'pricing_basis' => PricingBasis::class,
     ];

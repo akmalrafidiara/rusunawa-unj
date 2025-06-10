@@ -9,10 +9,7 @@ enum PricingBasis: string
 
     public static function values(): array
     {
-        return [
-            self::PER_NIGHT->value,
-            self::PER_MONTH->value,
-        ];
+        return array_column(self::cases(), 'value');
     }
 
     public function label(): string
