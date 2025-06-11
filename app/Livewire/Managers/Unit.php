@@ -16,6 +16,7 @@ use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
 use Spatie\LivewireFilepond\WithFilePond;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 
 class Unit extends Component
@@ -24,7 +25,23 @@ class Unit extends Component
     use WithFileUploads;
     use WithFilePond;
 
-    public $roomNumber, $capacity, $virtualAccountNumber, $genderAllowed, $status, $unitTypeId, $unitClusterId, $createdAt, $updatedAt;
+    public
+        $roomNumber,
+        $capacity,
+        $virtualAccountNumber,
+        $genderAllowed,
+        $status,
+        $unitTypeId,
+        $unitClusterId,
+        $createdAt,
+        $updatedAt,
+        $unitTypeName,
+        $unitClusterName;
+
+    public $unitImages = [];
+    public $existingImages = [];
+    public $imagesToDelete = [];
+
     public $genderAllowedOptions;
     public $statusOptions;
     public $unitTypeOptions;
@@ -99,14 +116,26 @@ class Unit extends Component
 
     protected function fillData(UnitModel $unit)
     {
+        // Filling edit and modal
         $this->unitIdBeingEdited = $unit->id;
         $this->roomNumber = $unit->room_number;
         $this->capacity = $unit->capacity;
         $this->virtualAccountNumber = $unit->virtual_account_number;
-        $this->genderAllowed = $unit->genderAllowed;
-        $this->status = $unit->status;
+        $this->genderAllowed = $unit->gender_allowed->value;
+        $this->status = $unit->status->value;
         $this->unitTypeId = $unit->unit_type_id;
         $this->unitClusterId = $unit->unit_cluster_id;
+
+        // Filling images data
+        $this->existingImages = $unit->attachments()->get();
+
+        // Reset image arrays
+        $this->unitImages = [];
+        $this->imagesToDelete = [];
+
+        // Filling detail
+        $this->unitTypeName = $unit->unitType->name;
+        $this->unitClusterName = $unit->unitCluster->name;
         $this->createdAt = $unit->created_at;
         $this->updatedAt = $unit->updated_at;
     }
@@ -120,7 +149,7 @@ class Unit extends Component
 
     public function detail(UnitModel $unit)
     {
-        $this->fillData($unit);
+        $this->fillData(unit: $unit);
         $this->modalType = 'detail';
         $this->showModal = true;
     }
@@ -129,8 +158,18 @@ class Unit extends Component
     {
         return [
             'roomNumber' => 'required|string|max:255',
-            'capacity' => 'required|integer|min:1',
-            'virtualAccountNumber' => 'nullable|string|max:255',
+            'capacity' => 'required|integer|min:1|max:3',
+            'virtualAccountNumber' => 'nullable|numeric|digits_between:15,16',
+            'genderAllowed' => [
+                'required',
+                Rule::in(GenderAllowed::values()),
+            ],
+            'status' => [
+                'required',
+                Rule::in(UnitStatus::values()),
+            ],
+            'unitTypeId' => 'required|exists:unit_types,id',
+            'unitClusterId' => 'required|exists:unit_clusters,id',
         ];
     }
 
@@ -148,17 +187,44 @@ class Unit extends Component
         $data = [
             'room_number' => $this->roomNumber,
             'capacity' => $this->capacity,
-            'virtual_account_number' => $this->virtualAccountNumber,
+            'virtual_account_number' => str_replace(' ', '', $this->virtualAccountNumber ?? ''),
             'gender_allowed' => $this->genderAllowed,
             'status' => $this->status,
             'unit_type_id' => $this->unitTypeId,
             'unit_cluster_id' => $this->unitClusterId,
         ];
 
-        UnitModel::updateOrCreate(
+        $unit = UnitModel::updateOrCreate(
             ['id' => $this->unitIdBeingEdited],
             $data
         );
+
+        // Handle image uploads
+        if (!empty($this->unitImages)) {
+            foreach ($this->unitImages as $image) {
+                if ($image instanceof TemporaryUploadedFile) {
+                    $path = $image->store('images', 'public');
+
+                    $unit->attachments()->create([
+                        'name' => $image->getClientOriginalName(),
+                        'file_name' => basename($path),
+                        'mime_type' => $image->getMimeType(),
+                        'path' => $path,
+                    ]);
+                }
+            }
+        }
+
+        // Delete marked images
+        if (!empty($this->imagesToDelete)) {
+            foreach ($this->imagesToDelete as $attachmentId) {
+                $attachment = $unit->attachments()->find($attachmentId);
+                if ($attachment) {
+                    Storage::disk('public')->delete($attachment->path);
+                    $attachment->delete();
+                }
+            }
+        }
 
         LivewireAlert::title($this->unitIdBeingEdited ? 'Data berhasil diperbarui.' : 'Unit berhasil ditambahkan.')
         ->success()
@@ -187,10 +253,18 @@ class Unit extends Component
         $unit = UnitModel::find($id);
 
         if ($unit) {
+            // Delete all associated images first
+            $attachments = $unit->attachments()->get();
+            foreach ($attachments as $attachment) {
+                Storage::disk('public')->delete($attachment->path);
+                $attachment->delete();
+            }
+
+            $roomNumber = $unit->room_number;
             $unit->delete();
 
             LivewireAlert::title('Berhasil Dihapus')
-                ->text($unit->name . ' telah dihapus.')
+                ->text('Unit ' . $roomNumber . ' telah dihapus.')
                 ->success()
                 ->toast()
                 ->position('top-end')
@@ -208,6 +282,31 @@ class Unit extends Component
         $this->unitTypeId = '';
         $this->unitClusterId = '';
         $this->unitIdBeingEdited = null;
+    }
+
+    public function removeUnitImage($index)
+    {
+        if (isset($this->unitImages[$index])) {
+            $image = $this->unitImages[$index];
+            if ($image instanceof TemporaryUploadedFile) {
+                $image->delete();
+            } else {
+                Storage::disk('public')->delete($image);
+            }
+            unset($this->unitImages[$index]);
+        }
+    }
+
+    public function markImageForDeletion($attachmentId)
+    {
+        if (!in_array($attachmentId, $this->imagesToDelete)) {
+            $this->imagesToDelete[] = $attachmentId;
+        }
+
+        // Remove the image from existing images array
+        $this->existingImages = collect($this->existingImages)->reject(function ($image) use ($attachmentId) {
+            return $image->id == $attachmentId;
+        });
     }
 
     public function exportPdf()

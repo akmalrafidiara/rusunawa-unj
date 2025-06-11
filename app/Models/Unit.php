@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\GenderAllowed;
+use App\Enums\UnitStatus;
 use Illuminate\Database\Eloquent\Model;
 
 class Unit extends Model
@@ -15,6 +17,11 @@ class Unit extends Model
         'unit_type_id',
         'unit_cluster_id',
     ];
+
+    public function attachments()
+    {
+        return $this->morphMany(Attachment::class, 'attachable');
+    }
 
     public function unitType()
     {
@@ -30,4 +37,9 @@ class Unit extends Model
     {
         return $this->belongsToMany(UnitRate::class, 'unit_rate', 'unit_id', 'unit_rate_id');
     }
+
+    protected $casts = [
+        'gender_allowed' => GenderAllowed::class,
+        'status' => UnitStatus::class,
+    ];
 }

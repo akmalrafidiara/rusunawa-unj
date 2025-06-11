@@ -101,24 +101,28 @@
 
                         <!-- Gender Allowed -->
                         <x-managers.table.cell>
-                            @php
-                                $genderAllowedEnum = \App\Enums\GenderAllowed::tryFrom($unit->gender_allowed);
-                            @endphp
+                            @foreach ($unit->gender_allowed as $gender_allowed)
+                                @php
+                                    $genderAllowedEnum = \App\Enums\GenderAllowed::tryFrom($gender_allowed);
+                                @endphp
 
-                            <x-managers.ui.badge :type="$genderAllowedEnum?->value ?? 'default'" :color="$genderAllowedEnum?->color()">
-                                {{ $genderAllowedEnum?->label() }}
-                            </x-managers.ui.badge>
+                                <x-managers.ui.badge :type="$genderAllowedEnum?->value ?? 'default'" :color="$genderAllowedEnum?->color()">
+                                    {{ $genderAllowedEnum?->label() }}
+                                </x-managers.ui.badge>
+                            @endforeach
                         </x-managers.table.cell>
 
                         {{-- Status --}}
                         <x-managers.table.cell>
-                            @php
-                                $statusEnum = \App\Enums\UnitStatus::tryFrom($unit->status);
-                            @endphp
+                            @foreach ($unit->status as $status)
+                                @php
+                                    $statusEnum = \App\Enums\UnitStatus::tryFrom($status);
+                                @endphp
 
-                            <x-managers.ui.badge :type="$statusEnum?->value ?? 'default'" :color="$statusEnum?->color()">
-                                {{ $statusEnum?->label() }}
-                            </x-managers.ui.badge>
+                                <x-managers.ui.badge :type="$statusEnum?->value ?? 'default'" :color="$statusEnum?->color()">
+                                    {{ $statusEnum?->label() }}
+                                </x-managers.ui.badge>
+                            @endforeach
                         </x-managers.table.cell>
 
                         {{-- Unit Type --}}
@@ -177,43 +181,84 @@
     </x-managers.ui.card>
 
     {{-- Modal Create --}}
-    {{-- <x-managers.ui.modal title="Form Tipe Kamar" :show="$showModal && $modalType === 'form'">
+    <x-managers.ui.modal title="Form Unit" :show="$showModal && $modalType === 'form'" class="max-w-md">
         <form wire:submit.prevent="save" class="space-y-4">
-            <!-- Nama Tipe -->
-            <x-managers.form.label>Nama Cluster</x-managers.form.label>
-            <x-managers.form.input wire:model.live="name" placeholder="Contoh: Gedung A.." />
+            <!-- Room Number -->
+            <x-managers.form.label>Nomor Kamar</x-managers.form.label>
+            <x-managers.form.input wire:model.live="roomNumber" placeholder="Contoh: A101" />
 
-            <!-- PIC (Staff) -->
-            <x-managers.form.label>Staff Penanggung Jawab</x-managers.form.label>
-            <x-managers.form.select wire:model.live="staffId" :options="$staffOptions" label="Pilih Staff" />
+            <!-- Capacity -->
+            <x-managers.form.label>Kapasitas</x-managers.form.label>
+            <x-managers.form.input wire:model.live="capacity" type="number" placeholder="Max: 3" />
 
-            <!-- Alamat -->
-            <x-managers.form.label>Alamat Cluster</x-managers.form.label>
-            <x-managers.form.input wire:model.live="address" placeholder="Contoh: Jl. Raya No. 123" />
+            <!-- Virtual Account Number -->
+            <x-managers.form.label>Nomor Virtual Account</x-managers.form.label>
+            <x-managers.form.input wire:model.live="virtualAccountNumber" placeholder="Contoh: 008" type="number" />
 
-            <!-- Deskripsi -->
-            <x-managers.form.label>Deskripsi Tipe</x-managers.form.label>
-            <x-managers.form.textarea wire:model.live="description" rows="3" />
+            <!-- Gender Allowed -->
+            <x-managers.form.label>Peruntukan</x-managers.form.label>
+            <x-managers.form.select wire:model.live="genderAllowed" :options="$genderAllowedOptions" label="Pilih Peruntukan" />
 
-            <!-- Upload Gambar -->
-            <x-managers.form.label>Gambar Tipe</x-managers.form.label>
-            @if ($image)
-                <div class="inline-flex gap-2 border border-gray-300 rounded p-2 mb-2">
-                    <x-managers.form.small>Preview</x-managers.form.small>
-                    <img src="{{ $image instanceof \Illuminate\Http\UploadedFile ? $image->temporaryUrl() : asset('storage/' . $image) }}"
-                        alt="Preview Gambar" class="w-16 h-16 object-cover rounded border" />
+            <!-- Status -->
+            <x-managers.form.label>Status Unit</x-managers.form.label>
+            <x-managers.form.select wire:model.live="status" :options="$statusOptions" label="Pilih Status" />
+
+            <!-- Unit Type -->
+            <x-managers.form.label>Tipe Unit</x-managers.form.label>
+            <x-managers.form.select wire:model.live="unitTypeId" :options="$unitTypeOptions" label="Pilih Tipe Unit" />
+
+            <!-- Unit Cluster -->
+            <x-managers.form.label>Cluster Unit</x-managers.form.label>
+            <x-managers.form.select wire:model.live="unitClusterId" :options="$unitClusterOptions" label="Pilih Cluster Unit" />
+
+            {{-- Unit Images --}}
+            <x-managers.form.label>Gambar Unit</x-managers.form.label>
+
+            {{-- Existing Images --}}
+            @if ($existingImages && count($existingImages) > 0)
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 border border-gray-300 rounded p-2 mb-2">
+                    <x-managers.form.small class="col-span-full">Gambar Saat Ini</x-managers.form.small>
+                    @foreach ($existingImages as $index => $image)
+                        <div class="relative">
+                            <img src="{{ asset('storage/' . $image->path) }}" alt="Gambar Unit {{ $index + 1 }}"
+                                class="w-full h-16 object-cover rounded border" />
+                            <button type="button" wire:click="markImageForDeletion({{ $image->id }})"
+                                class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600">
+                                <flux:icon name="x-mark" class="w-3 h-3" />
+                            </button>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+
+            {{-- New Images Preview --}}
+            @if ($unitImages && count($unitImages) > 0)
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 border border-gray-300 rounded p-2 mb-2">
+                    <x-managers.form.small class="col-span-full">Gambar Baru</x-managers.form.small>
+                    @foreach ($unitImages as $index => $image)
+                        <div class="relative">
+                            <img src="{{ $image->temporaryUrl() }}" alt="Preview Gambar {{ $index + 1 }}"
+                                class="w-full h-16 object-cover rounded border" />
+                            <button type="button" wire:click="removeUnitImage({{ $index }})"
+                                class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600">
+                                <flux:icon name="x-mark" class="w-3 h-3" />
+                            </button>
+                        </div>
+                    @endforeach
                 </div>
             @endif
 
             <div class="mb-2">
-                @if ($errors->has('image'))
-                    <span class="text-red-500 text-sm">{{ $errors->first('image') }}</span>
+                @if ($errors->has('unitImages.*'))
+                    <span class="text-red-500 text-sm">{{ $errors->first('unitImages.*') }}</span>
                 @else
-                    <x-managers.form.small>Max 2MB. JPG, PNG, GIF</x-managers.form.small>
+                    <x-managers.form.small>Max 2MB per file. JPG, PNG, GIF. Upload multiple
+                        images</x-managers.form.small>
                 @endif
             </div>
 
-            <x-filepond::upload wire:model.live="image" />
+            <x-filepond::upload wire:model.live="unitImages" multiple />
+
 
             <!-- Tombol Aksi -->
             <div class="flex justify-end gap-2 mt-10">
@@ -224,124 +269,149 @@
                 </x-managers.ui.button>
             </div>
         </form>
-    </x-managers.ui.modal> --}}
+    </x-managers.ui.modal>
 
     {{-- Modal Detail --}}
-    <x-managers.ui.modal title="Detail Cluster Unit" :show="$showModal && $modalType === 'detail'" class="max-w-3xl">
-        <div class="space-y-6">
-            {{-- Unit Header --}}
-            <div
-                class="flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-100">
-                <div class="p-3 bg-blue-500 rounded-full">
-                    <flux:icon.home class="w-6 h-6 text-white" />
+    @if ($unitIdBeingEdited)
+        <x-managers.ui.modal title="Detail Cluster Unit" :show="$showModal && $modalType === 'detail'" class="max-w-3xl">
+            <div class="space-y-6">
+                {{-- Unit Header --}}
+                <div
+                    class="flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-100">
+                    <div class="p-3 bg-blue-500 rounded-full">
+                        <flux:icon.home class="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800">Unit {{ $roomNumber }}</h3>
+                        <p class="text-sm text-gray-600">Detail informasi unit rusunawa</p>
+                    </div>
                 </div>
-                <div>
-                    <h3 class="text-xl font-bold text-gray-800">Unit {{ $roomNumber }}</h3>
-                    <p class="text-sm text-gray-600">Detail informasi unit rusunawa</p>
-                </div>
-            </div>
 
-            {{-- Unit Information Grid --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {{-- Basic Info Card --}}
-                <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-                    <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                        <flux:icon.information-circle class="w-5 h-5 text-blue-500" />
-                        Informasi Dasar
-                    </h4>
-                    <div class="space-y-3">
-                        <div class="flex justify-between items-center py-2 border-b border-gray-100">
-                            <span class="text-gray-600">Nomor Kamar</span>
-                            <span class="font-semibold text-lg text-blue-600">{{ $roomNumber }}</span>
+                {{-- Unit Images --}}
+                @if (!empty($existingImages))
+                    <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                        <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                            <flux:icon.photo class="w-5 h-5 text-purple-500" />
+                            Gambar Unit
+                        </h4>
+                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                            @foreach ($existingImages as $index => $image)
+                                <div class="relative group">
+                                    <img src="{{ $image instanceof \Illuminate\Http\UploadedFile ? $image->temporaryUrl() : asset('storage/' . $image->path) }}"
+                                        alt="Gambar Unit {{ $index + 1 }}"
+                                        class="w-full h-24 object-cover rounded-lg border border-gray-200 hover:shadow-md transition-shadow cursor-pointer">
+                                    <div
+                                        class="absolute inset-0 bg-opacity-0 group-hover:bg-opacity-20 rounded-lg transition-opacity">
+                                    </div>
+                                </div>
+                            @endforeach
                         </div>
-                        <div class="flex justify-between items-center py-2 border-b border-gray-100">
-                            <span class="text-gray-600">Kapasitas</span>
-                            <div class="flex items-center gap-1">
-                                <flux:icon.users class="w-4 h-4 text-gray-500" />
-                                <span class="font-semibold">{{ $capacity }} Orang</span>
+                    </div>
+                @endif
+
+                {{-- Unit Information Grid --}}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {{-- Basic Info Card --}}
+                    <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                        <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                            <flux:icon.information-circle class="w-5 h-5 text-blue-500" />
+                            Informasi Dasar
+                        </h4>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                                <span class="text-gray-600">Nomor Kamar</span>
+                                <span class="font-semibold text-lg text-blue-600">{{ $roomNumber }}</span>
+                            </div>
+                            <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                                <span class="text-gray-600">Kapasitas</span>
+                                <div class="flex items-center gap-1">
+                                    <flux:icon.users class="w-4 h-4 text-gray-500" />
+                                    <span class="font-semibold">{{ $capacity }} Orang</span>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center py-2">
+                                <span class="text-gray-600">Virtual Account</span>
+                                <span class="font-mono text-sm bg-gray-100 px-2 py-1 rounded">
+                                    {{ chunk_split($virtualAccountNumber, 4, ' ') }}
+                                </span>
                             </div>
                         </div>
-                        <div class="flex justify-between items-center py-2">
-                            <span class="text-gray-600">Virtual Account</span>
-                            <span class="font-mono text-sm bg-gray-100 px-2 py-1 rounded">
-                                {{ chunk_split($virtualAccountNumber, 4, ' ') }}
+                    </div>
+
+                    {{-- Status & Classification Card --}}
+                    <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                        <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                            <flux:icon.tag class="w-5 h-5 text-green-500" />
+                            Status & Klasifikasi
+                        </h4>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                                <span class="text-gray-600">Peruntukan</span>
+                                @php
+                                    $genderEnum = \App\Enums\GenderAllowed::tryFrom($genderAllowed);
+                                @endphp
+                                <x-managers.ui.badge :type="$genderEnum?->value ?? 'default'" :color="$genderEnum?->color()">
+                                    {{ $genderEnum?->label() }}
+                                </x-managers.ui.badge>
+                            </div>
+                            <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                                <span class="text-gray-600">Status Unit</span>
+                                @php
+                                    $statusEnum = \App\Enums\UnitStatus::tryFrom($status);
+                                @endphp
+                                <x-managers.ui.badge :type="$statusEnum?->value ?? 'default'" :color="$statusEnum?->color()">
+                                    {{ $statusEnum?->label() }}
+                                </x-managers.ui.badge>
+                            </div>
+                            <div class="flex justify-between items-center py-2">
+                                <span class="text-gray-600">Tipe Unit</span>
+                                <span class="font-semibold">{{ $unitTypeName ?? 'Tidak ada tipe' }}</span>
+                            </div>
+                            <div class="flex justify-between items-center py-2">
+                                <span class="text-gray-600">Cluster Unit</span>
+                                <span class="font-semibold">{{ $unitClusterName ?? 'Tidak ada cluster' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Timestamps Card --}}
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                    <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                        <flux:icon.clock class="w-5 h-5 text-gray-500" />
+                        Informasi Waktu
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Tanggal Dibuat</span>
+                            <span class="font-medium">
+                                @if ($createdAt)
+                                    {{ $createdAt->format('d M Y, H:i') }} WIB
+                                @else
+                                    -
+                                @endif
+                            </span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Terakhir Diperbarui</span>
+                            <span class="font-medium">
+                                @if ($updatedAt)
+                                    {{ $updatedAt->format('d M Y, H:i') }} WIB
+                                @else
+                                    -
+                                @endif
                             </span>
                         </div>
                     </div>
                 </div>
-
-                {{-- Status & Classification Card --}}
-                <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-                    <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                        <flux:icon.tag class="w-5 h-5 text-green-500" />
-                        Status & Klasifikasi
-                    </h4>
-                    <div class="space-y-3">
-                        <div class="flex justify-between items-center py-2 border-b border-gray-100">
-                            <span class="text-gray-600">Peruntukan</span>
-                            @php
-                                $genderEnum = \App\Enums\GenderAllowed::tryFrom($genderAllowed);
-                            @endphp
-                            <x-managers.ui.badge :type="$genderEnum?->value ?? 'default'" :color="$genderEnum?->color()">
-                                {{ $genderEnum?->label() }}
-                            </x-managers.ui.badge>
-                        </div>
-                        <div class="flex justify-between items-center py-2 border-b border-gray-100">
-                            <span class="text-gray-600">Status Unit</span>
-                            @php
-                                $statusEnum = \App\Enums\UnitStatus::tryFrom($status);
-                            @endphp
-                            <x-managers.ui.badge :type="$statusEnum?->value ?? 'default'" :color="$statusEnum?->color()">
-                                {{ $statusEnum?->label() }}
-                            </x-managers.ui.badge>
-                        </div>
-                        <div class="flex justify-between items-center py-2">
-                            <span class="text-gray-600">Tipe Unit</span>
-                            <span class="font-semibold">{{ $unitType?->name ?? 'Tidak ada tipe' }}</span>
-                        </div>
-                        <div class="flex justify-between items-center py-2">
-                            <span class="text-gray-600">Cluster Unit</span>
-                            <span class="font-semibold">{{ $unitCluster?->name ?? 'Tidak ada cluster' }}</span>
-                        </div>
-                    </div>
-                </div>
             </div>
 
-            {{-- Timestamps Card --}}
-            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                    <flux:icon.clock class="w-5 h-5 text-gray-500" />
-                    Informasi Waktu
-                </h4>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="flex justify-between items-center">
-                        <span class="text-gray-600">Tanggal Dibuat</span>
-                        <span class="font-medium">
-                            @if ($createdAt)
-                                {{ $createdAt->format('d M Y, H:i') }} WIB
-                            @else
-                                -
-                            @endif
-                        </span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-gray-600">Terakhir Diperbarui</span>
-                        <span class="font-medium">
-                            @if ($updatedAt)
-                                {{ $updatedAt->format('d M Y, H:i') }} WIB
-                            @else
-                                -
-                            @endif
-                        </span>
-                    </div>
-                </div>
+            <div class="flex justify-end mt-6">
+                <x-managers.ui.button type="button" variant="danger" wire:click="$set('showModal', false)">
+                    Tutup
+                </x-managers.ui.button>
             </div>
-        </div>
+        </x-managers.ui.modal>
+    @endif
 
-        <div class="flex justify-end mt-6">
-            <x-managers.ui.button type="button" variant="danger" wire:click="$set('showModal', false)">
-                Tutup
-            </x-managers.ui.button>
-        </div>
-    </x-managers.ui.modal>
 </div>
