@@ -106,7 +106,7 @@
         <x-managers.ui.pagination :paginator="$users" />
     </x-managers.ui.card>
 
-    <x-managers.ui.modal title="Form User" :show="$showModal">
+    <x-managers.ui.modal title="Form User" :show="$showModal" class="max-w-md">
         <form wire:submit.prevent="save" class="space-y-4">
 
             {{-- Name --}}

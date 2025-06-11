@@ -105,7 +105,7 @@
     </x-managers.ui.card>
 
     {{-- Modal Create --}}
-    <x-managers.ui.modal title="Form Tipe Kamar" :show="$showModal">
+    <x-managers.ui.modal title="Form Tipe Kamar" :show="$showModal" class="max-w-md">
         <form wire:submit.prevent="save" class="space-y-4">
             <!-- Nama Tipe -->
             <x-managers.form.label>Nama Tipe</x-managers.form.label>
