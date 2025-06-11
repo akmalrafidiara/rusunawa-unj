@@ -16,7 +16,7 @@ class UnitCluster extends Component
     use WithFilePond;
 
     public $search = '';
-    public $name, $address, $image, $description, $staffId, $staffName, $temporaryImage, $createdAt;
+    public $name, $address, $image, $description, $staffId, $staffName, $temporaryImage, $createdAt, $updatedAt;
 
     public $staffOptions;
 
@@ -72,9 +72,10 @@ class UnitCluster extends Component
         $this->description = $unitCluster->description;
         $this->image = $unitCluster->image;
         $this->staffId = $unitCluster->staff_id;
-        $this->staffName = $unitCluster->staff_name;
+        $this->staffName = $unitCluster->staff->name ?? '';
         $this->temporaryImage = $unitCluster->image;
         $this->createdAt = $unitCluster->created_at;
+        $this->updatedAt = $unitCluster->updated_at;
     }
 
     public function edit(UnitClusterModel $unitCluster)
