@@ -98,20 +98,31 @@ class Unit extends Component
     }
 
     /**
+     * Membangun instance query builder untuk unit dengan semua filter dan sorting yang diterapkan.
+     * Ini adalah satu-satunya sumber untuk semua query unit di komponen ini.
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    private function buildUnitQuery()
+    {
+        return UnitModel::query()
+            ->when($this->search, fn($q) => $q->where('room_number', 'like', "%{$this->search}%"))
+            ->when($this->genderAllowedFilter, fn($q) => $q->where("gender_allowed", $this->genderAllowedFilter))
+            ->when($this->statusFilter, fn($q) => $q->where("status", $this->statusFilter))
+            ->when($this->unitTypeFilter, fn($q) => $q->where("unit_type_id", $this->unitTypeFilter))
+            ->when($this->unitClusterFilter, fn($q) => $q->where("unit_cluster_id", $this->unitClusterFilter))
+            ->with(['unitType', 'unitCluster']) // Pastikan eager loading ada di sini
+            ->orderBy($this->orderBy, $this->sort);
+    }
+
+    /**
      * Render the component.
      *
      * @return \Illuminate\View\View
      */
     public function render()
     {
-        $units = UnitModel::query()
-            ->when($this->search, fn($q) => $q->where('room_number', 'like', "%{$this->search}%"))
-            ->when($this->genderAllowedFilter, fn($q) => $q->where("gender_allowed", $this->genderAllowedFilter))
-            ->when($this->statusFilter, fn($q) => $q->where("status", $this->statusFilter))
-            ->when($this->unitTypeFilter, fn($q) => $q->where("unit_type_id", $this->unitTypeFilter))
-            ->when($this->unitClusterFilter, fn($q) => $q->where("unit_cluster_id", $this->unitClusterFilter))
-            ->orderBy($this->orderBy, $this->sort)
-            ->paginate($this->perPage);
+        $units = $this->buildUnitQuery()->paginate($this->perPage);
 
         return view('livewire.managers.unit', compact('units'));
     }
@@ -395,14 +406,7 @@ class Unit extends Component
     public function exportPdf()
     {
         // Validate the search and filter parameters
-        $units = UnitModel::query()
-            ->when($this->search, fn($q) => $q->where('room_number', 'like', "%{$this->search}%"))
-            ->when($this->genderAllowedFilter, fn($q) => $q->where("gender_allowed", $this->genderAllowedFilter))
-            ->when($this->statusFilter, fn($q) => $q->where("status", $this->statusFilter))
-            ->when($this->unitTypeFilter, fn($q) => $q->where("unit_type_id", $this->unitTypeFilter))
-            ->when($this->unitClusterFilter, fn($q) => $q->where("unit_cluster_id", $this->unitClusterFilter))
-            ->orderBy($this->orderBy, $this->sort)
-            ->get();
+        $units = $this->buildUnitQuery()->get();
 
         // Prepare data for PDF export
         $pdfData = $units->map(function ($unit) {
@@ -440,25 +444,17 @@ class Unit extends Component
      */
     public function exportExcel()
     {
-        // Show processing alert
-        LivewireAlert::title('Memproses Excel...')
-            ->text('Mohon tunggu.')
-            ->info()
+        $units = $this->buildUnitQuery()->get();
+
+        LivewireAlert::title('PDF Berhasil Diunduh')
+            ->text('Data unit berhasil diekspor ke PDF.')
+            ->success()
             ->toast()
             ->position('top-end')
             ->show();
 
-
         return Excel::download(
-            new UnitsExport(
-                $this->search,
-                $this->genderAllowedFilter,
-                $this->statusFilter,
-                $this->unitTypeFilter,
-                $this->unitClusterFilter,
-                $this->orderBy,
-                $this->sort
-            ),
+            new UnitsExport($units),
             now()->format('Y-m-d') . '_units.xlsx'
         );
     }
