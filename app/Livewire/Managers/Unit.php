@@ -233,14 +233,14 @@ class Unit extends Component
             ];
         });
 
-        $pdf = Pdf::loadView('exports.units', ['units' => $pdfData]);
-
         LivewireAlert::title('Memproses PDF...')
-            ->text('Mohon tunggu sebentar.')
+            ->text('Mohon tunggu.')
             ->info()
             ->toast()
             ->position('top-end')
             ->show();
+
+        $pdf = Pdf::loadView('exports.units', ['units' => $pdfData]);
 
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf->output();
@@ -249,6 +249,13 @@ class Unit extends Component
 
     public function exportExcel()
     {
+        LivewireAlert::title('Memproses Excel...')
+            ->text('Mohon tunggu.')
+            ->info()
+            ->toast()
+            ->position('top-end')
+            ->show();
+
         return Excel::download(
             new UnitsExport(
                 $this->search,

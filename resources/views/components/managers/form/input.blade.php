@@ -13,7 +13,7 @@
     $error = $wireModel && $errors->has($wireModel);
 
     // THIS IS NOT A BUG, this is to get the actual wire:model value
-    $value = data_get($this, $wireModel);
+    $value = $wireModel ? data_get($__livewire ?? null, $wireModel) : null;
 @endphp
 
 <div class="w-full">
