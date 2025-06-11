@@ -21,10 +21,12 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class Unit extends Component
 {
+    // Traits
     use WithPagination;
     use WithFileUploads;
     use WithFilePond;
 
+    // Main data properties
     public
         $roomNumber,
         $capacity,
@@ -38,31 +40,35 @@ class Unit extends Component
         $unitTypeName,
         $unitClusterName;
 
+    // File upload properties
     public $unitImages = [];
     public $existingImages = [];
     public $imagesToDelete = [];
 
+    // Options properties
     public $genderAllowedOptions;
     public $statusOptions;
     public $unitTypeOptions;
     public $unitClusterOptions;
 
+    // Filter properties
     public $search = '';
     public $genderAllowedFilter = '';
     public $statusFilter = '';
     public $unitTypeFilter = '';
     public $unitClusterFilter = '';
 
-
+    // Pagination and sorting properties
     public $perPage = 10;
-
     public $orderBy = 'room_number';
     public $sort = 'asc';
 
+    // Modal properties
     public $showModal = false;
-    public $modalType;
+    public $modalType = '';
     public $unitIdBeingEdited = null;
 
+    // Query string properties
     protected $queryString = [
         'search' => ['except' => ''],
         'genderAllowedFilter' => ['except' => ''],
@@ -74,24 +80,28 @@ class Unit extends Component
         'sort' => ['except' => 'asc'],
     ];
 
+    /**
+     * Initialize the component.
+     */
     public function mount()
     {
         $this->genderAllowedOptions = GenderAllowed::options();
         $this->statusOptions = UnitStatus::options();
-        $this->unitTypeOptions = UnitType::all()->map(function ($unitType) {
-            return [
+        $this->unitTypeOptions = UnitType::select('id', 'name')->get()->map(fn($unitType) => [
             'value' => $unitType->id,
             'label' => $unitType->name,
-            ];
-        })->toArray();
-        $this->unitClusterOptions = UnitCluster::all()->map(function ($unitCluster) {
-            return [
+        ])->toArray();
+        $this->unitClusterOptions = UnitCluster::select('id', 'name')->get()->map(fn($unitCluster) => [
             'value' => $unitCluster->id,
             'label' => $unitCluster->name,
-            ];
-        })->toArray();
+        ])->toArray();
     }
 
+    /**
+     * Render the component.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         $units = UnitModel::query()
@@ -106,6 +116,9 @@ class Unit extends Component
         return view('livewire.managers.unit', compact('units'));
     }
 
+    /**
+     * Open modal for creating a new unit.
+     */
     public function create()
     {
         $this->search = '';
@@ -114,6 +127,11 @@ class Unit extends Component
         $this->showModal = true;
     }
 
+    /**
+     * Fill data for edit or detail modal.
+     *
+     * @param UnitModel $unit
+     */
     protected function fillData(UnitModel $unit)
     {
         // Filling edit and modal
@@ -140,6 +158,11 @@ class Unit extends Component
         $this->updatedAt = $unit->updated_at;
     }
 
+    /**
+     * Open modal for editing or viewing details of a unit.
+     *
+     * @param UnitModel $unit
+     */
     public function edit(UnitModel $unit)
     {
         $this->fillData($unit);
@@ -147,6 +170,11 @@ class Unit extends Component
         $this->showModal = true;
     }
 
+    /**
+     * Open modal for viewing details of a unit.
+     *
+     * @param UnitModel $unit
+     */
     public function detail(UnitModel $unit)
     {
         $this->fillData(unit: $unit);
@@ -154,6 +182,11 @@ class Unit extends Component
         $this->showModal = true;
     }
 
+    /**
+     * Rules for validation.
+     *
+     * @return array
+     */
     public function rules()
     {
         return [
@@ -170,20 +203,36 @@ class Unit extends Component
             ],
             'unitTypeId' => 'required|exists:unit_types,id',
             'unitClusterId' => 'required|exists:unit_clusters,id',
+            'unitImages.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Max 2MB per image
+            'imagesToDelete' => 'array',
+            'imagesToDelete.*' => 'exists:attachments,id', // Ensure the IDs exist in attachments
         ];
     }
 
+    /**
+     * Validate the form when a property is updated.
+     * This method is called automatically (live) by Livewire when a property is updated.
+     *
+     * @param string $propertyName
+     */
     public function updated($propertyName)
     {
+        // Validate only the changed property if it exists in the rules
         if (in_array($propertyName, array_keys($this->rules()))) {
             $this->validateOnly($propertyName, $this->rules());
         }
     }
 
+    /**
+     * Save the unit data.
+     * This method is called when the form is submitted.
+     */
     public function save()
     {
+        // Validate all properties
         $this->validate($this->rules());
 
+        // Prepare data for saving
         $data = [
             'room_number' => $this->roomNumber,
             'capacity' => $this->capacity,
@@ -194,6 +243,7 @@ class Unit extends Component
             'unit_cluster_id' => $this->unitClusterId,
         ];
 
+        // If editing, ensure the unit ID is set
         $unit = UnitModel::updateOrCreate(
             ['id' => $this->unitIdBeingEdited],
             $data
@@ -215,7 +265,7 @@ class Unit extends Component
             }
         }
 
-        // Delete marked images
+        // Delete marked images if any
         if (!empty($this->imagesToDelete)) {
             foreach ($this->imagesToDelete as $attachmentId) {
                 $attachment = $unit->attachments()->find($attachmentId);
@@ -226,29 +276,42 @@ class Unit extends Component
             }
         }
 
+        // Flash message
         LivewireAlert::title($this->unitIdBeingEdited ? 'Data berhasil diperbarui.' : 'Unit berhasil ditambahkan.')
         ->success()
         ->toast()
         ->position('top-end')
         ->show();
 
+        // Reset form and close modal
         $this->resetForm();
         $this->showModal = false;
     }
 
+    /**
+     * Confirm deletion of a unit.
+     *
+     * @param array $data
+     */
     public function confirmDelete($data)
     {
         LivewireAlert::title('Hapus data Nomor Kamar '. $data['room_number'] . '?')
             ->text('Apakah Anda yakin ingin menghapus data ini?')
             ->question()
             ->withCancelButton('Batalkan')
-            ->withConfirmButton('Hapus!')
+            ->withConfirmButton('Hapus!') // Confirm button to delete method
             ->onConfirm('deleteUnit', ['id' => $data['id']])
             ->show();
     }
 
+    /**
+     * Delete a unit.
+     *
+     * @param array $data
+     */
     public function deleteUnit($data)
     {
+        // Validate the ID
         $id = $data['id'];
         $unit = UnitModel::find($id);
 
@@ -260,9 +323,11 @@ class Unit extends Component
                 $attachment->delete();
             }
 
+            // Delete the unit
             $roomNumber = $unit->room_number;
             $unit->delete();
 
+            // Flash success message
             LivewireAlert::title('Berhasil Dihapus')
                 ->text('Unit ' . $roomNumber . ' telah dihapus.')
                 ->success()
@@ -272,6 +337,9 @@ class Unit extends Component
         }
     }
 
+    /**
+     * Reset the form fields.
+     */
     private function resetForm()
     {
         $this->roomNumber = '';
@@ -284,6 +352,11 @@ class Unit extends Component
         $this->unitIdBeingEdited = null;
     }
 
+    /**
+     * Remove an image from the unit images array.
+     *
+     * @param int $index
+     */
     public function removeUnitImage($index)
     {
         if (isset($this->unitImages[$index])) {
@@ -297,6 +370,11 @@ class Unit extends Component
         }
     }
 
+    /**
+     * Mark an image for deletion.
+     *
+     * @param int $attachmentId
+     */
     public function markImageForDeletion($attachmentId)
     {
         if (!in_array($attachmentId, $this->imagesToDelete)) {
@@ -309,8 +387,14 @@ class Unit extends Component
         });
     }
 
+    /**
+     * Export units data to PDF.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function exportPdf()
     {
+        // Validate the search and filter parameters
         $units = UnitModel::query()
             ->when($this->search, fn($q) => $q->where('room_number', 'like', "%{$this->search}%"))
             ->when($this->genderAllowedFilter, fn($q) => $q->where("gender_allowed", $this->genderAllowedFilter))
@@ -320,6 +404,7 @@ class Unit extends Component
             ->orderBy($this->orderBy, $this->sort)
             ->get();
 
+        // Prepare data for PDF export
         $pdfData = $units->map(function ($unit) {
             return [
                 'room_number' => $unit->room_number,
@@ -332,6 +417,7 @@ class Unit extends Component
             ];
         });
 
+        // Show processing alert
         LivewireAlert::title('Memproses PDF...')
             ->text('Mohon tunggu.')
             ->info()
@@ -339,21 +425,29 @@ class Unit extends Component
             ->position('top-end')
             ->show();
 
+        // Load the PDF view with the data
         $pdf = Pdf::loadView('exports.units', ['units' => $pdfData]);
 
+        // Return the PDF as a downloadable response
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf->output();
         }, now()->format('Y-m-d') . '_units.pdf');
     }
 
+    /**
+     * Export units data to Excel.
+     *
+     */
     public function exportExcel()
     {
+        // Show processing alert
         LivewireAlert::title('Memproses Excel...')
             ->text('Mohon tunggu.')
             ->info()
             ->toast()
             ->position('top-end')
             ->show();
+
 
         return Excel::download(
             new UnitsExport(
