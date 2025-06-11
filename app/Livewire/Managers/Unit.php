@@ -410,17 +410,17 @@ class Unit extends Component
                 'room_number' => $unit->room_number,
                 'capacity' => $unit->capacity,
                 'virtual_account_number' => (string) $unit->virtual_account_number,
-                'gender_allowed' => GenderAllowed::from($unit->gender_allowed)->label(),
-                'status' => UnitStatus::from($unit->status)->label(),
+                'gender_allowed' => $unit->gender_allowed->label(),
+                'status' => $unit->status->label(),
                 'unit_type_id' => $unit->unitType ? $unit->unitType->name : '',
                 'unit_cluster_id' => $unit->unitCluster ? $unit->unitCluster->name : '',
             ];
         });
 
         // Show processing alert
-        LivewireAlert::title('Memproses PDF...')
-            ->text('Mohon tunggu.')
-            ->info()
+        LivewireAlert::title('PDF Berhasil Diunduh')
+            ->text('Data unit berhasil diekspor ke PDF.')
+            ->success()
             ->toast()
             ->position('top-end')
             ->show();
