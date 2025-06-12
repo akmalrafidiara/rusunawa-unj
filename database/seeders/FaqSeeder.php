@@ -20,7 +20,7 @@ class FaqSeeder extends Seeder
             ],
             [
                 'question' => 'How can I contact customer support?',
-                'answer' => 'You can contact customer support via email at',
+                'answer' => 'You can contact customer support via email at support@example.com.', // Menambahkan detail jawaban
             ],
             [
                 'question' => 'What are the business hours?',
@@ -35,11 +35,15 @@ class FaqSeeder extends Seeder
                 'answer' => 'To reset your password, go to the login page and click on "Forgot Password".',
             ],
         ];
-        foreach ($faqs as $faq) {
+
+        foreach ($faqs as $index => $faqData) { // Gunakan $index untuk prioritas
             Faq::firstOrCreate(
-                ['question' => $faq['question']],
-                ['answer' => $faq['answer']]
+                ['question' => $faqData['question']],
+                [
+                    'answer' => $faqData['answer'],
+                    'priority' => $index, // Atur prioritas berdasarkan indeks
+                ]
             );
-        }    
+        }
     }
 }

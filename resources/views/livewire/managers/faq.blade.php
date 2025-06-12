@@ -1,5 +1,4 @@
 <div class="flex flex-col gap-6">
-    <!-- Toolbar -->
     <div class="flex flex-col sm:flex-row gap-4">
         {{-- Search Form --}}
         <x-managers.form.input wire:model.live="search" clearable placeholder="Cari pertanyaan..." icon="magnifying-glass"
@@ -11,47 +10,78 @@
                 Tambah FAQ
             </x-managers.ui.button>
 
-            {{-- Dropdown for Filters --}}
+            {{-- Dropdown for Filters and Sorting --}}
             <x-managers.ui.dropdown class="flex flex-col gap-2">
                 <x-slot name="trigger">
                     <flux:icon.adjustments-horizontal />
                 </x-slot>
+                
+                {{-- Sort Options --}}
                 @php
                     $sortOptions = [
                         ['value' => 'asc', 'label' => 'Menaik'],
                         ['value' => 'desc', 'label' => 'Menurun'],
                     ];
+                    $orderByOptions = [
+                        ['value' => 'priority', 'label' => 'Prioritas'],
+                        ['value' => 'question', 'label' => 'Pertanyaan'],
+                        ['value' => 'created_at', 'label' => 'Tanggal Dibuat'],
+                    ];
                 @endphp
 
-                {{-- Sort --}}
                 <x-managers.form.small>Urutkan</x-managers.form.small>
                 <div class="flex gap-2">
+                    <x-managers.ui.dropdown-picker wire:model.live="orderBy" :options="$orderByOptions"
+                        label="Urutkan Berdasarkan" wire:key="dropdown-orderBy" />
+
                     <x-managers.ui.dropdown-picker wire:model.live="sort" :options="$sortOptions"
-                        label="Sort" wire:key="dropdown-sort" disabled />
+                        label="Arah Urutan" wire:key="dropdown-sort" />
                 </div>
             </x-managers.ui.dropdown>
         </div>
     </div>
 
-    <!-- Tabel Data FAQ -->
     <x-managers.ui.card class="p-0">
-        <x-managers.table.table :headers="['Pertanyaan', 'Jawaban', 'Aksi']">
+        <x-managers.table.table :headers="['Prioritas', 'Pertanyaan', 'Jawaban', 'Aksi']">
             <x-managers.table.body>
                 @forelse ($faqs as $faq)
                     <x-managers.table.row wire:key="{{ $faq->id }}">
-                        <!-- Question -->
+                        <x-managers.table.cell class="text-center">
+                            <div class="flex items-center justify-center gap-2">
+                                {{-- Tombol Up --}}
+                                {{-- Tampilkan jika bukan elemen pertama dari data yang dipaginasi (untuk mencegah tampilan duplikat tombol up jika priority 0 bukan yang terkecil secara keseluruhan) --}}
+                                @if ($faq->priority > $faqs->first()->priority || $faqs->currentPage() > 1) {{-- Lebih aman memeriksa dengan first() di halaman saat ini atau jika bukan halaman pertama --}}
+                                    <x-managers.ui.button wire:click="moveUp({{ $faq->id }})" variant="secondary" size="sm" class="!px-2">
+                                        <flux:icon.arrow-up class="w-4" />
+                                    </x-managers.ui.button>
+                                @else
+                                    {{-- Placeholder untuk menjaga lebar kolom agar tidak bergeser --}}
+                                    <span class="w-8 h-8 inline-flex items-center justify-center"></span>
+                                @endif
+                                <span class="font-bold">{{ $faq->priority }}</span>
+                                {{-- Tombol Down --}}
+                                {{-- Tampilkan jika bukan elemen terakhir dari data yang dipaginasi atau jika ada lebih banyak data setelahnya --}}
+                                @if ($faq->priority < $this->maxPriority)
+                                    <x-managers.ui.button wire:click="moveDown({{ $faq->id }})" variant="secondary" size="sm" class="!px-2">
+                                        <flux:icon.arrow-down class="w-4" />
+                                    </x-managers.ui.button>
+                                @else
+                                    {{-- Placeholder untuk menjaga lebar kolom agar tidak bergeser --}}
+                                    <span class="w-8 h-8 inline-flex items-center justify-center"></span>
+                                @endif
+                            </div>
+                        </x-managers.table.cell>
+
                         <x-managers.table.cell>
                             <span class="font-bold">{{ $faq->question }}</span>
                         </x-managers.table.cell>
 
-                        <!-- Answer -->
                         <x-managers.table.cell>
                             {{ $faq->answer }}
                         </x-managers.table.cell>
 
-                        <!-- Aksi -->
                         <x-managers.table.cell class="text-right">
-                            <div class="flex gap-2">
+                            <div class="flex gap-2 justify-end">
                                 {{-- Edit Button --}}
                                 <x-managers.ui.button wire:click="edit({{ $faq->id }})" variant="secondary" size="sm">
                                     <flux:icon.pencil class="w-4" />
@@ -65,7 +95,7 @@
                     </x-managers.table.row>
                 @empty
                     <x-managers.table.row>
-                        <x-managers.table.cell colspan="3" class="text-center text-gray-500">
+                        <x-managers.table.cell colspan="4" class="text-center text-gray-500">
                             Tidak ada FAQ ditemukan.
                         </x-managers.table.cell>
                     </x-managers.table.row>
@@ -77,19 +107,18 @@
     {{-- Modal Create/Edit FAQ --}}
     <x-managers.ui.modal title="Form FAQ" :show="$showModal" class="max-w-md">
         <form wire:submit.prevent="save" class="space-y-4">
-            <!-- Question -->
             <x-managers.form.label>Pertanyaan</x-managers.form.label>
             <x-managers.form.input wire:model.live="question" placeholder="Masukkan pertanyaan..." />
+            @error('question') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
 
-            <!-- Answer -->
-            <x-managers.form.label>Jawaban</x-managers.form.label>
+            <x-managers.form.label class="mt-4">Jawaban</x-managers.form.label>
             <x-managers.form.textarea wire:model.live="answer" placeholder="Masukkan jawaban..." />
+            @error('answer') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
 
-            <!-- Tombol Aksi -->
             <div class="flex justify-end gap-2 mt-10">
                 <x-managers.ui.button type="button" variant="secondary"
                     wire:click="$set('showModal', false)">Batal</x-managers.ui.button>
-                <x-managers.ui.button wire:click="save()" variant="primary">
+                <x-managers.ui.button type="submit" variant="primary">
                     Simpan
                 </x-managers.ui.button>
             </div>

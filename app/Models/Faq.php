@@ -11,5 +11,6 @@ class Faq extends Model
     protected $fillable = [
         'question',
         'answer',
+        'priority',
     ];
 }

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('question');
             $table->text('answer');
+            $table->unsignedInteger('priority')->default(0); // Tambahkan kolom priority
             $table->timestamps();
         });
     }

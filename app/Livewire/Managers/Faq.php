@@ -14,17 +14,18 @@ class Faq extends Component
 
     public $answerFilter = '';
 
-    public $orderBy = 'created_at';
-    public $sort = 'asc';
+    public $orderBy = 'priority'; // Ubah default order by menjadi priority
+    public $sort = 'asc'; // priority biasanya diurutkan secara ascending (dari kecil ke besar)
 
     public $showModal = false;
     public $faqIdBeingEdited = null;
+    public $maxPriority = 0; // Tambahkan properti untuk menyimpan prioritas maksimum
 
     protected $queryString = [
         'search' => ['except' => ''],
         'answerFilter' => ['except' => ''],
-        'orderBy' => ['except' => 'created_at'],
-        'sort' => ['except' => 'asc'],
+        'orderBy' => ['except' => 'priority'], // Sesuaikan default order by
+        'sort' => ['except' => 'asc'], // Sesuaikan default sort
     ];
 
     public function render()
@@ -35,12 +36,16 @@ class Faq extends Component
             ->orderBy($this->orderBy, $this->sort)
             ->paginate(10);
 
+        // Ambil nilai max priority di sini dan setel ke properti publik
+        // Gunakan ?? 0 untuk menangani kasus tabel kosong
+        $this->maxPriority = FaqModel::max('priority') ?? 0;
+
         return view('livewire.managers.faq', compact('faqs'));
     }
 
     public function create()
     {
-        $this->search = '';
+        $this->search = ''; // Reset search saat membuat baru agar tidak terpengaruh filter
         $this->resetForm();
         $this->showModal = true;
     }
@@ -69,6 +74,13 @@ class Faq extends Component
             'question' => $this->question,
             'answer' => $this->answer,
         ];
+
+        // Jika ini adalah FAQ baru, tentukan prioritasnya
+        if (!$this->faqIdBeingEdited) {
+            $maxPriority = FaqModel::max('priority');
+            // Jika belum ada FAQ, prioritas pertama adalah 0, jika ada, prioritasnya adalah max + 1
+            $data['priority'] = ($maxPriority !== null) ? $maxPriority + 1 : 0;
+        }
 
         FaqModel::updateOrCreate(
             ['id' => $this->faqIdBeingEdited],
@@ -101,6 +113,8 @@ class Faq extends Component
         $id = $data['id'];
         $faq = FaqModel::find($id);
         if ($faq) {
+            // Sesuaikan prioritas FAQ lain yang lebih tinggi setelah penghapusan
+            FaqModel::where('priority', '>', $faq->priority)->decrement('priority');
             $faq->delete();
 
             LivewireAlert::title('Berhasil Dihapus')
@@ -109,6 +123,40 @@ class Faq extends Component
                 ->toast()
                 ->position('top-end')
                 ->show();
+        }
+    }
+
+    public function moveUp(FaqModel $faq)
+    {
+        // Temukan FAQ di atasnya (dengan prioritas yang lebih rendah, ambil yang terbesar di antara yang lebih rendah)
+        $previousFaq = FaqModel::where('priority', '<', $faq->priority)
+                                ->orderBy('priority', 'desc')
+                                ->first();
+
+        if ($previousFaq) {
+            // Tukar prioritas
+            $tempPriority = $faq->priority;
+            $faq->update(['priority' => $previousFaq->priority]);
+            $previousFaq->update(['priority' => $tempPriority]);
+
+            LivewireAlert::success('Prioritas berhasil diubah.')->toast()->position('top-end');
+        }
+    }
+
+    public function moveDown(FaqModel $faq)
+    {
+        // Temukan FAQ di bawahnya (dengan prioritas yang lebih tinggi, ambil yang terkecil di antara yang lebih tinggi)
+        $nextFaq = FaqModel::where('priority', '>', $faq->priority)
+                            ->orderBy('priority', 'asc')
+                            ->first();
+
+        if ($nextFaq) {
+            // Tukar prioritas
+            $tempPriority = $faq->priority;
+            $faq->update(['priority' => $nextFaq->priority]);
+            $nextFaq->update(['priority' => $tempPriority]);
+
+            LivewireAlert::success('Prioritas berhasil diubah.')->toast()->position('top-end');
         }
     }
 
