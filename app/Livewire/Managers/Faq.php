@@ -10,23 +10,32 @@ use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 class Faq extends Component
 {
     public $search = '';
-    public $question, $answer;
+    public $question;
+    public $answer; // Properti ini akan diisi oleh Trix editor
 
     public $answerFilter = '';
 
-    public $orderBy = 'priority'; // Ubah default order by menjadi priority
-    public $sort = 'asc'; // priority biasanya diurutkan secara ascending (dari kecil ke besar)
+    public $orderBy = 'priority';
+    public $sort = 'asc';
 
     public $showModal = false;
     public $faqIdBeingEdited = null;
-    public $maxPriority = 0; // Tambahkan properti untuk menyimpan prioritas maksimum
+    public $maxPriority = 0;
 
     protected $queryString = [
         'search' => ['except' => ''],
         'answerFilter' => ['except' => ''],
-        'orderBy' => ['except' => 'priority'], // Sesuaikan default order by
-        'sort' => ['except' => 'asc'], // Sesuaikan default sort
+        'orderBy' => ['except' => 'priority'],
+        'sort' => ['except' => 'asc'],
     ];
+
+    // Tambahkan listener untuk event dari Trix editor
+    protected $listeners = ['contentChanged' => 'updateAnswer'];
+
+    public function updateAnswer($content)
+    {
+        $this->answer = $content;
+    }
 
     public function render()
     {
@@ -36,8 +45,6 @@ class Faq extends Component
             ->orderBy($this->orderBy, $this->sort)
             ->paginate(10);
 
-        // Ambil nilai max priority di sini dan setel ke properti publik
-        // Gunakan ?? 0 untuk menangani kasus tabel kosong
         $this->maxPriority = FaqModel::max('priority') ?? 0;
 
         return view('livewire.managers.faq', compact('faqs'));
@@ -45,7 +52,7 @@ class Faq extends Component
 
     public function create()
     {
-        $this->search = ''; // Reset search saat membuat baru agar tidak terpengaruh filter
+        $this->search = '';
         $this->resetForm();
         $this->showModal = true;
     }
@@ -56,13 +63,21 @@ class Faq extends Component
         $this->question = $faq->question;
         $this->answer = $faq->answer;
         $this->showModal = true;
+
+        // Penting: Emit event setelah data dimuat untuk menginisialisasi Trix
+        $this->dispatch('trix-load-content', $this->answer);
     }
 
     public function rules()
     {
         return [
-            'question' => 'required|string|max:255',
-            'answer' => 'required|string',
+            'question' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('faq')->ignore($this->faqIdBeingEdited),
+            ],
+            'answer' => 'required|string', // Validasi tetap sama, meskipun inputnya WYSIWYG
         ];
     }
 
@@ -75,10 +90,8 @@ class Faq extends Component
             'answer' => $this->answer,
         ];
 
-        // Jika ini adalah FAQ baru, tentukan prioritasnya
         if (!$this->faqIdBeingEdited) {
             $maxPriority = FaqModel::max('priority');
-            // Jika belum ada FAQ, prioritas pertama adalah 0, jika ada, prioritasnya adalah max + 1
             $data['priority'] = ($maxPriority !== null) ? $maxPriority + 1 : 0;
         }
 
@@ -113,7 +126,6 @@ class Faq extends Component
         $id = $data['id'];
         $faq = FaqModel::find($id);
         if ($faq) {
-            // Sesuaikan prioritas FAQ lain yang lebih tinggi setelah penghapusan
             FaqModel::where('priority', '>', $faq->priority)->decrement('priority');
             $faq->delete();
 
@@ -128,13 +140,11 @@ class Faq extends Component
 
     public function moveUp(FaqModel $faq)
     {
-        // Temukan FAQ di atasnya (dengan prioritas yang lebih rendah, ambil yang terbesar di antara yang lebih rendah)
         $previousFaq = FaqModel::where('priority', '<', $faq->priority)
                                 ->orderBy('priority', 'desc')
                                 ->first();
 
         if ($previousFaq) {
-            // Tukar prioritas
             $tempPriority = $faq->priority;
             $faq->update(['priority' => $previousFaq->priority]);
             $previousFaq->update(['priority' => $tempPriority]);
@@ -145,13 +155,11 @@ class Faq extends Component
 
     public function moveDown(FaqModel $faq)
     {
-        // Temukan FAQ di bawahnya (dengan prioritas yang lebih tinggi, ambil yang terkecil di antara yang lebih tinggi)
         $nextFaq = FaqModel::where('priority', '>', $faq->priority)
                             ->orderBy('priority', 'asc')
                             ->first();
 
         if ($nextFaq) {
-            // Tukar prioritas
             $tempPriority = $faq->priority;
             $faq->update(['priority' => $nextFaq->priority]);
             $nextFaq->update(['priority' => $tempPriority]);
@@ -162,8 +170,8 @@ class Faq extends Component
 
     public function resetForm()
     {
-        $this->question = '';
-        $this->answer = '';
-        $this->faqIdBeingEdited = null;
+        $this->reset(['question', 'answer', 'faqIdBeingEdited']);
+        // Emit event untuk mereset Trix editor di sisi client
+        $this->dispatch('trix-reset');
     }
 }

@@ -15,7 +15,7 @@
                 <x-slot name="trigger">
                     <flux:icon.adjustments-horizontal />
                 </x-slot>
-                
+
                 {{-- Sort Options --}}
                 @php
                     $sortOptions = [
@@ -49,24 +49,20 @@
                         <x-managers.table.cell class="text-center">
                             <div class="flex items-center justify-center gap-2">
                                 {{-- Tombol Up --}}
-                                {{-- Tampilkan jika bukan elemen pertama dari data yang dipaginasi (untuk mencegah tampilan duplikat tombol up jika priority 0 bukan yang terkecil secara keseluruhan) --}}
-                                @if ($faq->priority > $faqs->first()->priority || $faqs->currentPage() > 1) {{-- Lebih aman memeriksa dengan first() di halaman saat ini atau jika bukan halaman pertama --}}
+                                @if ($faq->priority > 0)
                                     <x-managers.ui.button wire:click="moveUp({{ $faq->id }})" variant="secondary" size="sm" class="!px-2">
                                         <flux:icon.arrow-up class="w-4" />
                                     </x-managers.ui.button>
                                 @else
-                                    {{-- Placeholder untuk menjaga lebar kolom agar tidak bergeser --}}
                                     <span class="w-8 h-8 inline-flex items-center justify-center"></span>
                                 @endif
                                 <span class="font-bold">{{ $faq->priority }}</span>
                                 {{-- Tombol Down --}}
-                                {{-- Tampilkan jika bukan elemen terakhir dari data yang dipaginasi atau jika ada lebih banyak data setelahnya --}}
                                 @if ($faq->priority < $this->maxPriority)
                                     <x-managers.ui.button wire:click="moveDown({{ $faq->id }})" variant="secondary" size="sm" class="!px-2">
                                         <flux:icon.arrow-down class="w-4" />
                                     </x-managers.ui.button>
                                 @else
-                                    {{-- Placeholder untuk menjaga lebar kolom agar tidak bergeser --}}
                                     <span class="w-8 h-8 inline-flex items-center justify-center"></span>
                                 @endif
                             </div>
@@ -77,7 +73,10 @@
                         </x-managers.table.cell>
 
                         <x-managers.table.cell>
-                            {{ $faq->answer }}
+                            {{-- Tampilkan jawaban dalam format HTML dengan class trix-content --}}
+                            <div class="trix-content">
+                                {!! $faq->answer !!}
+                            </div>
                         </x-managers.table.cell>
 
                         <x-managers.table.cell class="text-right">
@@ -105,14 +104,18 @@
     </x-managers.ui.card>
 
     {{-- Modal Create/Edit FAQ --}}
-    <x-managers.ui.modal title="Form FAQ" :show="$showModal" class="max-w-md">
+    <x-managers.ui.modal title="Form FAQ" :show="$showModal" class="max-w-3xl"> {{-- <--- PERUBAHAN DI SINI --}}
         <form wire:submit.prevent="save" class="space-y-4">
             <x-managers.form.label>Pertanyaan</x-managers.form.label>
             <x-managers.form.input wire:model.live="question" placeholder="Masukkan pertanyaan..." />
             @error('question') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
 
             <x-managers.form.label class="mt-4">Jawaban</x-managers.form.label>
-            <x-managers.form.textarea wire:model.live="answer" placeholder="Masukkan jawaban..." />
+            {{-- Ganti textarea dengan input Trix --}}
+            <div wire:ignore>
+                <input id="answer-trix-editor" type="hidden" name="content" value="{{ $answer }}">
+                <trix-editor input="answer-trix-editor"></trix-editor>
+            </div>
             @error('answer') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
 
             <div class="flex justify-end gap-2 mt-10">
@@ -124,4 +127,48 @@
             </div>
         </form>
     </x-managers.ui.modal>
+
+    {{-- Tambahkan script JavaScript untuk inisialisasi Trix dan komunikasi Livewire --}}
+    @push('scripts')
+        <link rel="stylesheet" type="text/css" href="https://unpkg.com/trix@1.3.1/dist/trix.css">
+        <script type="text/javascript" src="https://unpkg.com/trix@1.3.1/dist/trix.js"></script>
+
+        {{-- Gaya kustom untuk tautan Trix --}}
+        <style>
+            .trix-content a {
+                color: #3b82f6 !important; /* Tailwind's blue-500 */
+                text-decoration: underline;
+            }
+        </style>
+
+        <script>
+            // Menonaktifkan fitur upload dokumen di Trix
+            document.addEventListener("trix-file-accept", function(event) {
+                event.preventDefault(); // Mencegah Trix menerima file
+                alert("Upload dokumen tidak diizinkan."); // Opsional: Beri tahu pengguna
+            });
+
+            // Event listener untuk perubahan konten Trix
+            document.addEventListener('trix-change', function(event) {
+                // Emit event Livewire dengan konten terbaru dari Trix
+                Livewire.dispatch('contentChanged', { content: event.target.value });
+            });
+
+            // Event listener untuk mereset Trix dari Livewire
+            Livewire.on('trix-reset', () => {
+                const trixEditor = document.querySelector('trix-editor');
+                if (trixEditor) {
+                    trixEditor.editor.loadHTML(''); // Mengosongkan konten
+                }
+            });
+
+            // Event listener untuk memuat konten ke Trix saat edit
+            Livewire.on('trix-load-content', (content) => {
+                const trixEditor = document.querySelector('trix-editor');
+                if (trixEditor) {
+                    trixEditor.editor.loadHTML(content); // Memuat konten yang ada
+                }
+            });
+        </script>
+    @endpush
 </div>
