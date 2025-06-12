@@ -1,3 +1,8 @@
-<div>
-    <!-- It is not the man who has too little, but the man who craves more, that is poor. - Seneca -->
-</div>
+<x-layouts.managers :title="__('Galeri')">
+    <div class="flex flex-col gap-6">
+        <!-- Page Title -->
+        <x-managers.ui.page-title title="Galeri Foto"
+            subtitle="Kelola data referensi Galeri Foto Rusunawa untuk digunakan sebagai sarana informasi" />
+
+    </div>
+</x-layouts.managers>

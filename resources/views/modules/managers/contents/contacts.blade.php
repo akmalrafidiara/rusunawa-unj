@@ -1,3 +1,8 @@
-<div>
-    <!-- Simplicity is the consequence of refined emotions. - Jean D'Alembert -->
-</div>
+<x-layouts.managers :title="__('Kontak')">
+    <div class="flex flex-col gap-6">
+        <!-- Page Title -->
+        <x-managers.ui.page-title title="Kontak Rusunawa"
+            subtitle="Kelola data referensi Kontak Pengelola untuk digunakan sebagai sarana informasi" />
+
+    </div>
+</x-layouts.managers>
