@@ -3,9 +3,9 @@
 @import "flowbite/src/themes/default";
 @import 'trix/dist/trix.css';
 
-/* Custom styles for Trix editor, PASTIKAN INI DI BAWAH IMPOR TRIX */
 .trix-content a {
-    color: #007bff;/* Contoh: Biru yang lebih umum */
+    color: #3b82f6 !important;
+    /* Tailwind's blue-500 */
     text-decoration: underline;
 }
 
@@ -50,6 +50,7 @@
 }
 
 @layer base {
+
     *,
     ::after,
     ::before,

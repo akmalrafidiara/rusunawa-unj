@@ -24,7 +24,6 @@
                     ];
                     $orderByOptions = [
                         ['value' => 'priority', 'label' => 'Prioritas'],
-                        ['value' => 'question', 'label' => 'Pertanyaan'],
                         ['value' => 'created_at', 'label' => 'Tanggal Dibuat'],
                     ];
                 @endphp
@@ -32,10 +31,10 @@
                 <x-managers.form.small>Urutkan</x-managers.form.small>
                 <div class="flex gap-2">
                     <x-managers.ui.dropdown-picker wire:model.live="orderBy" :options="$orderByOptions"
-                        label="Urutkan Berdasarkan" wire:key="dropdown-orderBy" />
+                        label="Urutkan Berdasarkan" wire:key="dropdown-orderBy" disabled />
 
                     <x-managers.ui.dropdown-picker wire:model.live="sort" :options="$sortOptions"
-                        label="Arah Urutan" wire:key="dropdown-sort" />
+                        label="Arah Urutan" wire:key="dropdown-sort" disabled />
                 </div>
             </x-managers.ui.dropdown>
         </div>
@@ -101,10 +100,12 @@
                 @endforelse
             </x-managers.table.body>
         </x-managers.table.table>
+        {{-- Pagination --}}
+        <x-managers.ui.pagination :paginator="$faqs"/>
     </x-managers.ui.card>
 
     {{-- Modal Create/Edit FAQ --}}
-    <x-managers.ui.modal title="Form FAQ" :show="$showModal" class="max-w-3xl"> {{-- <--- PERUBAHAN DI SINI --}}
+    <x-managers.ui.modal title="Form FAQ" :show="$showModal" class="max-w-3xl">
         <form wire:submit.prevent="save" class="space-y-4">
             <x-managers.form.label>Pertanyaan</x-managers.form.label>
             <x-managers.form.input wire:model.live="question" placeholder="Masukkan pertanyaan..." />
@@ -127,48 +128,4 @@
             </div>
         </form>
     </x-managers.ui.modal>
-
-    {{-- Tambahkan script JavaScript untuk inisialisasi Trix dan komunikasi Livewire --}}
-    @push('scripts')
-        <link rel="stylesheet" type="text/css" href="https://unpkg.com/trix@1.3.1/dist/trix.css">
-        <script type="text/javascript" src="https://unpkg.com/trix@1.3.1/dist/trix.js"></script>
-
-        {{-- Gaya kustom untuk tautan Trix --}}
-        <style>
-            .trix-content a {
-                color: #3b82f6 !important; /* Tailwind's blue-500 */
-                text-decoration: underline;
-            }
-        </style>
-
-        <script>
-            // Menonaktifkan fitur upload dokumen di Trix
-            document.addEventListener("trix-file-accept", function(event) {
-                event.preventDefault(); // Mencegah Trix menerima file
-                alert("Upload dokumen tidak diizinkan."); // Opsional: Beri tahu pengguna
-            });
-
-            // Event listener untuk perubahan konten Trix
-            document.addEventListener('trix-change', function(event) {
-                // Emit event Livewire dengan konten terbaru dari Trix
-                Livewire.dispatch('contentChanged', { content: event.target.value });
-            });
-
-            // Event listener untuk mereset Trix dari Livewire
-            Livewire.on('trix-reset', () => {
-                const trixEditor = document.querySelector('trix-editor');
-                if (trixEditor) {
-                    trixEditor.editor.loadHTML(''); // Mengosongkan konten
-                }
-            });
-
-            // Event listener untuk memuat konten ke Trix saat edit
-            Livewire.on('trix-load-content', (content) => {
-                const trixEditor = document.querySelector('trix-editor');
-                if (trixEditor) {
-                    trixEditor.editor.loadHTML(content); // Memuat konten yang ada
-                }
-            });
-        </script>
-    @endpush
 </div>
