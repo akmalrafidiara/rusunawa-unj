@@ -110,7 +110,9 @@
 
             <!-- Occupant Type Tipe -->
             <x-managers.form.label>Tipe Penghuni</x-managers.form.label>
-            <x-managers.form.input wire:model.live="occupantType" placeholder="Contoh: Internal UNJ" icon="user" />
+            {{-- <x-managers.form.input wire:model.live="occupantType" placeholder="Contoh: Internal UNJ" icon="user" /> --}}
+            <x-managers.form.select-or-create wire:model="occupantType" :options="$occupantTypeOptions"
+                placeholder="Pilih atau ketik untuk membuat baru..." />
 
             <!-- Pricing Base -->
             <x-managers.form.label>Dasar Penetapan Harga</x-managers.form.label>

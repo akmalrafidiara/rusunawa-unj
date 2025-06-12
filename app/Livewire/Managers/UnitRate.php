@@ -16,6 +16,7 @@ class UnitRate extends Component
     public $pricingBasis;
 
     public $pricingBasisOptions;
+    public $occupantTypeOptions = [];
 
     public $pricingBasisFilter = '';
 
@@ -35,6 +36,8 @@ class UnitRate extends Component
     public function mount()
     {
         $this->pricingBasisOptions = PricingBasis::options();
+
+        $this->refreshOccupantTypeOptions();
     }
 
     public function render()
@@ -97,6 +100,8 @@ class UnitRate extends Component
             $data
         );
 
+        $this->refreshOccupantTypeOptions();
+
         // Flash message
         LivewireAlert::title($this->unitRateIdBeingEdited ? 'Data berhasil diperbarui.' : 'Rate unit berhasil ditambahkan.')
         ->success()
@@ -130,6 +135,8 @@ class UnitRate extends Component
             // Hapus unit rate
             $unitRate->delete();
 
+            $this->refreshOccupantTypeOptions();
+
             LivewireAlert::title('Berhasil Dihapus')
                 ->text($unitRate->occupant_type . ' telah dihapus.')
                 ->success()
@@ -144,5 +151,14 @@ class UnitRate extends Component
         $this->occupantType = '';
         $this->pricingBasis = '';
         $this->unitRateIdBeingEdited = null;
+    }
+
+    private function refreshOccupantTypeOptions()
+    {
+        $this->occupantTypeOptions = UnitRateModel::query()
+            ->select('occupant_type')
+            ->distinct()
+            ->pluck('occupant_type')
+            ->toArray();
     }
 }
