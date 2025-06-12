@@ -48,7 +48,7 @@
                         <x-managers.table.cell class="text-center">
                             <div class="flex items-center justify-center gap-2">
                                 {{-- Tombol Up --}}
-                                @if ($faq->priority > 0)
+                                @if ($faq->priority > 1) {{-- Diubah dari $faq->priority > 0 menjadi > 1 --}}
                                     <x-managers.ui.button wire:click="moveUp({{ $faq->id }})" variant="secondary" size="sm" class="!px-2">
                                         <flux:icon.arrow-up class="w-4" />
                                     </x-managers.ui.button>

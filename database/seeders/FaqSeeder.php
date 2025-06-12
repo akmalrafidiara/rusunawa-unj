@@ -36,12 +36,12 @@ class FaqSeeder extends Seeder
             ],
         ];
 
-        foreach ($faqs as $index => $faqData) { // Gunakan $index untuk prioritas
+        foreach ($faqs as $index => $faqData) {
             Faq::firstOrCreate(
                 ['question' => $faqData['question']],
                 [
                     'answer' => $faqData['answer'],
-                    'priority' => $index, // Atur prioritas berdasarkan indeks
+                    'priority' => $index + 1, // Diubah menjadi $index + 1
                 ]
             );
         }
