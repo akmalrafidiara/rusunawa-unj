@@ -4,5 +4,7 @@
         <x-managers.ui.page-title title="FAQ"
             subtitle="Kelola data referensi FAQ untuk digunakan sebagai sarana informasi" />
 
+        {{-- Dynamic Content - FAQ --}}
+        <livewire:managers.faq/>
     </div>
 </x-layouts.managers>
