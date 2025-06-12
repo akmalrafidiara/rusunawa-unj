@@ -8,11 +8,11 @@ use App\Exports\UnitsExport;
 use App\Models\Unit as UnitModel;
 use App\Models\UnitCluster;
 use App\Models\UnitType;
+use App\Models\Attachment;
 use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Storage;
-use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
 use Spatie\LivewireFilepond\WithFilePond;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -139,6 +139,30 @@ class Unit extends Component
     }
 
     /**
+     * Open modal for editing or viewing details of a unit.
+     *
+     * @param UnitModel $unit
+     */
+    public function edit(UnitModel $unit)
+    {
+        $this->fillData($unit);
+        $this->modalType = 'form';
+        $this->showModal = true;
+    }
+
+    /**
+     * Open modal for viewing details of a unit.
+     *
+     * @param UnitModel $unit
+     */
+    public function detail(UnitModel $unit)
+    {
+        $this->fillData(unit: $unit);
+        $this->modalType = 'detail';
+        $this->showModal = true;
+    }
+
+    /**
      * Fill data for edit or detail modal.
      *
      * @param UnitModel $unit
@@ -170,30 +194,6 @@ class Unit extends Component
     }
 
     /**
-     * Open modal for editing or viewing details of a unit.
-     *
-     * @param UnitModel $unit
-     */
-    public function edit(UnitModel $unit)
-    {
-        $this->fillData($unit);
-        $this->modalType = 'form';
-        $this->showModal = true;
-    }
-
-    /**
-     * Open modal for viewing details of a unit.
-     *
-     * @param UnitModel $unit
-     */
-    public function detail(UnitModel $unit)
-    {
-        $this->fillData(unit: $unit);
-        $this->modalType = 'detail';
-        $this->showModal = true;
-    }
-
-    /**
      * Rules for validation.
      *
      * @return array
@@ -204,20 +204,25 @@ class Unit extends Component
             'roomNumber' => 'required|string|max:255',
             'capacity' => 'required|integer|min:1|max:3',
             'virtualAccountNumber' => 'nullable|numeric|digits_between:15,16',
-            'genderAllowed' => [
-                'required',
-                Rule::in(GenderAllowed::values()),
-            ],
-            'status' => [
-                'required',
-                Rule::in(UnitStatus::values()),
-            ],
+            'genderAllowed' => ['required', Rule::in(GenderAllowed::values())],
+            'status' => ['required', Rule::in(UnitStatus::values())],
             'unitTypeId' => 'required|exists:unit_types,id',
             'unitClusterId' => 'required|exists:unit_clusters,id',
+            // --- Consolidated Validation Rule ---
             'unitImages.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Max 2MB per image
-            'imagesToDelete' => 'array',
-            'imagesToDelete.*' => 'exists:attachments,id', // Ensure the IDs exist in attachments
         ];
+    }
+
+
+    /**
+     * Lifecycle hook called when the component is updated.
+     *
+     */
+    public function updatedUnitImages()
+    {
+        $this->resetErrorBag('unitImages.*');
+
+        $this->validateOnly('unitImages.*');
     }
 
     /**
@@ -260,32 +265,9 @@ class Unit extends Component
             $data
         );
 
-        // Handle image uploads
-        if (!empty($this->unitImages)) {
-            foreach ($this->unitImages as $image) {
-                if ($image instanceof TemporaryUploadedFile) {
-                    $path = $image->store('images', 'public');
-
-                    $unit->attachments()->create([
-                        'name' => $image->getClientOriginalName(),
-                        'file_name' => basename($path),
-                        'mime_type' => $image->getMimeType(),
-                        'path' => $path,
-                    ]);
-                }
-            }
-        }
-
-        // Delete marked images if any
-        if (!empty($this->imagesToDelete)) {
-            foreach ($this->imagesToDelete as $attachmentId) {
-                $attachment = $unit->attachments()->find($attachmentId);
-                if ($attachment) {
-                    Storage::disk('public')->delete($attachment->path);
-                    $attachment->delete();
-                }
-            }
-        }
+        // --- Refactored Image Handling ---
+        $this->handleImageDeletions($unit);
+        $this->handleImageUploads($unit);
 
         // Flash message
         LivewireAlert::title($this->unitIdBeingEdited ? 'Data berhasil diperbarui.' : 'Unit berhasil ditambahkan.')
@@ -361,6 +343,46 @@ class Unit extends Component
         $this->unitTypeId = '';
         $this->unitClusterId = '';
         $this->unitIdBeingEdited = null;
+
+        $this->unitImages = [];
+        $this->existingImages = [];
+        $this->imagesToDelete = [];
+        $this->resetErrorBag();
+        $this->resetValidation();
+    }
+
+    /**
+     * [Refactored] Handles deleting images marked for removal.
+     * @param UnitModel $unit
+     */
+    private function handleImageDeletions(UnitModel $unit)
+    {
+        if (!empty($this->imagesToDelete)) {
+            $attachments = Attachment::whereIn('id', $this->imagesToDelete)->get();
+            foreach ($attachments as $attachment) {
+                Storage::disk('public')->delete($attachment->path);
+                $attachment->delete();
+            }
+        }
+    }
+
+    /**
+     * [Refactored] Handles newly uploaded images.
+     * @param UnitModel $unit
+     */
+    private function handleImageUploads(UnitModel $unit)
+    {
+        if (!empty($this->unitImages)) {
+            foreach ($this->unitImages as $image) {
+                $path = $image->store('images/units', 'public');
+                $unit->attachments()->create([
+                    'name' => $image->getClientOriginalName(),
+                    'file_name' => basename($path),
+                    'mime_type' => $image->getMimeType(),
+                    'path' => $path,
+                ]);
+            }
+        }
     }
 
     /**
@@ -368,34 +390,15 @@ class Unit extends Component
      *
      * @param int $index
      */
-    public function removeUnitImage($index)
+    public function queueImageForDeletion($imageId)
     {
-        if (isset($this->unitImages[$index])) {
-            $image = $this->unitImages[$index];
-            if ($image instanceof TemporaryUploadedFile) {
-                $image->delete();
-            } else {
-                Storage::disk('public')->delete($image);
-            }
-            unset($this->unitImages[$index]);
-        }
-    }
-
-    /**
-     * Mark an image for deletion.
-     *
-     * @param int $attachmentId
-     */
-    public function markImageForDeletion($attachmentId)
-    {
-        if (!in_array($attachmentId, $this->imagesToDelete)) {
-            $this->imagesToDelete[] = $attachmentId;
+        if (!in_array($imageId, $this->imagesToDelete)) {
+            $this->imagesToDelete[] = $imageId;
         }
 
-        // Remove the image from existing images array
-        $this->existingImages = collect($this->existingImages)->reject(function ($image) use ($attachmentId) {
-            return $image->id == $attachmentId;
-        });
+        $this->existingImages = collect($this->existingImages)->reject(function ($image) use ($imageId) {
+            return $image['id'] == $imageId;
+        })->values();
     }
 
     /**

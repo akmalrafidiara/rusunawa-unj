@@ -214,15 +214,17 @@
             {{-- Unit Images --}}
             <x-managers.form.label>Gambar Unit</x-managers.form.label>
 
-            {{-- Existing Images --}}
+            {{-- Existing Images while Editing --}}
             @if ($existingImages && count($existingImages) > 0)
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 border border-gray-300 rounded p-2 mb-2">
                     <x-managers.form.small class="col-span-full">Gambar Saat Ini</x-managers.form.small>
-                    @foreach ($existingImages as $index => $image)
-                        <div class="relative">
-                            <img src="{{ asset('storage/' . $image->path) }}" alt="Gambar Unit {{ $index + 1 }}"
+                    @foreach ($existingImages as $image)
+                        <div class="relative" wire:key="existing-image-{{ $image['id'] }}">
+                            <img src="{{ asset('storage/' . $image['path']) }}" alt="Gambar {{ $image['id'] }}"
                                 class="w-full h-16 object-cover rounded border" />
-                            <button type="button" wire:click="markImageForDeletion({{ $image->id }})"
+
+                            <button type="button" wire:click="queueImageForDeletion({{ $image['id'] }})"
+                                wire:loading.attr="disabled" wire:target="queueImageForDeletion({{ $image['id'] }})"
                                 class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600">
                                 <flux:icon name="x-mark" class="w-3 h-3" />
                             </button>
@@ -231,33 +233,22 @@
                 </div>
             @endif
 
-            {{-- New Images Preview --}}
-            @if ($unitImages && count($unitImages) > 0)
-                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 border border-gray-300 rounded p-2 mb-2">
-                    <x-managers.form.small class="col-span-full">Gambar Baru</x-managers.form.small>
-                    @foreach ($unitImages as $index => $image)
-                        <div class="relative">
-                            <img src="{{ $image->temporaryUrl() }}" alt="Preview Gambar {{ $index + 1 }}"
-                                class="w-full h-16 object-cover rounded border" />
-                            <button type="button" wire:click="removeUnitImage({{ $index }})"
-                                class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600">
-                                <flux:icon name="x-mark" class="w-3 h-3" />
-                            </button>
-                        </div>
-                    @endforeach
-                </div>
-            @endif
-
-            <div class="mb-2">
-                @if ($errors->has('unitImages.*'))
-                    <span class="text-red-500 text-sm">{{ $errors->first('unitImages.*') }}</span>
-                @else
-                    <x-managers.form.small>Max 2MB per file. JPG, PNG, GIF. Upload multiple
-                        images</x-managers.form.small>
-                @endif
+            <div wire:key="filepond-wrapper">
+                <x-filepond::upload wire:model.live="unitImages" multiple accept="image/png, image/jpeg, image/gif"
+                    max-file-size="2MB" />
             </div>
 
-            <x-filepond::upload wire:model.live="unitImages" multiple />
+
+            {{-- Pesan error dan petunjuk --}}
+            <div class="mt-2">
+                @error('unitImages.*')
+                    {{-- Error ini akan ditampilkan jika validasi di server gagal --}}
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                @else
+                    <x-managers.form.small>Max 2MB per file. Tipe: JPG, PNG, GIF. Bisa upload banyak
+                        gambar.</x-managers.form.small>
+                @enderror
+            </div>
 
 
             <!-- Tombol Aksi -->
