@@ -5,10 +5,13 @@ namespace App\Livewire\Managers;
 use App\Models\Faq as FaqModel;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
+use Livewire\WithPagination;
 use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 
 class Faq extends Component
 {
+    use WithPagination;
+    
     public $search = '';
     public $question;
     public $answer; // Properti ini akan diisi oleh Trix editor

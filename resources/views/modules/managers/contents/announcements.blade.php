@@ -3,5 +3,8 @@
         <!-- Page Title -->
         <x-managers.ui.page-title title="Pengumuman"
             subtitle="Kelola data referensi pengumuman untuk digunakan sebagai sarana informasi" />
+
+        {{-- Dynamic Content - Announcements --}}
+        <livewire:managers.announcement />
     </div>
 </x-layouts.managers>

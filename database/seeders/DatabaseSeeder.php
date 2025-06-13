@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             UnitSeeder::class,
             PivotUnitRateSeeder::class,
             FaqSeeder::class,
+            AnnouncementSeeder::class,
         ]);
     }
 }
