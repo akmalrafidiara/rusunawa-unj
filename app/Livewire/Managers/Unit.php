@@ -124,7 +124,7 @@ class Unit extends Component
     {
         $units = $this->buildUnitQuery()->paginate($this->perPage);
 
-        return view('livewire.managers.unit', compact('units'));
+        return view('livewire.managers.oprations.units.index', compact('units'));
     }
 
     /**
