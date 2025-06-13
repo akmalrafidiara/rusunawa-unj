@@ -44,7 +44,7 @@ class UnitType extends Component
             return $unitType;
         });
 
-        return view('livewire.managers.unit-type', compact('unitTypes'));
+        return view('livewire.managers.oprations.unit-types.index', compact('unitTypes'));
     }
 
     public function create()
