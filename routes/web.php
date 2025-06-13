@@ -32,15 +32,15 @@ Route::prefix('managers')->middleware(['auth', 'verified'])->group(function () {
     Route::view('occupants', 'modules.managers.tenancy.occupants')->name('occupants');
 
     // Oprations
-    Route::view('users', 'modules.managers.oprations.users')->name('users');
-    Route::view('incomes-reports', 'modules.managers.oprations.income-reports')->name('income.reports');
-    Route::view('reports-and-complaints', 'modules.managers.oprations.reports-and-complaints')->name('reports.and.complaints');
-    Route::view('maintenance', 'modules.managers.oprations.maintenance')->name('maintenance');
+    Route::view('users', 'modules.managers.oprations.users.index')->name('users');
+    Route::view('incomes-reports', 'modules.managers.oprations.income-reports.index')->name('income.reports');
+    Route::view('reports-and-complaints', 'modules.managers.oprations.reports-and-complaints.index')->name('reports.and.complaints');
+    Route::view('maintenance', 'modules.managers.oprations.maintenance.index')->name('maintenance');
     Route::prefix('units')->group(function () {
         Route::view('/', 'modules.managers.oprations.units.index')->name('units');
-        Route::view('types', 'modules.managers.oprations.units.types')->name('unit.types');
-        Route::view('clusters', 'modules.managers.oprations.units.clusters')->name('unit.clusters');
-        Route::view('rates', 'modules.managers.oprations.units.rates')->name('unit.rates');
+        Route::view('types', 'modules.managers.oprations.unit-types.index')->name('unit.types');
+        Route::view('clusters', 'modules.managers.oprations.unit-clusters.index')->name('unit.clusters');
+        Route::view('rates', 'modules.managers.oprations.unit-rates.index')->name('unit.rates');
     });
 
     // Content
