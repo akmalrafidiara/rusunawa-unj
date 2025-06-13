@@ -8,7 +8,7 @@ use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-class UserManagement extends Component
+class Users extends Component
 {
     use WithPagination;
 
@@ -59,7 +59,7 @@ class UserManagement extends Component
             return $user;
         });
 
-        return view('livewire.managers.user-management', compact('users'));
+        return view('livewire.managers.oprations.users.index', compact('users'));
     }
 
     public function create()
