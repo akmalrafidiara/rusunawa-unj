@@ -48,7 +48,7 @@ class UnitRate extends Component
             ->orderBy($this->orderBy, $this->sort)
             ->paginate(10);
 
-        return view('livewire.managers.unit-rate', compact('unitRates'));
+        return view('livewire.managers.oprations.unit-rates.index', compact('unitRates'));
     }
 
     public function create()
