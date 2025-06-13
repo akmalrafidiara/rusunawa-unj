@@ -52,7 +52,7 @@ class UnitCluster extends Component
             ->orderBy($this->orderBy, $this->sort)
             ->paginate(10);
 
-        return view('livewire.managers.unit-cluster', compact('unitClusters'));
+        return view('livewire.managers.oprations.unit-clusters.index', compact('unitClusters'));
     }
 
     public function create()
