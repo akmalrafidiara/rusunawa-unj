@@ -81,7 +81,7 @@ class Announcement extends Component
     {
         return AnnouncementModel::query()
             ->when($this->search, fn($q) => $q->where('title', 'like', "%{$this->search}%")
-                                              ->orWhere('description', 'like', "%{$this->search}%"))
+                                             ->orWhere('description', 'like', "%{$this->search}%"))
             ->when($this->statusFilter, fn($q) => $q->where("status", $this->statusFilter))
             ->orderBy($this->orderBy, $this->sort);
     }
@@ -313,6 +313,82 @@ class Announcement extends Component
             // Flash success message
             LivewireAlert::title('Berhasil Dihapus')
                 ->text('Pengumuman "' . $title . '" telah dihapus.')
+                ->success()
+                ->toast()
+                ->position('top-end')
+                ->show();
+        }
+    }
+
+    /**
+     * Confirm archiving of an announcement.
+     *
+     * @param array $data
+     */
+    public function confirmArchive($data)
+    {
+        LivewireAlert::title('Arsipkan pengumuman "' . $data['title'] . '"?')
+            ->text('Apakah Anda yakin ingin mengarsipkan pengumuman ini? Pengumuman tidak akan terlihat di tampilan publik.')
+            ->question()
+            ->withCancelButton('Batalkan')
+            ->withConfirmButton('Arsipkan!')
+            ->onConfirm('archiveAnnouncement', ['id' => $data['id']])
+            ->show();
+    }
+
+    /**
+     * Archive an announcement.
+     *
+     * @param array $data
+     */
+    public function archiveAnnouncement($data)
+    {
+        $id = $data['id'];
+        $announcement = AnnouncementModel::find($id);
+
+        if ($announcement) {
+            $announcement->update(['status' => AnnouncementStatus::Archived]);
+
+            LivewireAlert::title('Berhasil Diarsipkan')
+                ->text('Pengumuman "' . $announcement->title . '" telah diarsipkan.')
+                ->success()
+                ->toast()
+                ->position('top-end')
+                ->show();
+        }
+    }
+
+    /**
+     * Confirm publishing of an announcement.
+     *
+     * @param array $data
+     */
+    public function confirmPublish($data)
+    {
+        LivewireAlert::title('Terbitkan pengumuman "' . $data['title'] . '"?')
+            ->text('Apakah Anda yakin ingin menerbitkan pengumuman ini? Pengumuman akan terlihat di tampilan publik.')
+            ->question()
+            ->withCancelButton('Batalkan')
+            ->withConfirmButton('Terbitkan!')
+            ->onConfirm('publishAnnouncement', ['id' => $data['id']])
+            ->show();
+    }
+
+    /**
+     * Publish an announcement.
+     *
+     * @param array $data
+     */
+    public function publishAnnouncement($data)
+    {
+        $id = $data['id'];
+        $announcement = AnnouncementModel::find($id);
+
+        if ($announcement) {
+            $announcement->update(['status' => AnnouncementStatus::Published]);
+
+            LivewireAlert::title('Berhasil Diterbitkan')
+                ->text('Pengumuman "' . $announcement->title . '" telah diterbitkan.')
                 ->success()
                 ->toast()
                 ->position('top-end')

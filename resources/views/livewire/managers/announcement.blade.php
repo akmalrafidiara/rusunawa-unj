@@ -94,27 +94,35 @@
                             <div class="flex gap-2 justify-start">
                                 {{-- Detail Button --}}
                                 <x-managers.ui.button wire:click="detail({{ $announcement->id }})" variant="info"
-                                    size="sm">
+                                    size="sm" title="Lihat Detail">
                                     <flux:icon.eye class="w-4" />
                                 </x-managers.ui.button>
 
                                 {{-- Edit Button --}}
                                 <x-managers.ui.button wire:click="edit({{ $announcement->id }})" variant="secondary"
-                                    size="sm">
+                                    size="sm" title="Perbarui">
                                     <flux:icon.pencil class="w-4" />
                                 </x-managers.ui.button>
 
                                 {{-- Delete Button --}}
                                 <x-managers.ui.button wire:click="confirmDelete({{ $announcement }})" id="delete-announcement"
-                                    variant="danger" size="sm">
+                                    variant="danger" size="sm" title="Hapus">
                                     <flux:icon.trash class="w-4" />
                                 </x-managers.ui.button>
 
                                 {{-- Archive Button (New) --}}
                                 @if ($announcement->status->value !== 'archived')
-                                    <x-managers.ui.button wire:click="archive({{ $announcement->id }})" variant="warning"
+                                    <x-managers.ui.button wire:click="confirmArchive({{ $announcement }})" variant="warning"
                                         size="sm" title="Arsipkan">
                                         <flux:icon.archive-box class="w-4" />
+                                    </x-managers.ui.button>
+                                @endif
+
+                                {{-- Publish Button (New) --}}
+                                @if ($announcement->status->value === 'draft' || $announcement->status->value === 'archived')
+                                    <x-managers.ui.button wire:click="confirmPublish({{ $announcement }})" variant="primary"
+                                        size="sm" title="Terbitkan">
+                                        <flux:icon.document-check class="w-4" />
                                     </x-managers.ui.button>
                                 @endif
                             </div>
