@@ -50,7 +50,7 @@
             'Judul',
             'Status',
             'Tanggal Dibuat',
-            'Deskripsi',
+            'Isi Pengumuman',
             'Aksi',
         ]">
             <x-managers.table.body>
@@ -94,19 +94,19 @@
                             <div class="flex gap-2 justify-start">
                                 {{-- Detail Button --}}
                                 <x-managers.ui.button wire:click="detail({{ $announcement->id }})" variant="info"
-                                    size="sm">
+                                    size="sm" title="Lihat Detail Pengumuman">
                                     <flux:icon.eye class="w-4" />
                                 </x-managers.ui.button>
 
                                 {{-- Edit Button --}}
                                 <x-managers.ui.button wire:click="edit({{ $announcement->id }})" variant="secondary"
-                                    size="sm">
+                                    size="sm" title="Edit Pengumuman">
                                     <flux:icon.pencil class="w-4" />
                                 </x-managers.ui.button>
 
                                 {{-- Delete Button --}}
                                 <x-managers.ui.button wire:click="confirmDelete({{ $announcement }})" id="delete-announcement"
-                                    variant="danger" size="sm">
+                                    variant="danger" size="sm" title="Hapus Pengumuman">
                                     <flux:icon.trash class="w-4" />
                                 </x-managers.ui.button>
 
@@ -114,7 +114,7 @@
                                 {{-- Tombol Arsipkan hanya muncul jika status BUKAN 'draft' dan BUKAN 'archived' --}}
                                 @if ($announcement->status->value !== 'draft' && $announcement->status->value !== 'archived')
                                     <x-managers.ui.button wire:click="confirmArchive({{ $announcement }})" variant="warning"
-                                        size="sm" title="Arsipkan">
+                                        size="sm" title="Arsipkan Pengumuman">
                                         <flux:icon.archive-box class="w-4" />
                                     </x-managers.ui.button>
                                 @endif
@@ -123,7 +123,7 @@
                                 {{-- Tombol Terbitkan hanya muncul jika status adalah 'draft' ATAU 'archived' --}}
                                 @if ($announcement->status->value === 'draft' || $announcement->status->value === 'archived')
                                     <x-managers.ui.button wire:click="confirmPublish({{ $announcement }})" variant="primary"
-                                        size="sm" title="Terbitkan">
+                                        size="sm" title="Terbitkan Pengumuman">
                                         <flux:icon.document-check class="w-4" />
                                     </x-managers.ui.button>
                                 @endif
@@ -153,7 +153,7 @@
                 <span class="text-red-500 text-sm">{{ $message }}</span>
             @enderror
 
-            <x-managers.form.label for="description">Deskripsi</x-managers.form.label>
+            <x-managers.form.label for="description">Isi Pengumuman</x-managers.form.label>
             <x-managers.form.textarea wire:model.live="description" placeholder="Masukkan deskripsi pengumuman" id="description" />
             @error('description')
                 <span class="text-red-500 text-sm">{{ $message }}</span>
@@ -166,7 +166,7 @@
             @enderror
 
             {{-- Single Image for 'image' column --}}
-            <x-managers.form.label>Gambar Utama (Opsional)</x-managers.form.label>
+            <x-managers.form.label>Gambar Banner</x-managers.form.label>
             @if ($existingImage && !$image)
                 <div class="relative w-full h-32 mb-2">
                     <img src="{{ asset('storage/' . $existingImage) }}" alt="Gambar Utama"
@@ -199,7 +199,7 @@
             @enderror
 
             {{-- Attachments for 'attachments' morphMany --}}
-            <x-managers.form.label>Lampiran (Gambar atau File Lain)</x-managers.form.label>
+            <x-managers.form.label>Lampiran (Gambar atau File Pendukung)</x-managers.form.label>
 
             {{-- Existing Attachments while Editing --}}
             @if ($existingAttachments && count($existingAttachments) > 0)
@@ -268,7 +268,7 @@
                 <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
                     <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
                         <flux:icon.photo class="w-5 h-5 text-indigo-500" />
-                        Gambar Utama
+                        Gambar Banner
                     </h4>
                     @if ($existingImage)
                         <div class="flex justify-center">
@@ -277,7 +277,7 @@
                         </div>
                     @else
                         <div class="text-center text-gray-500 py-4">
-                            Tidak ada gambar utama.
+                            Tidak ada gambar banner.
                         </div>
                     @endif
                 </div>
@@ -306,7 +306,7 @@
                         </div>
                         {{-- Deskripsi --}}
                         <div class="py-2">
-                            <span class="text-gray-600 font-semibold block mb-1">Deskripsi</span>
+                            <span class="text-gray-600 font-semibold block mb-1">Isi Pengumuman</span>
                             <p class="text-gray-800 text-base leading-relaxed">{!! $description ?? '-' !!}</p>
                         </div>
                     </div>
