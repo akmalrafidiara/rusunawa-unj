@@ -236,26 +236,60 @@
                 </div>
 
                 {{-- Main Image --}}
-                @if ($existingImage)
-                    <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-                        <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                            <flux:icon.photo class="w-5 h-5 text-indigo-500" />
-                            Gambar Utama
-                        </h4>
+                <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                    <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                        <flux:icon.photo class="w-5 h-5 text-indigo-500" />
+                        Gambar Utama
+                    </h4>
+                    @if ($existingImage)
                         <div class="flex justify-center">
                             <img src="{{ asset('storage/' . $existingImage) }}" alt="Gambar Utama Pengumuman"
                                 class="max-w-full h-auto max-h-64 object-contain rounded-lg border border-gray-200" />
                         </div>
+                    @else
+                        <div class="text-center text-gray-500 py-4">
+                            Tidak ada gambar utama.
+                        </div>
+                    @endif
+                </div>
+
+                {{-- Announcement Information --}}
+                <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                    <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                        <flux:icon.information-circle class="w-5 h-5 text-blue-500" />
+                        Informasi Detail
+                    </h4>
+                    <div class="space-y-3">
+                        {{-- Status --}}
+                        <div class="py-2">
+                            <span class="text-gray-600 font-semibold block mb-1">Status</span>
+                            @php
+                                $statusEnum = \App\Enums\AnnouncementStatus::tryFrom($status);
+                            @endphp
+                            <x-managers.ui.badge :type="$statusEnum?->value ?? 'default'" :color="$statusEnum?->color()">
+                                {{ $statusEnum?->label() }}
+                            </x-managers.ui.badge>
+                        </div>
+                        {{-- Judul --}}
+                        <div class="py-2">
+                            <span class="text-gray-600 font-semibold block mb-1">Judul</span>
+                            <p class="font-bold text-lg text-blue-600">{{ $title }}</p>
+                        </div>
+                        {{-- Deskripsi --}}
+                        <div class="py-2">
+                            <span class="text-gray-600 font-semibold block mb-1">Deskripsi</span>
+                            <p class="text-gray-800 text-base leading-relaxed">{{ $description ?? '-' }}</p>
+                        </div>
                     </div>
-                @endif
+                </div>
 
                 {{-- Attachments --}}
-                @if (!empty($existingAttachments))
-                    <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-                        <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                            <flux:icon.paper-clip class="w-5 h-5 text-orange-500" />
-                            Lampiran
-                        </h4>
+                <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                    <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                        <flux:icon.paper-clip class="w-5 h-5 text-orange-500" />
+                        Lampiran
+                    </h4>
+                    @if (!empty($existingAttachments) && count($existingAttachments) > 0)
                         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                             @foreach ($existingAttachments as $index => $attachment)
                                 <a href="{{ asset('storage/' . $attachment->path) }}" target="_blank"
@@ -269,72 +303,42 @@
                                             <span class="truncate w-full">{{ $attachment->name }}</span>
                                         </div>
                                     @endif
-                                    {{-- Blok ini dihapus untuk menghilangkan ikon unduh --}}
-                                    {{-- <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 flex items-center justify-center transition-opacity">
-                                        <flux:icon.arrow-down-tray class="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                                    </div> --}}
                                 </a>
                             @endforeach
                         </div>
-                    </div>
-                @endif
-
-                {{-- Announcement Information --}}
-                <div class="grid grid-cols-1 gap-6">
-                    {{-- Basic Info Card --}}
-                    <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-                        <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                            <flux:icon.information-circle class="w-5 h-5 text-blue-500" />
-                            Informasi Detail
-                        </h4>
-                        <div class="space-y-3">
-                            <div class="py-2">
-                                <span class="text-gray-600 font-semibold block mb-1">Judul</span>
-                                <p class="font-bold text-lg text-blue-600">{{ $title }}</p>
-                            </div>
-                            <div class="py-2">
-                                <span class="text-gray-600 font-semibold block mb-1">Deskripsi</span>
-                                <p class="text-gray-800 text-base leading-relaxed">{{ $description ?? '-' }}</p>
-                            </div>
-                            <div class="py-2">
-                                <span class="text-gray-600 font-semibold block mb-1">Status</span>
-                                @php
-                                    $statusEnum = \App\Enums\AnnouncementStatus::tryFrom($status);
-                                @endphp
-                                <x-managers.ui.badge :type="$statusEnum?->value ?? 'default'" :color="$statusEnum?->color()">
-                                    {{ $statusEnum?->label() }}
-                                </x-managers.ui.badge>
-                            </div>
+                    @else
+                        <div class="text-center text-gray-500 py-4">
+                            Tidak ada lampiran.
                         </div>
-                    </div>
+                    @endif
+                </div>
 
-                    {{-- Timestamps Card --}}
-                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                        <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                            <flux:icon.clock class="w-5 h-5 text-gray-500" />
-                            Informasi Waktu
-                        </h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="flex justify-between items-center">
-                                <span class="text-gray-600">Tanggal Dibuat</span>
-                                <span class="font-medium">
-                                    @if ($createdAt)
-                                        {{ $createdAt->format('d M Y, H:i') }} WIB
-                                    @else
-                                        -
-                                    @endif
-                                </span>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-gray-600">Terakhir Diperbarui</span>
-                                <span class="font-medium">
-                                    @if ($updatedAt)
-                                        {{ $updatedAt->format('d M Y, H:i') }} WIB
-                                    @else
-                                        -
-                                    @endif
-                                </span>
-                            </div>
+                {{-- Timestamps Card --}}
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                    <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                        <flux:icon.clock class="w-5 h-5 text-gray-500" />
+                        Informasi Waktu
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Tanggal Dibuat</span>
+                            <span class="font-medium">
+                                @if ($createdAt)
+                                    {{ $createdAt->format('d M Y, H:i') }} WIB
+                                @else
+                                    -
+                                @endif
+                            </span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Terakhir Diperbarui</span>
+                            <span class="font-medium">
+                                @if ($updatedAt)
+                                    {{ $updatedAt->format('d M Y, H:i') }} WIB
+                                @else
+                                    -
+                                @endif
+                            </span>
                         </div>
                     </div>
                 </div>
