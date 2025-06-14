@@ -10,23 +10,27 @@ use Livewire\WithPagination;
 
 class Users extends Component
 {
+    // Traits
     use WithPagination;
 
-    public $search = '';
-    public $roleFilter = '';
-    public $name, $email, $password, $phone;
-    public $role;
+    // Main data properties
+    public $name, $email, $password, $phone, $role;
 
+    // Options properties
     public $roleOptions;
 
+    // Toolbar properties
+    public $search = '';
+    public $roleFilter = '';
     public $perPage = 10;
-
     public $orderBy = 'created_at';
     public $sort = 'asc';
 
+    // Modal properties
     public $showModal = false;
     public $userIdBeingEdited = null;
 
+    // Query string properties
     protected $queryString = [
         'search' => ['except' => ''],
         'roleFilter' => ['except' => ''],
@@ -35,11 +39,19 @@ class Users extends Component
         'sort' => ['except' => 'asc'],
     ];
 
+    /**
+     * Initialize the component.
+     */
     public function mount()
     {
         $this->roleOptions = RoleUser::options();
     }
 
+    /**
+     * Render the component.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         $users = User::query()
@@ -62,6 +74,9 @@ class Users extends Component
         return view('livewire.managers.oprations.users.index', compact('users'));
     }
 
+    /**
+     * Create a new user.
+     */
     public function create()
     {
         $this->search = '';
@@ -69,6 +84,11 @@ class Users extends Component
         $this->showModal = true;
     }
 
+    /**
+     * Edit an existing user.
+     *
+     * @param User $user
+     */
     public function edit(User $user)
     {
         $this->search = '';
@@ -80,6 +100,11 @@ class Users extends Component
         $this->showModal = true;
     }
 
+    /**
+     * Validation rules for the form.
+     *
+     * @return array
+     */
     public function rules()
     {
         return [
@@ -91,6 +116,11 @@ class Users extends Component
         ];
     }
 
+    /**
+     * Validate the form data when a property is updated.
+     *
+     * @param string $propertyName
+     */
     public function updated($propertyName)
     {
         if (in_array($propertyName, array_keys($this->rules()))) {
@@ -98,6 +128,9 @@ class Users extends Component
         }
     }
 
+    /**
+     * Save the user data.
+     */
     public function save()
     {
         $this->validate($this->rules());
@@ -131,6 +164,11 @@ class Users extends Component
         $this->showModal = false;
     }
 
+    /**
+     * Confirm deletion of a user.
+     *
+     * @param array $data
+     */
     public function confirmDelete($data)
     {
         LivewireAlert::title('Hapus data '. $data['name'] . '?')
@@ -142,6 +180,11 @@ class Users extends Component
             ->show();
     }
 
+    /**
+     * Delete a user.
+     *
+     * @param array $data
+     */
     public function deleteUser($data)
     {
         $id = $data['id'];
@@ -159,6 +202,9 @@ class Users extends Component
         }
     }
 
+    /**
+     * Reset the form fields.
+     */
     private function resetForm()
     {
         $this->name = '';

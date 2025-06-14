@@ -12,27 +12,39 @@ use Spatie\LivewireFilepond\WithFilePond;
 
 class UnitCluster extends Component
 {
+    // Traits
     use WithFileUploads;
     use WithFilePond;
 
-    public $search = '';
-    public $name, $address, $image, $description, $staffId, $staffName, $temporaryImage, $createdAt, $updatedAt;
+    // Main data properties
+    public $name, $address, $image, $description, $staffId, $staffName, $createdAt, $updatedAt;
 
+    // Temporary image for editing
+    public $temporaryImage;
+
+    // Options properties
     public $staffOptions;
 
+    // Toolbar properties
+    public $search = '';
     public $orderBy = 'created_at';
     public $sort = 'asc';
 
+    // Modal properties
     public $showModal = false;
     public $modalType;
     public $unitClusterIdBeingEdited = null;
 
+    // Query string properties
     protected $queryString = [
         'search' => ['except' => ''],
         'orderBy' => ['except' => 'created_at'],
         'sort' => ['except' => 'asc'],
     ];
 
+    /**
+     * Initialize the component.
+     */
     public function mount()
     {
         $this->staffOptions = \App\Models\User::whereHas('roles', function ($query) {
@@ -45,6 +57,11 @@ class UnitCluster extends Component
         })->toArray();
     }
 
+    /**
+     * Render the component.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         $unitClusters = UnitClusterModel::query()
@@ -55,6 +72,9 @@ class UnitCluster extends Component
         return view('livewire.managers.oprations.unit-clusters.index', compact('unitClusters'));
     }
 
+    /**
+     * Reset the component state.
+     */
     public function create()
     {
         $this->search = '';
@@ -63,7 +83,11 @@ class UnitCluster extends Component
         $this->showModal = true;
     }
 
-    // Refactor: Use a single method to fill form fields from a UnitClusterModel
+    /**
+     * Fill the form data with the given unit cluster model.
+     *
+     * @param UnitClusterModel $unitCluster
+     */
     protected function fillData(UnitClusterModel $unitCluster)
     {
         $this->unitClusterIdBeingEdited = $unitCluster->id;
@@ -78,6 +102,11 @@ class UnitCluster extends Component
         $this->updatedAt = $unitCluster->updated_at;
     }
 
+    /**
+     * Show the form to edit or view the unit cluster.
+     *
+     * @param UnitClusterModel $unitCluster
+     */
     public function edit(UnitClusterModel $unitCluster)
     {
         $this->fillData($unitCluster);
@@ -85,6 +114,11 @@ class UnitCluster extends Component
         $this->showModal = true;
     }
 
+    /**
+     * Show the detail view of the unit cluster.
+     *
+     * @param UnitClusterModel $unitCluster
+     */
     public function detail(UnitClusterModel $unitCluster)
     {
         $this->fillData($unitCluster);
@@ -92,6 +126,11 @@ class UnitCluster extends Component
         $this->showModal = true;
     }
 
+    /**
+     * Define the validation rules for the form.
+     *
+     * @return array
+     */
     public function rules()
     {
         return [
@@ -117,6 +156,11 @@ class UnitCluster extends Component
         ];
     }
 
+    /**
+     * Validate the uploaded file.
+     *
+     * @return bool
+     */
     public function validateUploadedFile()
     {
         $this->validate([
@@ -126,11 +170,19 @@ class UnitCluster extends Component
         return true;
     }
 
+    /**
+     * Validate the form data when a property is updated.
+     *
+     * @param string $propertyName
+     */
     public function updated($propertyName)
     {
         $this->validateOnly($propertyName, $this->rules());
     }
 
+    /**
+     * Save the unit cluster data.
+     */
     public function save()
     {
         $this->validate($this->rules());
@@ -181,6 +233,11 @@ class UnitCluster extends Component
         $this->showModal = false;
     }
 
+    /**
+     * Confirm deletion of the unit cluster.
+     *
+     * @param array $data
+     */
     public function confirmDelete($data)
     {
         LivewireAlert::title('Hapus data '. $data['name'] . '?')
@@ -192,6 +249,11 @@ class UnitCluster extends Component
             ->show();
     }
 
+    /**
+     * Delete the unit cluster.
+     *
+     * @param array $data
+     */
     public function deleteUnitCluster($data)
     {
         $id = $data['id'];
@@ -214,6 +276,9 @@ class UnitCluster extends Component
         }
     }
 
+    /**
+     * Reset the form fields.
+     */
     public function resetForm() {
         $this->name = '';
         $this->address = '';

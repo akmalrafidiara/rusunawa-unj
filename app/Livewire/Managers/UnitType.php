@@ -12,26 +12,36 @@ use Spatie\LivewireFilepond\WithFilePond;
 
 class UnitType extends Component
 {
+    // Traits
     use WithFileUploads;
     use WithFilePond;
 
-    public $search = '';
+    // Main data properties
     public $name, $description, $image, $temporaryImage;
     public $facilities = [];
     public $newFacility = '';
 
+    // Toolbar properties
+    public $search = '';
     public $orderBy = 'created_at';
     public $sort = 'asc';
 
+    // Modal properties
     public $showModal = false;
     public $unitTypeIdBeingEdited = null;
 
+    // Query string properties
     protected $queryString = [
         'search' => ['except' => ''],
         'orderBy' => ['except' => 'created_at'],
         'sort' => ['except' => 'asc'],
     ];
 
+    /**
+     * Render the component.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         $unitTypes = UnitTypeModel::query()
@@ -47,6 +57,10 @@ class UnitType extends Component
         return view('livewire.managers.oprations.unit-types.index', compact('unitTypes'));
     }
 
+
+    /**
+     * Create a new unit type.
+     */
     public function create()
     {
         $this->search = '';
@@ -54,6 +68,11 @@ class UnitType extends Component
         $this->showModal = true;
     }
 
+    /**
+     * Edit an existing unit type.
+     *
+     * @param UnitTypeModel $unitType
+     */
     public function edit(UnitTypeModel $unitType)
     {
         $this->unitTypeIdBeingEdited = $unitType->id;
@@ -65,6 +84,11 @@ class UnitType extends Component
         $this->showModal = true;
     }
 
+    /**
+     * Validation rules for the form.
+     *
+     * @return array
+     */
     public function rules()
     {
         return [
@@ -78,6 +102,11 @@ class UnitType extends Component
         ];
     }
 
+    /**
+     * Validate the uploaded file.
+     *
+     * @return bool
+     */
     public function validateUploadedFile()
     {
         $this->validate([
@@ -87,11 +116,19 @@ class UnitType extends Component
         return true;
     }
 
+    /**
+     * Validate the form when a property is updated.
+     *
+     * @param string $propertyName
+     */
     public function updated($propertyName)
     {
         $this->validateOnly($propertyName, $this->rules());
     }
 
+    /**
+     * Save the unit type data.
+     */
     public function save()
     {
         $this->validate($this->rules());
@@ -141,6 +178,11 @@ class UnitType extends Component
         $this->showModal = false;
     }
 
+    /**
+     * Confirm deletion of a unit type.
+     *
+     * @param array $data
+     */
     public function confirmDelete($data)
     {
         LivewireAlert::title('Hapus data '. $data['name'] . '?')
@@ -152,6 +194,11 @@ class UnitType extends Component
             ->show();
     }
 
+    /**
+     * Delete a unit type.
+     *
+     * @param array $data
+     */
     public function deleteUnitType($data)
     {
         $id = $data['id'];
@@ -174,6 +221,9 @@ class UnitType extends Component
         }
     }
 
+    /**
+     * Reset the form fields.
+     */
     public function resetForm() {
         $this->name = '';
         $this->description = '';
@@ -183,6 +233,9 @@ class UnitType extends Component
         $this->unitTypeIdBeingEdited = null;
     }
 
+    /**
+     * Add a new facility to the list.
+     */
     public function addFacility()
     {
         if (!empty($this->newFacility)) {
@@ -191,6 +244,11 @@ class UnitType extends Component
         }
     }
 
+    /**
+     * Remove a facility from the list by index.
+     *
+     * @param int $index
+     */
     public function removeFacility($index)
     {
         unset($this->facilities[$index]);

@@ -10,22 +10,24 @@ use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 
 class UnitRate extends Component
 {
-    public $search = '';
-    public $price, $occupantType;
+    // Main data properties
+    public $price, $occupantType, $pricingBasis;
 
-    public $pricingBasis;
-
+    // Options properties
     public $pricingBasisOptions;
     public $occupantTypeOptions = [];
 
+    // Toolbar properties
+    public $search = '';
     public $pricingBasisFilter = '';
-
     public $orderBy = 'created_at';
     public $sort = 'asc';
 
+    // Modal properties
     public $showModal = false;
     public $unitRateIdBeingEdited = null;
 
+    // Query string properties
     protected $queryString = [
         'search' => ['except' => ''],
         'pricingBasisFilter' => ['except' => ''],
@@ -33,6 +35,9 @@ class UnitRate extends Component
         'sort' => ['except' => 'asc'],
     ];
 
+    /**
+     * Initialize the component.
+     */
     public function mount()
     {
         $this->pricingBasisOptions = PricingBasis::options();
@@ -40,6 +45,11 @@ class UnitRate extends Component
         $this->refreshOccupantTypeOptions();
     }
 
+    /**
+     * Render the component.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         $unitRates = UnitRateModel::query()
@@ -51,6 +61,10 @@ class UnitRate extends Component
         return view('livewire.managers.oprations.unit-rates.index', compact('unitRates'));
     }
 
+
+    /**
+     * Create a new unit rate.
+     */
     public function create()
     {
         $this->search = '';
@@ -58,6 +72,11 @@ class UnitRate extends Component
         $this->showModal = true;
     }
 
+    /**
+     * Edit an existing unit rate.
+     *
+     * @param UnitRateModel $unitRate
+     */
     public function edit(UnitRateModel $unitRate)
     {
         $this->unitRateIdBeingEdited = $unitRate->id;
@@ -67,6 +86,11 @@ class UnitRate extends Component
         $this->showModal = true;
     }
 
+    /**
+     * Validation rules for the form.
+     *
+     * @return array
+     */
     public function rules()
     {
         return [
@@ -79,11 +103,9 @@ class UnitRate extends Component
         ];
     }
 
-    // public function updated($propertyName)
-    // {
-    //     $this->validateOnly($propertyName, $this->rules());
-    // }
-
+    /**
+     * Save the unit rate data.
+     */
     public function save()
     {
         $this->validate($this->rules());
@@ -114,6 +136,11 @@ class UnitRate extends Component
         $this->showModal = false;
     }
 
+    /**
+     * Confirm deletion of the unit rate.
+     *
+     * @param array $data
+     */
     public function confirmDelete($data)
     {
         $pricingBasisInstance = PricingBasis::from($data['pricing_basis']);
@@ -126,6 +153,11 @@ class UnitRate extends Component
             ->show();
     }
 
+    /**
+     * Delete the unit rate.
+     *
+     * @param array $data
+     */
     public function deleteUnitRate($data)
     {
         $id = $data['id'];
@@ -146,6 +178,9 @@ class UnitRate extends Component
         }
     }
 
+    /**
+     * Reset the form fields.
+     */
     public function resetForm() {
         $this->price = '';
         $this->occupantType = '';
@@ -153,6 +188,9 @@ class UnitRate extends Component
         $this->unitRateIdBeingEdited = null;
     }
 
+    /**
+     * Refresh the occupant type options from the database.
+     */
     private function refreshOccupantTypeOptions()
     {
         $this->occupantTypeOptions = UnitRateModel::query()
