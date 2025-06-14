@@ -36,21 +36,12 @@
                 <x-managers.form.small>Urutkan</x-managers.form.small>
                 <div class="flex gap-2">
                     <x-managers.ui.dropdown-picker wire:model.live="orderBy" :options="$orderByOptions"
-                        label="Urutkan Berdasarkan" wire:key="dropdown-order-by" />
+                        label="Urutkan Berdasarkan" wire:key="dropdown-order-by" disabled />
 
                     <x-managers.ui.dropdown-picker wire:model.live="sort" :options="$sortOptions" label="Sort"
-                        wire:key="dropdown-sort" />
+                        wire:key="dropdown-sort" disabled />
                 </div>
             </x-managers.ui.dropdown>
-        </div>
-    </div>
-
-    {{-- Panel --}}
-    <div class="flex justify-end items-center gap-2 w-full sm:w-auto">
-        {{-- Per Page Input --}}
-        <span>Baris</span>
-        <div class="w-22">
-            <x-managers.form.input wire:model.live="perPage" type="number" placeholder="10" />
         </div>
     </div>
 
@@ -59,18 +50,19 @@
             'Judul',
             'Status',
             'Tanggal Dibuat',
-            'Terakhir Diperbarui',
+            'Isi Pengumuman',
             'Aksi',
         ]">
             <x-managers.table.body>
                 @forelse ($announcements as $announcement)
                     <x-managers.table.row wire:key="{{ $announcement->id }}">
-                        <x-managers.table.cell>
-                            <span class="font-bold">{{ $announcement->title }}</span>
+                        {{-- Judul (diperbesar jadi w-1/4 atau 25%) --}}
+                        <x-managers.table.cell class="w-1/3">
+                            <span class="font-bold" style="word-break: break-word;">{{ $announcement->title }}</span>
                         </x-managers.table.cell>
 
-                        {{-- Status --}}
-                        <x-managers.table.cell>
+                        {{-- Status (sedikit mengecil jadi w-1/12 atau ~8.33%) --}}
+                        <x-managers.table.cell class="w-1/12">
                             @php
                                 $statusEnum = \App\Enums\AnnouncementStatus::tryFrom($announcement->status->value);
                             @endphp
@@ -79,35 +71,62 @@
                             </x-managers.ui.badge>
                         </x-managers.table.cell>
 
-                        {{-- Created At --}}
-                        <x-managers.table.cell>
-                            {{ $announcement->created_at->format('d M Y, H:i') }}
+                        {{-- Tanggal Dibuat (sedikit mengecil jadi w-1/6 atau ~16.67%) --}}
+                        <x-managers.table.cell class="w-1/6">
+                            <span class="text-sm text-gray-700">
+                                {{ $announcement->created_at->format('d M Y, H:i') }}
+                            </span>
                         </x-managers.table.cell>
 
-                        {{-- Updated At --}}
-                        <x-managers.table.cell>
-                            {{ $announcement->updated_at->format('d M Y, H:i') }}
+                        {{-- Deskripsi (sedikit mengecil jadi w-1/3 atau ~33.33%) --}}
+                        <x-managers.table.cell class="w-1/3">
+                            <div class="text-sm text-gray-700" style="word-break: break-word;">
+                                @if (str_word_count(strip_tags($announcement->description)) > 30)
+                                    {!! Str::words(strip_tags($announcement->description), 30, '...') !!}
+                                @else
+                                    {!! $announcement->description !!}
+                                @endif
+                            </div>
                         </x-managers.table.cell>
 
-                        <x-managers.table.cell class="text-right">
-                            <div class="flex gap-2">
+                        {{-- Aksi (tetap w-auto) --}}
+                        <x-managers.table.cell class="w-auto">
+                            <div class="flex gap-2 justify-start">
                                 {{-- Detail Button --}}
                                 <x-managers.ui.button wire:click="detail({{ $announcement->id }})" variant="info"
-                                    size="sm">
+                                    size="sm" title="Lihat Detail Pengumuman">
                                     <flux:icon.eye class="w-4" />
                                 </x-managers.ui.button>
 
                                 {{-- Edit Button --}}
                                 <x-managers.ui.button wire:click="edit({{ $announcement->id }})" variant="secondary"
-                                    size="sm">
+                                    size="sm" title="Edit Pengumuman">
                                     <flux:icon.pencil class="w-4" />
                                 </x-managers.ui.button>
 
                                 {{-- Delete Button --}}
                                 <x-managers.ui.button wire:click="confirmDelete({{ $announcement }})" id="delete-announcement"
-                                    variant="danger" size="sm">
+                                    variant="danger" size="sm" title="Hapus Pengumuman">
                                     <flux:icon.trash class="w-4" />
                                 </x-managers.ui.button>
+
+                                {{-- Archive Button --}}
+                                {{-- Tombol Arsipkan hanya muncul jika status BUKAN 'draft' dan BUKAN 'archived' --}}
+                                @if ($announcement->status->value !== 'draft' && $announcement->status->value !== 'archived')
+                                    <x-managers.ui.button wire:click="confirmArchive({{ $announcement }})" variant="warning"
+                                        size="sm" title="Arsipkan Pengumuman">
+                                        <flux:icon.archive-box class="w-4" />
+                                    </x-managers.ui.button>
+                                @endif
+
+                                {{-- Publish Button --}}
+                                {{-- Tombol Terbitkan hanya muncul jika status adalah 'draft' ATAU 'archived' --}}
+                                @if ($announcement->status->value === 'draft' || $announcement->status->value === 'archived')
+                                    <x-managers.ui.button wire:click="confirmPublish({{ $announcement }})" variant="primary"
+                                        size="sm" title="Terbitkan Pengumuman">
+                                        <flux:icon.document-check class="w-4" />
+                                    </x-managers.ui.button>
+                                @endif
                             </div>
                         </x-managers.table.cell>
                     </x-managers.table.row>
@@ -134,7 +153,7 @@
                 <span class="text-red-500 text-sm">{{ $message }}</span>
             @enderror
 
-            <x-managers.form.label for="description">Deskripsi</x-managers.form.label>
+            <x-managers.form.label for="description">Isi Pengumuman</x-managers.form.label>
             <x-managers.form.textarea wire:model.live="description" placeholder="Masukkan deskripsi pengumuman" id="description" />
             @error('description')
                 <span class="text-red-500 text-sm">{{ $message }}</span>
@@ -147,7 +166,7 @@
             @enderror
 
             {{-- Single Image for 'image' column --}}
-            <x-managers.form.label>Gambar Utama (Opsional)</x-managers.form.label>
+            <x-managers.form.label>Gambar Banner</x-managers.form.label>
             @if ($existingImage && !$image)
                 <div class="relative w-full h-32 mb-2">
                     <img src="{{ asset('storage/' . $existingImage) }}" alt="Gambar Utama"
@@ -180,7 +199,7 @@
             @enderror
 
             {{-- Attachments for 'attachments' morphMany --}}
-            <x-managers.form.label>Lampiran (Gambar atau File Lain)</x-managers.form.label>
+            <x-managers.form.label>Lampiran (Gambar atau File Pendukung)</x-managers.form.label>
 
             {{-- Existing Attachments while Editing --}}
             @if ($existingAttachments && count($existingAttachments) > 0)
@@ -244,27 +263,62 @@
                     </div>
                 </div>
 
+
                 {{-- Main Image --}}
-                @if ($existingImage)
-                    <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-                        <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                            <flux:icon.photo class="w-5 h-5 text-indigo-500" />
-                            Gambar Utama
-                        </h4>
+                <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                    <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                        <flux:icon.photo class="w-5 h-5 text-indigo-500" />
+                        Gambar Banner
+                    </h4>
+                    @if ($existingImage)
                         <div class="flex justify-center">
                             <img src="{{ asset('storage/' . $existingImage) }}" alt="Gambar Utama Pengumuman"
                                 class="max-w-full h-auto max-h-64 object-contain rounded-lg border border-gray-200" />
                         </div>
+                    @else
+                        <div class="text-center text-gray-500 py-4">
+                            Tidak ada gambar banner.
+                        </div>
+                    @endif
+                </div>
+
+                {{-- Announcement Information --}}
+                <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                    <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                        <flux:icon.information-circle class="w-5 h-5 text-blue-500" />
+                        Informasi Detail
+                    </h4>
+                    <div class="space-y-3">
+                        {{-- Status --}}
+                        <div class="py-2">
+                            <span class="text-gray-600 font-semibold block mb-1">Status</span>
+                            @php
+                                $statusEnum = \App\Enums\AnnouncementStatus::tryFrom($status);
+                            @endphp
+                            <x-managers.ui.badge :type="$statusEnum?->value ?? 'default'" :color="$statusEnum?->color()">
+                                {{ $statusEnum?->label() }}
+                            </x-managers.ui.badge>
+                        </div>
+                        {{-- Judul --}}
+                        <div class="py-2">
+                            <span class="text-gray-600 font-semibold block mb-1">Judul</span>
+                            <p class="font-bold text-lg text-blue-600">{{ $title }}</p>
+                        </div>
+                        {{-- Deskripsi --}}
+                        <div class="py-2">
+                            <span class="text-gray-600 font-semibold block mb-1">Isi Pengumuman</span>
+                            <p class="text-gray-800 text-base leading-relaxed">{!! $description ?? '-' !!}</p>
+                        </div>
                     </div>
-                @endif
+                </div>
 
                 {{-- Attachments --}}
-                @if (!empty($existingAttachments))
-                    <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-                        <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                            <flux:icon.paper-clip class="w-5 h-5 text-orange-500" />
-                            Lampiran
-                        </h4>
+                <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                    <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                        <flux:icon.paper-clip class="w-5 h-5 text-orange-500" />
+                        Lampiran
+                    </h4>
+                    @if (!empty($existingAttachments) && count($existingAttachments) > 0)
                         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                             @foreach ($existingAttachments as $index => $attachment)
                                 <a href="{{ asset('storage/' . $attachment->path) }}" target="_blank"
@@ -278,72 +332,42 @@
                                             <span class="truncate w-full">{{ $attachment->name }}</span>
                                         </div>
                                     @endif
-                                    {{-- Blok ini dihapus untuk menghilangkan ikon unduh --}}
-                                    {{-- <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 flex items-center justify-center transition-opacity">
-                                        <flux:icon.arrow-down-tray class="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                                    </div> --}}
                                 </a>
                             @endforeach
                         </div>
-                    </div>
-                @endif
-
-                {{-- Announcement Information --}}
-                <div class="grid grid-cols-1 gap-6">
-                    {{-- Basic Info Card --}}
-                    <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-                        <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                            <flux:icon.information-circle class="w-5 h-5 text-blue-500" />
-                            Informasi Detail
-                        </h4>
-                        <div class="space-y-3">
-                            <div class="py-2">
-                                <span class="text-gray-600 font-semibold block mb-1">Judul</span>
-                                <p class="font-bold text-lg text-blue-600">{{ $title }}</p>
-                            </div>
-                            <div class="py-2">
-                                <span class="text-gray-600 font-semibold block mb-1">Deskripsi</span>
-                                <p class="text-gray-800 text-base leading-relaxed">{{ $description ?? '-' }}</p>
-                            </div>
-                            <div class="py-2">
-                                <span class="text-gray-600 font-semibold block mb-1">Status</span>
-                                @php
-                                    $statusEnum = \App\Enums\AnnouncementStatus::tryFrom($status);
-                                @endphp
-                                <x-managers.ui.badge :type="$statusEnum?->value ?? 'default'" :color="$statusEnum?->color()">
-                                    {{ $statusEnum?->label() }}
-                                </x-managers.ui.badge>
-                            </div>
+                    @else
+                        <div class="text-center text-gray-500 py-4">
+                            Tidak ada lampiran.
                         </div>
-                    </div>
+                    @endif
+                </div>
 
-                    {{-- Timestamps Card --}}
-                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                        <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                            <flux:icon.clock class="w-5 h-5 text-gray-500" />
-                            Informasi Waktu
-                        </h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="flex justify-between items-center">
-                                <span class="text-gray-600">Tanggal Dibuat</span>
-                                <span class="font-medium">
-                                    @if ($createdAt)
-                                        {{ $createdAt->format('d M Y, H:i') }} WIB
-                                    @else
-                                        -
-                                    @endif
-                                </span>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-gray-600">Terakhir Diperbarui</span>
-                                <span class="font-medium">
-                                    @if ($updatedAt)
-                                        {{ $updatedAt->format('d M Y, H:i') }} WIB
-                                    @else
-                                        -
-                                    @endif
-                                </span>
-                            </div>
+                {{-- Timestamps Card (masih di modal detail) --}}
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                    <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                        <flux:icon.clock class="w-5 h-5 text-gray-500" />
+                        Informasi Waktu
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Tanggal Dibuat</span>
+                            <span class="font-medium">
+                                @if ($createdAt)
+                                    {{ $createdAt->format('d M Y, H:i') }} WIB
+                                @else
+                                    -
+                                @endif
+                            </span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Terakhir Diperbarui</span>
+                            <span class="font-medium">
+                                @if ($updatedAt)
+                                    {{ $updatedAt->format('d M Y, H:i') }} WIB
+                                @else
+                                    -
+                                @endif
+                            </span>
                         </div>
                     </div>
                 </div>

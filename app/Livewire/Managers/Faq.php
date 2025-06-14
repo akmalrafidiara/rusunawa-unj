@@ -51,7 +51,7 @@ class Faq extends Component
         // Ambil prioritas maksimum, jika tidak ada, default ke 0 (karena +1 nanti jadi 1)
         $this->maxPriority = FaqModel::max('priority') ?? 0;
 
-        return view('livewire.managers.faq', compact('faqs'));
+        return view('livewire.managers.contents.faq.index', compact('faqs'));
     }
 
     public function create()
