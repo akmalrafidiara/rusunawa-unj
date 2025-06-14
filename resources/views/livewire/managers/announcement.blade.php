@@ -36,10 +36,10 @@
                 <x-managers.form.small>Urutkan</x-managers.form.small>
                 <div class="flex gap-2">
                     <x-managers.ui.dropdown-picker wire:model.live="orderBy" :options="$orderByOptions"
-                        label="Urutkan Berdasarkan" wire:key="dropdown-order-by" />
+                        label="Urutkan Berdasarkan" wire:key="dropdown-order-by" disabled />
 
                     <x-managers.ui.dropdown-picker wire:model.live="sort" :options="$sortOptions" label="Sort"
-                        wire:key="dropdown-sort" />
+                        wire:key="dropdown-sort" disabled />
                 </div>
             </x-managers.ui.dropdown>
         </div>
@@ -50,18 +50,19 @@
             'Judul',
             'Status',
             'Tanggal Dibuat',
-            'Terakhir Diperbarui',
+            'Deskripsi',
             'Aksi',
         ]">
             <x-managers.table.body>
                 @forelse ($announcements as $announcement)
                     <x-managers.table.row wire:key="{{ $announcement->id }}">
-                        <x-managers.table.cell>
-                            <span class="font-bold">{{ $announcement->title }}</span>
+                        {{-- Judul (diperbesar jadi w-1/4 atau 25%) --}}
+                        <x-managers.table.cell class="w-1/3">
+                            <span class="font-bold" style="word-break: break-word;">{{ $announcement->title }}</span>
                         </x-managers.table.cell>
 
-                        {{-- Status --}}
-                        <x-managers.table.cell>
+                        {{-- Status (sedikit mengecil jadi w-1/12 atau ~8.33%) --}}
+                        <x-managers.table.cell class="w-1/12">
                             @php
                                 $statusEnum = \App\Enums\AnnouncementStatus::tryFrom($announcement->status->value);
                             @endphp
@@ -70,18 +71,27 @@
                             </x-managers.ui.badge>
                         </x-managers.table.cell>
 
-                        {{-- Created At --}}
-                        <x-managers.table.cell>
-                            {{ $announcement->created_at->format('d M Y, H:i') }}
+                        {{-- Tanggal Dibuat (sedikit mengecil jadi w-1/6 atau ~16.67%) --}}
+                        <x-managers.table.cell class="w-1/6">
+                            <span class="text-sm text-gray-700">
+                                {{ $announcement->created_at->format('d M Y, H:i') }}
+                            </span>
                         </x-managers.table.cell>
 
-                        {{-- Updated At --}}
-                        <x-managers.table.cell>
-                            {{ $announcement->updated_at->format('d M Y, H:i') }}
+                        {{-- Deskripsi (sedikit mengecil jadi w-1/3 atau ~33.33%) --}}
+                        <x-managers.table.cell class="w-1/3">
+                            <div class="text-sm text-gray-700" style="word-break: break-word;">
+                                @if (str_word_count(strip_tags($announcement->description)) > 30)
+                                    {!! Str::words(strip_tags($announcement->description), 30, '...') !!}
+                                @else
+                                    {!! $announcement->description !!}
+                                @endif
+                            </div>
                         </x-managers.table.cell>
 
-                        <x-managers.table.cell class="text-right">
-                            <div class="flex gap-2">
+                        {{-- Aksi (tetap w-auto) --}}
+                        <x-managers.table.cell class="w-auto">
+                            <div class="flex gap-2 justify-start">
                                 {{-- Detail Button --}}
                                 <x-managers.ui.button wire:click="detail({{ $announcement->id }})" variant="info"
                                     size="sm">
@@ -243,6 +253,7 @@
                     </div>
                 </div>
 
+
                 {{-- Main Image --}}
                 <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
                     <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
@@ -286,7 +297,7 @@
                         {{-- Deskripsi --}}
                         <div class="py-2">
                             <span class="text-gray-600 font-semibold block mb-1">Deskripsi</span>
-                            <p class="text-gray-800 text-base leading-relaxed">{{ $description ?? '-' }}</p>
+                            <p class="text-gray-800 text-base leading-relaxed">{!! $description ?? '-' !!}</p>
                         </div>
                     </div>
                 </div>
@@ -321,7 +332,7 @@
                     @endif
                 </div>
 
-                {{-- Timestamps Card --}}
+                {{-- Timestamps Card (masih di modal detail) --}}
                 <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
                     <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
                         <flux:icon.clock class="w-5 h-5 text-gray-500" />
