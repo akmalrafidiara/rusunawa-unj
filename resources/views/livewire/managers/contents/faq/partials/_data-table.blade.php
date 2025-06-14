@@ -7,7 +7,7 @@
                         <div class="flex items-center justify-center gap-2">
                             {{-- Tombol Up --}}
                             @if ($faq->priority > 1)
-                                <x-managers.ui.button wire:click="moveUp({{ $faq->id }})" variant="secondary" size="sm" class="!px-2">
+                                <x-managers.ui.button wire:click="moveUp({{ $faq->id }})" variant="secondary" size="sm" class="!px-2" title="Naikkan Prioritas">
                                     <flux:icon.arrow-up class="w-4" />
                                 </x-managers.ui.button>
                             @else
@@ -16,7 +16,7 @@
                             <span class="font-bold">{{ $faq->priority }}</span>
                             {{-- Tombol Down --}}
                             @if ($faq->priority < $this->maxPriority)
-                                <x-managers.ui.button wire:click="moveDown({{ $faq->id }})" variant="secondary" size="sm" class="!px-2">
+                                <x-managers.ui.button wire:click="moveDown({{ $faq->id }})" variant="secondary" size="sm" class="!px-2" title="Pindahkan ke bawah">
                                     <flux:icon.arrow-down class="w-4" />
                                 </x-managers.ui.button>
                             @else
@@ -39,11 +39,11 @@
                     <x-managers.table.cell class="text-right">
                         <div class="flex gap-2 justify-end">
                             {{-- Edit Button --}}
-                            <x-managers.ui.button wire:click="edit({{ $faq->id }})" variant="secondary" size="sm">
+                            <x-managers.ui.button wire:click="edit({{ $faq->id }})" variant="secondary" size="sm" title="Perbarui Data" >
                                 <flux:icon.pencil class="w-4" />
                             </x-managers.ui.button>
                             {{-- Delete Button --}}
-                            <x-managers.ui.button wire:click="confirmDelete({{ $faq }})" variant="danger" size="sm">
+                            <x-managers.ui.button wire:click="confirmDelete({{ $faq }})" variant="danger" size="sm" title="Hapus Data">
                                 <flux:icon.trash class="w-4" />
                             </x-managers.ui.button>
                         </div>
