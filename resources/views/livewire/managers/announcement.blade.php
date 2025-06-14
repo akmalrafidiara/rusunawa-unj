@@ -45,15 +45,6 @@
         </div>
     </div>
 
-    {{-- Panel --}}
-    <div class="flex justify-end items-center gap-2 w-full sm:w-auto">
-        {{-- Per Page Input --}}
-        <span>Baris</span>
-        <div class="w-22">
-            <x-managers.form.input wire:model.live="perPage" type="number" placeholder="10" />
-        </div>
-    </div>
-
     <x-managers.ui.card class="p-0">
         <x-managers.table.table :headers="[
             'Judul',
