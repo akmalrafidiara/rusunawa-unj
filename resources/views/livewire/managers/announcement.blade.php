@@ -100,20 +100,20 @@
 
                                 {{-- Edit Button --}}
                                 <x-managers.ui.button wire:click="edit({{ $announcement->id }})" variant="secondary"
-                                    size="sm" title="Perbarui">
+                                    size="sm" title="Perbarui Pengumuman">
                                     <flux:icon.pencil class="w-4" />
                                 </x-managers.ui.button>
 
                                 {{-- Delete Button --}}
                                 <x-managers.ui.button wire:click="confirmDelete({{ $announcement }})" id="delete-announcement"
-                                    variant="danger" size="sm" title="Hapus">
+                                    variant="danger" size="sm" title="Hapus Pengumuman">
                                     <flux:icon.trash class="w-4" />
                                 </x-managers.ui.button>
 
                                 {{-- Archive Button (New) --}}
                                 @if ($announcement->status->value !== 'archived')
                                     <x-managers.ui.button wire:click="confirmArchive({{ $announcement }})" variant="warning"
-                                        size="sm" title="Arsipkan">
+                                        size="sm" title="Arsipkan Pengumuman">
                                         <flux:icon.archive-box class="w-4" />
                                     </x-managers.ui.button>
                                 @endif
@@ -121,7 +121,7 @@
                                 {{-- Publish Button (New) --}}
                                 @if ($announcement->status->value === 'draft' || $announcement->status->value === 'archived')
                                     <x-managers.ui.button wire:click="confirmPublish({{ $announcement }})" variant="primary"
-                                        size="sm" title="Terbitkan">
+                                        size="sm" title="Terbitkan Pengumuman">
                                         <flux:icon.document-check class="w-4" />
                                     </x-managers.ui.button>
                                 @endif
