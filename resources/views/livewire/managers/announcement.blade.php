@@ -99,6 +99,14 @@
                                     variant="danger" size="sm">
                                     <flux:icon.trash class="w-4" />
                                 </x-managers.ui.button>
+
+                                {{-- Archive Button (New) --}}
+                                @if ($announcement->status->value !== 'archived')
+                                    <x-managers.ui.button wire:click="archive({{ $announcement->id }})" variant="warning"
+                                        size="sm" title="Arsipkan">
+                                        <flux:icon.archive-box class="w-4" />
+                                    </x-managers.ui.button>
+                                @endif
                             </div>
                         </x-managers.table.cell>
                     </x-managers.table.row>
