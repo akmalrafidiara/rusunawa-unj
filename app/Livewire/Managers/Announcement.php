@@ -95,7 +95,7 @@ class Announcement extends Component
     {
         $announcements = $this->buildAnnouncementQuery()->paginate($this->perPage);
 
-        return view('livewire.managers.announcement', compact('announcements'));
+        return view('livewire.managers.contents.announcements.index', compact('announcements'));
     }
 
     /**
