@@ -8,6 +8,7 @@ use App\Exports\UnitsExport;
 use App\Models\Unit as UnitModel;
 use App\Models\UnitCluster;
 use App\Models\UnitType;
+use App\Models\UnitRate;
 use App\Models\Attachment;
 use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 use Livewire\Component;
@@ -45,11 +46,16 @@ class Unit extends Component
     public $existingImages = [];
     public $imagesToDelete = [];
 
+    // Rates properties
+    public $unitRates = [];
+
     // Options properties
     public $genderAllowedOptions;
     public $statusOptions;
     public $unitTypeOptions;
     public $unitClusterOptions;
+    public $rateOptions = [];
+
 
     // Filter properties
     public $search = '';
@@ -95,6 +101,13 @@ class Unit extends Component
             'value' => $unitCluster->id,
             'label' => $unitCluster->name,
         ])->toArray();
+
+        $this->rateOptions = UnitRate::select('id', 'price', 'occupant_type', 'pricing_basis')
+            ->get()
+            ->map(fn($rate) => [
+                'value' => $rate->id,
+                'label' => $rate->occupant_type . ' - Rp ' . number_format($rate->price) . ' (' . ucfirst(str_replace('_', ' ', $rate->pricing_basis->value)) . ')',
+            ])->toArray();
     }
 
     /**
@@ -178,6 +191,16 @@ class Unit extends Component
         $this->status = $unit->status->value;
         $this->unitTypeId = $unit->unit_type_id;
         $this->unitClusterId = $unit->unit_cluster_id;
+
+        // Filling rates
+        $this->unitRates = $unit->rates->map(function ($rate) {
+            return [
+                'id' => $rate->id,
+                'price' => $rate->price,
+                'occupant_type' => $rate->occupant_type,
+                'pricing_basis' => $rate->pricing_basis,
+            ];
+        })->toArray();
 
         // Filling images data
         $this->existingImages = $unit->attachments()->get();
@@ -264,6 +287,13 @@ class Unit extends Component
             ['id' => $this->unitIdBeingEdited],
             $data
         );
+
+        // Unit Rates
+        if (!empty($this->unitRates)) {
+            $unit->rates()->sync($this->unitRates);
+        } else {
+            $unit->rates()->detach();
+        }
 
         // --- Refactored Image Handling ---
         $this->handleImageDeletions($unit);
