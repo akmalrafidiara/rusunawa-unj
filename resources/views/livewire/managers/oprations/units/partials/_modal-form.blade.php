@@ -29,6 +29,25 @@
         <x-managers.form.label>Cluster Unit</x-managers.form.label>
         <x-managers.form.select wire:model.live="unitClusterId" :options="$unitClusterOptions" label="Pilih Cluster Unit" />
 
+        {{-- Unit Rates --}}
+        <x-managers.form.label>Tarif Unit</x-managers.form.label>
+        <div class="space-y-2">
+            @if ($rateOptions && count($rateOptions) > 0)
+                @foreach ($rateOptions as $rate)
+                    <div class="flex items-center space-x-2">
+                        <input type="checkbox" wire:model.live="unitRates" value="{{ $rate['value'] }}"
+                            id="rate-{{ $rate['value'] }}"
+                            class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                        <label for="rate-{{ $rate['value'] }}" class="text-sm text-gray-700">
+                            {{ $rate['label'] }}
+                        </label>
+                    </div>
+                @endforeach
+            @else
+                <x-managers.form.small class="text-gray-500">Tidak ada tarif tersedia</x-managers.form.small>
+            @endif
+        </div>
+
         {{-- Unit Images --}}
         <x-managers.form.label>Gambar Unit</x-managers.form.label>
 

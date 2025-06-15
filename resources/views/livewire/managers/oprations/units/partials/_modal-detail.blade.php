@@ -101,6 +101,41 @@
                 </div>
             </div>
 
+            {{-- Unit Rates Card --}}
+            <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                    <flux:icon.currency-dollar class="w-5 h-5 text-amber-500" />
+                    Tarif Unit
+                </h4>
+                @if (!empty($unitRates))
+                    <div class="space-y-3">
+                        @foreach ($unitRates as $rate)
+                            <div
+                                class="flex justify-between items-center py-3 px-4 bg-gray-50 rounded-lg border border-gray-100">
+                                <div class="flex flex-col">
+                                    <span class="text-sm font-medium text-gray-800">
+                                        {{ ucfirst(str_replace('_', ' ', $rate['occupant_type'])) }}
+                                    </span>
+                                    <span class="text-xs text-gray-500">
+                                        {{ ucfirst(str_replace('_', ' ', $rate['pricing_basis']->value)) }}
+                                    </span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-lg font-bold text-green-600">
+                                        Rp {{ number_format($rate['price'], 0, ',', '.') }}
+                                    </span>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="text-center py-8 text-gray-500">
+                        <flux:icon.exclamation-triangle class="w-8 h-8 mx-auto mb-2 text-gray-400" />
+                        <p>Belum ada tarif yang ditetapkan untuk unit ini</p>
+                    </div>
+                @endif
+            </div>
+
             {{-- Timestamps Card --}}
             <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
                 <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
