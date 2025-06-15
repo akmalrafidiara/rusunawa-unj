@@ -35,7 +35,7 @@ class Unit extends Model
 
     public function rates()
     {
-        return $this->belongsToMany(UnitRate::class, 'unit_rate', 'unit_id', 'unit_rate_id');
+        return $this->belongsToMany(UnitRate::class, 'unit_rate', 'unit_id', 'rate_id');
     }
 
     protected $casts = [

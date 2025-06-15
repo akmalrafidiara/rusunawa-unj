@@ -17,7 +17,7 @@ class UnitRate extends Model
 
     public function units()
     {
-        return $this->belongsToMany(Unit::class, 'unit_rate', 'unit_rate_id', 'unit_id');
+        return $this->belongsToMany(Unit::class, 'unit_rate', 'rate_id', 'unit_id');
     }
 
     public function getFormattedPriceAttribute()
