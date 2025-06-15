@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             PivotUnitRateSeeder::class,
             FaqSeeder::class,
             AnnouncementSeeder::class,
+            GallerySeeder::class,
         ]);
     }
 }
