@@ -8,7 +8,7 @@
         {{-- Ganti textarea dengan input Trix --}}
         <div wire:ignore>
             <input id="answer-trix-editor" type="hidden" name="content" value="{{ $answer }}">
-            <trix-editor input="answer-trix-editor"></trix-editor>
+            <trix-editor input="answer-trix-editor" class="trix-content"></trix-editor>
         </div>
         @error('answer') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
 
