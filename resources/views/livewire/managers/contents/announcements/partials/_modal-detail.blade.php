@@ -57,7 +57,9 @@
                 {{-- Deskripsi --}}
                 <div class="py-2">
                     <span class="text-gray-600 font-semibold block mb-1">Isi Pengumuman</span>
-                    <p class="text-gray-800 text-base leading-relaxed">{!! $description ?? '-' !!}</p>
+                    <div class="trix-content">
+                        {!! $description ?? '-' !!}
+                    </div>
                 </div>
             </div>
         </div>

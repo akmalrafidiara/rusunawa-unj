@@ -86,6 +86,14 @@ class Announcement extends Component
             ->orderBy($this->orderBy, $this->sort);
     }
 
+    // Tambahkan listener untuk event dari Trix editor
+    protected $listeners = ['contentChanged' => 'updateDescription'];
+
+    public function updateDescription($content)
+    {
+        $this->description = $content;
+    }
+
     /**
      * Render the component.
      *
@@ -119,6 +127,9 @@ class Announcement extends Component
         $this->fillData($announcement);
         $this->modalType = 'form';
         $this->showModal = true;
+
+        // Penting: Emit event setelah data dimuat untuk menginisialisasi Trix
+        $this->dispatch('trix-load-content', $this->description);
     }
 
     /**
@@ -413,6 +424,9 @@ class Announcement extends Component
 
         $this->resetErrorBag();
         $this->resetValidation();
+
+        // Emit event untuk mereset Trix editor di sisi client
+        $this->dispatch('trix-reset');
     }
 
     /**

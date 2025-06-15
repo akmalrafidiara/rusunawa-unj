@@ -35,12 +35,25 @@
 
                 {{-- Deskripsi (sedikit mengecil jadi w-1/3 atau ~33.33%) --}}
                 <x-managers.table.cell class="w-1/3">
-                    <div class="text-sm text-gray-700" style="word-break: break-word;">
-                        @if (str_word_count(strip_tags($announcement->description)) > 30)
-                        {!! Str::words(strip_tags($announcement->description), 30, '...') !!}
-                        @else
-                        {!! $announcement->description !!}
-                        @endif
+                    <div class="trix-content" style="word-break: break-word;">
+                        @php
+                        $description = $announcement->description;
+                        $maxLength = 200; // Adjust this character limit as needed
+
+                        // Check if the description is longer than the max length
+                        if (mb_strlen(strip_tags($description)) > $maxLength) {
+                        // Find the first space after the max length to avoid breaking words
+                        $truncatedDescription = mb_substr($description, 0, $maxLength);
+                        $lastSpace = mb_strrpos($truncatedDescription, ' ');
+                        if ($lastSpace !== false) {
+                        $truncatedDescription = mb_substr($truncatedDescription, 0, $lastSpace);
+                        }
+                        $truncatedDescription .= '...';
+                        } else {
+                        $truncatedDescription = $description;
+                        }
+                        @endphp
+                        {!! $truncatedDescription !!}
                     </div>
                 </x-managers.table.cell>
 
