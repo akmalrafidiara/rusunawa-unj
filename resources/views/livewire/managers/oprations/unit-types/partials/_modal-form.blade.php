@@ -14,16 +14,16 @@
             <x-managers.form.label>Fasilitas</x-managers.form.label>
             <!-- Daftar Fasilitas -->
             @if (!empty($facilities))
-                @foreach ($facilities as $index => $facility)
-                    <div class="flex items-center gap-2 mb-2" wire:key="facility-{{ $index }}">
-                        <x-managers.form.input wire:model.live="facilities.{{ $index }}"
-                            placeholder="Contoh: AC, Dapur" />
-                        <x-managers.ui.button wire:click="removeFacility({{ $index }})" variant="danger"
-                            size="sm" icon="trash" />
-                    </div>
-                @endforeach
+            @foreach ($facilities as $index => $facility)
+            <div class="flex items-center gap-2 mb-2" wire:key="facility-{{ $index }}">
+                <x-managers.form.input wire:model.live="facilities.{{ $index }}"
+                    placeholder="Contoh: AC, Dapur" />
+                <x-managers.ui.button wire:click="removeFacility({{ $index }})" variant="danger"
+                    size="sm" icon="trash" />
+            </div>
+            @endforeach
             @else
-                <p class="text-gray-500 dark:text-gray-400 text-sm">Belum ada fasilitas.</p>
+            <p class="text-gray-500 dark:text-gray-400 text-sm">Belum ada fasilitas.</p>
             @endif
 
             <!-- Tambah Fasilitas Baru -->
@@ -38,23 +38,29 @@
         <!-- Upload Gambar -->
         <x-managers.form.label>Gambar Tipe</x-managers.form.label>
         @if ($image)
-            <div class="inline-flex gap-2 border border-gray-300 rounded p-2 mb-2">
-                <x-managers.form.small>Preview</x-managers.form.small>
-                <img src="{{ $image instanceof \Illuminate\Http\UploadedFile ? $image->temporaryUrl() : asset('storage/' . $image) }}"
-                    alt="Preview Gambar" class="w-16 h-16 object-cover rounded border" />
-            </div>
+        <div class="relative w-full h-56 mb-2">
+            <img src="{{ $image instanceof \Illuminate\Http\UploadedFile ? $image->temporaryUrl() : asset('storage/' . $image) }}"
+                alt="Preview Gambar"
+                class="w-full h-full max-w-full max-h-full object-contain rounded border" />
+            <button type="button" wire:click="$set('image', null)"
+                class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600">
+                <flux:icon name="x-mark" class="w-3 h-3" />
+            </button>
+        </div>
         @endif
 
-        <div class="mb-2">
-            @if ($errors->has('image'))
-                <span class="text-red-500 text-sm">{{ $errors->first('image') }}</span>
-            @else
-                <x-managers.form.small>Max 2MB. JPG, PNG, GIF</x-managers.form.small>
-            @endif
-        </div>
+        <input type="file" wire:model="image" class="block w-full text-sm text-gray-500
+        file:mr-4 file:py-2 file:px-4
+        file:rounded-full file:border-0
+        file:text-sm file:font-semibold
+        file:bg-blue-50 file:text-blue-700
+        hover:file:bg-blue-100" />
 
-        <x-filepond::upload wire:model.live="image" />
-
+        @error('image')
+        <span class="text-red-500 text-sm">{{ $message }}</span>
+        @else
+        <x-managers.form.small>Max 2MB. JPG, PNG, GIF</x-managers.form.small>
+        @enderror
 
         <!-- Tombol Aksi -->
         <div class="flex justify-end gap-2 mt-10">
