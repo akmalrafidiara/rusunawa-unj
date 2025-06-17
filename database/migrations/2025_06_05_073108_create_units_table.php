@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('units', function (Blueprint $table) {
             $table->id();
-            $table->string('room_number')->unique();
+            $table->string('room_number');
             $table->integer('capacity')->default(1);
             $table->string('virtual_account_number')->nullable();
             $table->enum('gender_allowed', ['male', 'female', 'general'])->default('general');
