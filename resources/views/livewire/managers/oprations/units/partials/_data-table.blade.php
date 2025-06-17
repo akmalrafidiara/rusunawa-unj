@@ -24,7 +24,7 @@
                     {{-- Virtual Account Number --}}
                     <x-managers.table.cell>
                         <span
-                            class="bg-gray-200 font-mono p-2">{{ chunk_split($unit->virtual_account_number, 4, ' ') }}</span>
+                            class="bg-gray-200 dark:bg-gray-700 font-mono p-2 text-gray-900 dark:text-gray-100 whitespace-nowrap">{{ chunk_split($unit->virtual_account_number, 4, ' ') }}</span>
                     </x-managers.table.cell>
 
                     <!-- Gender Allowed -->
@@ -34,7 +34,7 @@
                                 $genderAllowedEnum = \App\Enums\GenderAllowed::tryFrom($gender_allowed);
                             @endphp
 
-                            <x-managers.ui.badge :type="$genderAllowedEnum?->value ?? 'default'" :color="$genderAllowedEnum?->color()">
+                            <x-managers.ui.badge :color="$genderAllowedEnum?->color()">
                                 {{ $genderAllowedEnum?->label() }}
                             </x-managers.ui.badge>
                         @endforeach
@@ -47,7 +47,7 @@
                                 $statusEnum = \App\Enums\UnitStatus::tryFrom($status);
                             @endphp
 
-                            <x-managers.ui.badge :type="$statusEnum?->value ?? 'default'" :color="$statusEnum?->color()">
+                            <x-managers.ui.badge :color="$statusEnum?->color()">
                                 {{ $statusEnum?->label() }}
                             </x-managers.ui.badge>
                         @endforeach

@@ -1,6 +1,6 @@
 <!-- Tabel Data -->
 <x-managers.ui.card class="p-0">
-    <x-managers.table.table :headers="['Harga', 'Tipe Penghuni', 'Dasar Penetapan Harga', 'Aksi']">
+    <x-managers.table.table :headers="['Harga', 'Tipe Penghuni', 'Dasar Penetapan Harga', 'Verifikasi', 'Aksi']">
         <x-managers.table.body>
             @forelse ($unitRates as $unitRate)
                 <x-managers.table.row wire:key="{{ $unitRate->id }}">
@@ -19,10 +19,19 @@
                                 $pricingBasisEnum = \App\Enums\PricingBasis::tryFrom($pricing_basis);
                             @endphp
 
-                            <x-managers.ui.badge :type="$pricingBasisEnum?->value ?? 'default'" :color="$pricingBasisEnum?->color()">
+                            <x-managers.ui.badge :color="$pricingBasisEnum?->color()">
                                 {{ $pricingBasisEnum?->label() }}
                             </x-managers.ui.badge>
                         @endforeach
+                    </x-managers.table.cell>
+
+                    <!-- Requires Verification -->
+                    <x-managers.table.cell>
+                        @if ($unitRate->requires_verification)
+                            <x-managers.ui.badge type="success">Ya</x-managers.ui.badge>
+                        @else
+                            <x-managers.ui.badge type="danger">Tidak</x-managers.ui.badge>
+                        @endif
                     </x-managers.table.cell>
 
                     <!-- Aksi -->

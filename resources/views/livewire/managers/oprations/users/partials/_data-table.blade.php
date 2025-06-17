@@ -24,7 +24,7 @@
                                 $roleEnum = \App\Enums\RoleUser::tryFrom($role);
                             @endphp
 
-                            <x-managers.ui.badge :type="$roleEnum?->value ?? 'default'" :color="$roleEnum?->color()">
+                            <x-managers.ui.badge :color="$roleEnum?->color()">
                                 {{ $roleEnum?->label() ?? 'Belum Memiliki Role' }}
                             </x-managers.ui.badge>
                         @endforeach
