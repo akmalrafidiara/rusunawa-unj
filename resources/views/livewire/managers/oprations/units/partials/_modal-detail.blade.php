@@ -13,25 +13,20 @@
                 </div>
             </div>
 
-            {{-- Unit Images --}}
-            @if (!empty($existingImages))
+            {{-- Unit Image --}}
+            @if (!empty($image))
                 <div
                     class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg p-4 shadow-sm">
                     <h4 class="text-lg font-semibold text-zinc-800 dark:text-zinc-100 mb-4 flex items-center gap-2">
-                        <flux:icon.photo class="w-5 h-5 text-purple-500 dark:text-purple-400" />
+                        <flux:icon name="photo" class="w-5 h-5 text-purple-500 dark:text-purple-400" />
                         Gambar Unit
                     </h4>
-                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                        @foreach ($existingImages as $index => $image)
-                            <div class="relative group">
-                                <img src="{{ $image instanceof \Illuminate\Http\UploadedFile ? $image->temporaryUrl() : asset('storage/' . $image->path) }}"
-                                    alt="Gambar Unit {{ $index + 1 }}"
-                                    class="w-full h-24 object-cover rounded-lg border border-zinc-200 dark:border-zinc-600 hover:shadow-md transition-shadow cursor-pointer">
-                                <div
-                                    class="absolute inset-0 bg-opacity-0 group-hover:bg-opacity-20 dark:group-hover:bg-black dark:group-hover:bg-opacity-30 rounded-lg transition-opacity">
-                                </div>
-                            </div>
-                        @endforeach
+                    <div class="flex justify-center">
+                        <div class="relative group">
+                            <img src="{{ $image instanceof \Illuminate\Http\UploadedFile ? $image->temporaryUrl() : asset("storage/{$image}") }}"
+                                alt="Gambar Unit"
+                                class="w-full max-w-md h-48 object-cover rounded-lg border border-zinc-200 dark:border-zinc-600 hover:shadow-md transition-shadow cursor-pointer">
+                        </div>
                     </div>
                 </div>
             @endif

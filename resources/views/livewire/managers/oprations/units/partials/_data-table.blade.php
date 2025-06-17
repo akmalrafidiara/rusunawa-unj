@@ -8,6 +8,7 @@
         'Status',
         'Tipe Unit',
         'Cluster Unit',
+        'Keterangan',
         'Aksi',
     ]">
         <x-managers.table.body>
@@ -69,6 +70,11 @@
                         @else
                             <span class="text-gray-500">Tidak ada cluster unit</span>
                         @endif
+                    </x-managers.table.cell>
+
+                    {{-- Unit Notes --}}
+                    <x-managers.table.cell>
+                        <span class="text-gray-600 dark:text-gray-400">{{ $unit->notes ?: '-' }}</span>
                     </x-managers.table.cell>
 
                     <!-- Aksi -->

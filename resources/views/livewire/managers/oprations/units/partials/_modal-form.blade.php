@@ -52,44 +52,30 @@
             @endif
         </div>
 
-        {{-- Unit Images --}}
+        {{-- Unit Notes --}}
+        <x-managers.form.label>Keterangan Unit</x-managers.form.label>
+        <x-managers.form.textarea wire:model.live="notes" placeholder="Masukkan keterangan unit di sini"
+            rows="3" />
+
+        <!-- Upload Gambar -->
         <x-managers.form.label>Gambar Unit</x-managers.form.label>
-
-        {{-- Existing Images while Editing --}}
-        @if ($existingImages && count($existingImages) > 0)
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 border border-gray-300 rounded p-2 mb-2">
-                <x-managers.form.small class="col-span-full">Gambar Saat Ini</x-managers.form.small>
-                @foreach ($existingImages as $image)
-                    <div class="relative" wire:key="existing-image-{{ $image['id'] }}">
-                        <img src="{{ asset('storage/' . $image['path']) }}" alt="Gambar {{ $image['id'] }}"
-                            class="w-full h-16 object-cover rounded border" />
-
-                        <button type="button" wire:click="queueImageForDeletion({{ $image['id'] }})"
-                            wire:loading.attr="disabled" wire:target="queueImageForDeletion({{ $image['id'] }})"
-                            class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600">
-                            <flux:icon name="x-mark" class="w-3 h-3" />
-                        </button>
-                    </div>
-                @endforeach
+        @if ($image)
+            <div class="inline-flex gap-2 border border-gray-300 rounded p-2 mb-2">
+                <x-managers.form.small>Preview</x-managers.form.small>
+                <img src="{{ $image instanceof \Illuminate\Http\UploadedFile ? $image->temporaryUrl() : asset('storage/' . $image) }}"
+                    alt="Preview Gambar" class="w-16 h-16 object-cover rounded border" />
             </div>
         @endif
 
-        <div wire:key="filepond-wrapper">
-            <x-filepond::upload wire:model.live="unitImages" multiple accept="image/png, image/jpeg, image/gif"
-                max-file-size="2MB" />
-        </div>
-
-
-        {{-- Pesan error dan petunjuk --}}
-        <div class="mt-2">
-            @error('unitImages.*')
-                {{-- Error ini akan ditampilkan jika validasi di server gagal --}}
-                <span class="text-red-500 text-sm">{{ $message }}</span>
+        <div class="mb-2">
+            @if ($errors->has('image'))
+                <span class="text-red-500 text-sm">{{ $errors->first('image') }}</span>
             @else
-                <x-managers.form.small>Max 2MB per file. Tipe: JPG, PNG, GIF. Bisa upload banyak
-                    gambar.</x-managers.form.small>
-            @enderror
+                <x-managers.form.small>Max 2MB. JPG, PNG, GIF</x-managers.form.small>
+            @endif
         </div>
+
+        <x-filepond::upload wire:model.live="image" />
 
 
         <!-- Tombol Aksi -->

@@ -25,7 +25,7 @@ class UnitSeeder extends Seeder
             $units[] = [
                 'room_number' => 'RUSUN-' . Str::padLeft($i, 3, '0'), // RUSUN-001, RUSUN-002, dst.
                 'capacity' => rand(1, 4),
-                'virtual_account_number' => '888' . rand(1000000000000000, 9999999999999999),
+                'virtual_account_number' => '888' . rand(1000000000000, 9999999999999),
                 'gender_allowed' => fake()->randomElement(['male', 'female', 'general']),
                 'status' => fake()->randomElement(['available', 'not_available', 'occupied', 'under_maintenance']),
                 'unit_type_id' => fake()->randomElement($unitTypeIds),

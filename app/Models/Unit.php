@@ -14,14 +14,11 @@ class Unit extends Model
         'virtual_account_number',
         'gender_allowed',
         'status',
+        'notes',
+        'image',
         'unit_type_id',
         'unit_cluster_id',
     ];
-
-    public function attachments()
-    {
-        return $this->morphMany(Attachment::class, 'attachable');
-    }
 
     public function unitType()
     {

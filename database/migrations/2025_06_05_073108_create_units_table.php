@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('virtual_account_number')->nullable();
             $table->enum('gender_allowed', ['male', 'female', 'general'])->default('general');
             $table->enum('status', ['available', 'not_available', 'occupied', 'under_maintenance'])->default('available');
+            $table->string('notes')->nullable();
+            $table->string('image')->nullable();
             $table->foreignId('unit_type_id')->constrained('unit_types')->onDelete('cascade');
             $table->foreignId('unit_cluster_id')->constrained('unit_clusters')->onDelete('cascade');
             $table->timestamps();
