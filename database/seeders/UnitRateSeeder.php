@@ -28,11 +28,13 @@ class UnitRateSeeder extends Seeder
                 'price' => 900000,
                 'occupant_type' => 'Eksternal',
                 'pricing_basis' => 'per_month',
+                'requires_verification' => true,
             ],
             [
                 'price' => 200000,
                 'occupant_type' => 'Eksternal',
                 'pricing_basis' => 'per_night',
+                'requires_verification' => true,
             ],
         ];
 
@@ -42,6 +44,7 @@ class UnitRateSeeder extends Seeder
                     'price' => $rate['price'],
                     'occupant_type' => $rate['occupant_type'],
                     'pricing_basis' => $rate['pricing_basis'],
+                    'requires_verification' => $rate['requires_verification'] ?? false,
                 ]
             );
         }

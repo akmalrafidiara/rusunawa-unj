@@ -12,7 +12,8 @@ class UnitRate extends Model
     protected $fillable = [
         'price',
         'occupant_type',
-        'pricing_basis'
+        'pricing_basis',
+        'requires_verification',
     ];
 
     public function units()
@@ -27,5 +28,6 @@ class UnitRate extends Model
 
     protected $casts = [
         'pricing_basis' => PricingBasis::class,
+        'requires_verification' => 'boolean',
     ];
 }

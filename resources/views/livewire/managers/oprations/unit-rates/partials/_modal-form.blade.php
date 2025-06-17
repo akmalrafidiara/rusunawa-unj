@@ -15,6 +15,11 @@
         <x-managers.form.label>Dasar Penetapan Harga</x-managers.form.label>
         <x-managers.form.select wire:model.live="pricingBasis" :options="$pricingBasisOptions" label="Basis Harga" />
 
+        {{-- Requires Verification --}}
+        <x-managers.form.label>Memerlukan Verifikasi</x-managers.form.label>
+        <x-managers.form.checkbox wire:model.live="requiresVerification" label="Ya, memerlukan verifikasi"
+            description="Jika diaktifkan, harga ini memerlukan verifikasi sebelum diterapkan." />
+
         <!-- Tombol Aksi -->
         <div class="flex justify-end gap-2 mt-10">
             <x-managers.ui.button type="button" variant="secondary"

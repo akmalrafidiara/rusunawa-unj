@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('price');
             $table->string('occupant_type');
             $table->enum('pricing_basis', ['per_night', 'per_month']);
+            $table->boolean('requires_verification')->default(false);
             $table->timestamps();
         });
     }

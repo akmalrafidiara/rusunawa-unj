@@ -11,7 +11,7 @@ use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 class UnitRate extends Component
 {
     // Main data properties
-    public $price, $occupantType, $pricingBasis;
+    public $price, $occupantType, $pricingBasis, $requiresVerification;
 
     // Options properties
     public $pricingBasisOptions;
@@ -83,6 +83,7 @@ class UnitRate extends Component
         $this->price = $unitRate->price;
         $this->occupantType = $unitRate->occupant_type;
         $this->pricingBasis = $unitRate->pricing_basis->value;
+        $this->requiresVerification = $unitRate->requires_verification;
         $this->showModal = true;
     }
 
@@ -100,6 +101,7 @@ class UnitRate extends Component
                 'required',
                 Rule::in(PricingBasis::values()),
             ],
+            'requiresVerification' => 'boolean',
         ];
     }
 
@@ -114,6 +116,7 @@ class UnitRate extends Component
             'price' => $this->price,
             'occupant_type' => $this->occupantType,
             'pricing_basis' => $this->pricingBasis,
+            'requires_verification' => $this->requiresVerification,
         ];
 
         // Simpan atau update data
@@ -185,6 +188,7 @@ class UnitRate extends Component
         $this->price = '';
         $this->occupantType = '';
         $this->pricingBasis = '';
+        $this->requiresVerification = false;
         $this->unitRateIdBeingEdited = null;
     }
 
