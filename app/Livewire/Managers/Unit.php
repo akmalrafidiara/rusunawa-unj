@@ -48,6 +48,7 @@ class Unit extends Component
 
     // Rates properties
     public $unitRates = [];
+    public $unitRatesId = [];
 
     // Options properties
     public $genderAllowedOptions;
@@ -108,7 +109,7 @@ class Unit extends Component
                 'value' => $rate->id,
                 'label' => $rate->occupant_type . ' - Rp ' . number_format($rate->price) . ' (' . ucfirst(str_replace('_', ' ', $rate->pricing_basis->value)) . ')',
             ])->toArray();
-    }
+        }
 
     /**
      * Membangun instance query builder untuk unit dengan semua filter dan sorting yang diterapkan.
@@ -193,14 +194,17 @@ class Unit extends Component
         $this->unitClusterId = $unit->unit_cluster_id;
 
         // Filling rates
-        $this->unitRates = $unit->rates->map(function ($rate) {
+        $this->unitRates = $unit->rates->sortBy('occupant_type')->map(function ($rate) {
             return [
                 'id' => $rate->id,
                 'price' => $rate->price,
                 'occupant_type' => $rate->occupant_type,
                 'pricing_basis' => $rate->pricing_basis,
+                'requires_verification' => $rate->requires_verification,
             ];
-        })->toArray();
+        })->values()->toArray();
+
+        $this->unitRatesId = $unit->rates->pluck('id')->toArray();
 
         // Filling images data
         $this->existingImages = $unit->attachments()->get();
@@ -233,6 +237,11 @@ class Unit extends Component
             'unitClusterId' => 'required|exists:unit_clusters,id',
             // --- Consolidated Validation Rule ---
             'unitImages.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Max 2MB per image
+            
+            'unitRatesId.*' => [
+                'nullable',
+                'exists:rates,id',
+            ],
         ];
     }
 
@@ -289,8 +298,8 @@ class Unit extends Component
         );
 
         // Unit Rates
-        if (!empty($this->unitRates)) {
-            $unit->rates()->sync($this->unitRates);
+        if (!empty($this->unitRatesId)) {
+            $unit->rates()->sync($this->unitRatesId);
         } else {
             $unit->rates()->detach();
         }
