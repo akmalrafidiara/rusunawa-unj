@@ -7,4 +7,7 @@
 
     {{-- Modal Form --}}
     @include('livewire.managers.oprations.unit-types.partials._modal-form')
+
+    {{-- Modal Detail --}}
+    @include('livewire.managers.oprations.unit-types.partials._modal-detail')
 </div>

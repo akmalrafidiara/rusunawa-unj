@@ -3,23 +3,27 @@
 namespace App\Livewire\Managers;
 
 use App\Models\UnitType as UnitTypeModel;
+use App\Models\Attachment;
 use Livewire\Component;
 use Illuminate\Support\Facades\Storage;
-use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
-use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 use Spatie\LivewireFilepond\WithFilePond;
+use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 
 class UnitType extends Component
 {
-    // Traits
     use WithFileUploads;
     use WithFilePond;
 
     // Main data properties
-    public $name, $description, $image, $temporaryImage;
-    public $facilities = [];
+    public $name, $description;
+    public $facilities = []; // Pastikan ini selalu array
     public $newFacility = '';
+
+    // Attachment properties
+    public $attachments = []; // Untuk upload baru
+    public $existingAttachments = []; // Untuk tampilkan yang sudah ada
+    public $attachmentsToDelete = []; // Untuk hapus attachment
 
     // Toolbar properties
     public $search = '';
@@ -29,19 +33,15 @@ class UnitType extends Component
     // Modal properties
     public $showModal = false;
     public $unitTypeIdBeingEdited = null;
+    public $modalType = ''; // Tambahkan properti untuk mengontrol tipe modal (create, edit, detail)
+    public $detailedUnitType; // Properti publik baru untuk menyimpan data tipe unit yang akan ditampilkan di modal detail
 
-    // Query string properties
     protected $queryString = [
         'search' => ['except' => ''],
         'orderBy' => ['except' => 'created_at'],
         'sort' => ['except' => 'asc'],
     ];
 
-    /**
-     * Render the component.
-     *
-     * @return \Illuminate\View\View
-     */
     public function render()
     {
         $unitTypes = UnitTypeModel::query()
@@ -50,85 +50,87 @@ class UnitType extends Component
             ->paginate(10);
 
         $unitTypes->getCollection()->transform(function ($unitType) {
-            $unitType->facilities = json_decode($unitType->facilities, true);
+            // Karena sudah di-cast di model, facilities seharusnya sudah array.
+            // Tambahkan pengecekan jika Anda khawatir data lama tidak valid.
+            $unitType->facilities = $unitType->facilities ?? []; // <-- Pastikan ini array
+            $unitType->attachments = $unitType->attachments()->get();
             return $unitType;
         });
 
         return view('livewire.managers.oprations.unit-types.index', compact('unitTypes'));
     }
 
-
-    /**
-     * Create a new unit type.
-     */
     public function create()
     {
-        $this->search = '';
         $this->resetForm();
+        $this->modalType = 'create'; // Set tipe modal
         $this->showModal = true;
     }
 
-    /**
-     * Edit an existing unit type.
-     *
-     * @param UnitTypeModel $unitType
-     */
     public function edit(UnitTypeModel $unitType)
     {
         $this->unitTypeIdBeingEdited = $unitType->id;
         $this->name = $unitType->name;
         $this->description = $unitType->description;
-        $this->image = $unitType->image;
-        $this->temporaryImage = $unitType->image;
-        $this->facilities = json_decode($unitType->facilities, true) ?? [];
+        // Ambil langsung, diasumsikan sudah array dari model casting.
+        // Tambahkan pengecekan null coalescing untuk memastikan selalu array.
+        $this->facilities = $unitType->facilities ?? []; // <-- Pastikan ini array
+        $this->existingAttachments = $unitType->attachments()->get();
+        $this->attachments = [];
+        $this->attachmentsToDelete = [];
+        $this->modalType = 'edit'; // Set tipe modal
         $this->showModal = true;
     }
 
     /**
-     * Validation rules for the form.
-     *
-     * @return array
+     * Method to display the detail modal for a specific UnitType.
+     * @param int $unitTypeId The ID of the UnitType to display.
      */
+    public function detail($unitTypeId)
+    {
+        // Temukan tipe unit berdasarkan ID
+        $unitType = UnitTypeModel::find($unitTypeId);
+
+        // Pastikan tipe unit ditemukan sebelum membuka modal
+        if ($unitType) {
+            // Memastikan facilities adalah array.
+            $unitType->facilities = $unitType->facilities ?? []; // <-- Pastikan ini array
+
+            // Muat attachment
+            $unitType->attachments = $unitType->attachments()->get();
+
+            $this->detailedUnitType = $unitType; // Set properti detailedUnitType
+            $this->modalType = 'detail'; // Set tipe modal ke 'detail'
+            $this->showModal = true;
+        } else {
+            // Handle jika tipe unit tidak ditemukan (opsional)
+            LivewireAlert::title('Error')
+                ->text('Tipe Unit tidak ditemukan.')
+                ->danger()
+                ->toast()
+                ->position('top-end')
+                ->show();
+        }
+    }
+
     public function rules()
     {
         return [
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'image' => $this->unitTypeIdBeingEdited && $this->image === $this->temporaryImage
-                ? 'nullable'
-                : 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'facilities' => 'array',
             'facilities.*' => 'string|max:255',
+            'attachments.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ];
     }
 
-    /**
-     * Validate the uploaded file.
-     *
-     * @return bool
-     */
-    public function validateUploadedFile()
-    {
-        $this->validate([
-            'image' => $this->rules()['image'],
-        ]);
-
-        return true;
-    }
-
-    /**
-     * Validate the form when a property is updated.
-     *
-     * @param string $propertyName
-     */
     public function updated($propertyName)
     {
-        $this->validateOnly($propertyName, $this->rules());
+        if (in_array($propertyName, array_keys($this->rules()))) {
+            $this->validateOnly($propertyName, $this->rules());
+        }
     }
 
-    /**
-     * Save the unit type data.
-     */
     public function save()
     {
         $this->validate($this->rules());
@@ -136,53 +138,30 @@ class UnitType extends Component
         $data = [
             'name' => $this->name,
             'description' => $this->description,
-            'facilities' => json_encode($this->facilities),
+            'facilities' => $this->facilities, // Laravel akan otomatis meng-encode jika di-cast di model
         ];
 
-        // Jika tidak ada gambar lama di hapus
-        if ($this->image !== $this->temporaryImage && $this->temporaryImage != null) {
-            Storage::disk('public')->delete($this->temporaryImage);
-            $data['image'] = null;
-        }
-
-
-        // Jika ada gambar baru yang diupload
-        if ($this->image instanceof TemporaryUploadedFile) {
-
-            // Hapus gambar lama jika sedang edit
-            if ($this->unitTypeIdBeingEdited && $this->temporaryImage != null) {
-                if ($this->image !== $this->temporaryImage) {
-                    Storage::disk('public')->delete($this->temporaryImage);
-                }
-            }
-
-            // Simpan gambar baru ke storage
-            $data['image'] = $this->image->store('images', 'public');
-        }
-
-        // Simpan atau update data
-        UnitTypeModel::updateOrCreate(
+        $unitType = UnitTypeModel::updateOrCreate(
             ['id' => $this->unitTypeIdBeingEdited],
             $data
         );
 
-        // Flash message
+        // Hapus attachment yang dihapus user
+        $this->handleAttachmentDeletions($unitType);
+
+        // Upload attachment baru
+        $this->handleAttachmentUploads($unitType);
+
         LivewireAlert::title($this->unitTypeIdBeingEdited ? 'Data berhasil diperbarui.' : 'Tipe unit berhasil ditambahkan.')
         ->success()
         ->toast()
         ->position('top-end')
         ->show();
 
-        // Reset form
         $this->resetForm();
         $this->showModal = false;
     }
 
-    /**
-     * Confirm deletion of a unit type.
-     *
-     * @param array $data
-     */
     public function confirmDelete($data)
     {
         LivewireAlert::title('Hapus data '. $data['name'] . '?')
@@ -194,22 +173,16 @@ class UnitType extends Component
             ->show();
     }
 
-    /**
-     * Delete a unit type.
-     *
-     * @param array $data
-     */
     public function deleteUnitType($data)
     {
         $id = $data['id'];
         $unitType = UnitTypeModel::find($id);
         if ($unitType) {
-            // Hapus gambar dari storage jika ada
-            if ($unitType->image) {
-                Storage::disk('public')->delete($unitType->image);
+            // Hapus semua attachment
+            foreach ($unitType->attachments as $attachment) {
+                Storage::disk('public')->delete($attachment->path);
+                $attachment->delete();
             }
-
-            // Hapus unit type
             $unitType->delete();
 
             LivewireAlert::title('Berhasil Dihapus')
@@ -221,21 +194,20 @@ class UnitType extends Component
         }
     }
 
-    /**
-     * Reset the form fields.
-     */
     public function resetForm() {
         $this->name = '';
         $this->description = '';
-        $this->image = '';
-        $this->temporaryImage = '';
         $this->facilities = [];
+        $this->attachments = [];
+        $this->existingAttachments = [];
+        $this->attachmentsToDelete = [];
         $this->unitTypeIdBeingEdited = null;
+        $this->modalType = ''; // Reset modal type
+        $this->detailedUnitType = null; // Reset detailedUnitType
+        $this->resetErrorBag();
+        $this->resetValidation();
     }
 
-    /**
-     * Add a new facility to the list.
-     */
     public function addFacility()
     {
         if (!empty($this->newFacility)) {
@@ -244,14 +216,53 @@ class UnitType extends Component
         }
     }
 
-    /**
-     * Remove a facility from the list by index.
-     *
-     * @param int $index
-     */
     public function removeFacility($index)
     {
         unset($this->facilities[$index]);
-        $this->facilities = array_values($this->facilities); // Re-index array
+        $this->facilities = array_values($this->facilities);
+    }
+
+    // === Attachment Handling ===
+
+    public function updatedAttachments()
+    {
+        $this->resetErrorBag('attachments.*');
+        $this->validateOnly('attachments.*');
+    }
+
+    private function handleAttachmentUploads(UnitTypeModel $unitType)
+    {
+        if (!empty($this->attachments)) {
+            foreach ($this->attachments as $file) {
+                $path = $file->store('attachments/unit-types', 'public');
+                $unitType->attachments()->create([
+                    'name' => $file->getClientOriginalName(),
+                    'file_name' => basename($path),
+                    'mime_type' => $file->getMimeType(),
+                    'path' => $path,
+                ]);
+            }
+        }
+    }
+
+    private function handleAttachmentDeletions(UnitTypeModel $unitType)
+    {
+        if (!empty($this->attachmentsToDelete)) {
+            $attachments = Attachment::whereIn('id', $this->attachmentsToDelete)->get();
+            foreach ($attachments as $attachment) {
+                Storage::disk('public')->delete($attachment->path);
+                $attachment->delete();
+            }
+        }
+    }
+
+    public function queueAttachmentForDeletion($attachmentId)
+    {
+        if (!in_array($attachmentId, $this->attachmentsToDelete)) {
+            $this->attachmentsToDelete[] = $attachmentId;
+        }
+        $this->existingAttachments = collect($this->existingAttachments)->reject(function ($attachment) use ($attachmentId) {
+            return $attachment['id'] == $attachmentId;
+        })->values();
     }
 }

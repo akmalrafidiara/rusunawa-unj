@@ -1,26 +1,13 @@
-<!-- Tabel Data -->
 <x-managers.ui.card class="p-0">
-    <x-managers.table.table :headers="['Nama', 'Deskripsi', 'Gambar', 'Fasilitas', 'Aksi']">
+    <x-managers.table.table :headers="['Nama', 'Deskripsi', 'Fasilitas', 'Aksi']">
         <x-managers.table.body>
             @forelse ($unitTypes as $unitType)
                 <x-managers.table.row wire:key="{{ $unitType->id }}">
-                    <!-- Nama -->
                     <x-managers.table.cell>
                         <span class="font-bold">{{ $unitType->name }}</span>
                     </x-managers.table.cell>
 
-                    <!-- Description -->
                     <x-managers.table.cell>{{ $unitType->description }}</x-managers.table.cell>
-
-                    {{-- Image --}}
-                    <x-managers.table.cell>
-                        @if ($unitType->image)
-                            <img src="{{ asset('storage/' . $unitType->image) }}" alt="{{ $unitType->name }}"
-                                class="w-16 h-16 object-cover rounded">
-                        @else
-                            <span class="text-gray-500">Tidak ada gambar</span>
-                        @endif
-                    </x-managers.table.cell>
 
                     {{-- Facilities --}}
                     <x-managers.table.cell>
@@ -35,9 +22,14 @@
                         @endif
                     </x-managers.table.cell>
 
-                    <!-- Aksi -->
                     <x-managers.table.cell class="text-right">
                         <div class="flex gap-2">
+                            {{-- Detail Button --}}
+                            <x-managers.ui.button wire:click="detail({{ $unitType->id }})" variant="info"
+                                size="sm">
+                                <flux:icon.eye class="w-4" />
+                            </x-managers.ui.button>
+
                             {{-- Edit Button --}}
                             <x-managers.ui.button wire:click="edit({{ $unitType->id }})" variant="secondary"
                                 size="sm">
@@ -54,8 +46,8 @@
                 </x-managers.table.row>
             @empty
                 <x-managers.table.row>
-                    <x-managers.table.cell colspan="5" class="text-center text-gray-500">
-                        Tidak ada data pengguna ditemukan.
+                    <x-managers.table.cell colspan="4" class="text-center text-gray-500">
+                        Tidak ada data tipe unit yang ditemukan.
                     </x-managers.table.cell>
                 </x-managers.table.row>
             @endforelse

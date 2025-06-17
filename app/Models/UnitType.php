@@ -11,11 +11,15 @@ class UnitType extends Model
     protected $fillable = [
         'name',
         'description',
-        'image',
         'facilities',
     ];
 
     protected $casts = [
-        'facilities' => 'array',
+        'facilities' => 'array', // Ini yang sangat penting!
     ];
+
+    public function attachments()
+    {
+        return $this->morphMany(Attachment::class, 'attachable');
+    }
 }
