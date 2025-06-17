@@ -1,22 +1,26 @@
 <!-- Tabel Data -->
 <x-managers.ui.card class="p-0">
-    <x-managers.table.table :headers="[
-        'No Kamar',
-        'Kapasitas',
-        'No VA (Mandiri)',
-        'Peruntukan',
-        'Status',
-        'Tipe Unit',
-        'Cluster Unit',
-        'Keterangan',
-        'Aksi',
-    ]">
+    <x-managers.table.table :headers="['No Kamar', 'Tipe Unit', 'Kapasitas', 'No VA (Mandiri)', 'Peruntukan', 'Status', 'Keterangan', 'Aksi']">
         <x-managers.table.body>
             @forelse ($units as $unit)
                 <x-managers.table.row wire:key="{{ $unit->id }}">
                     <!-- Room Number -->
                     <x-managers.table.cell>
-                        <span class="font-bold">{{ $unit->room_number }}</span>
+                        @if ($unit->unitCluster)
+                            <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                                {{ $unit->unitCluster->name }}
+                            </div>
+                        @endif
+                        <span class="font-bold text-2xl">{{ $unit->room_number }}</span>
+                    </x-managers.table.cell>
+
+                    {{-- Unit Type --}}
+                    <x-managers.table.cell>
+                        @if ($unit->unitType)
+                            <span class="font-semibold">{{ $unit->unitType->name }}</span>
+                        @else
+                            <span class="text-gray-500">Tidak ada tipe unit</span>
+                        @endif
                     </x-managers.table.cell>
 
                     {{-- Capacity --}}
@@ -52,24 +56,6 @@
                                 {{ $statusEnum?->label() }}
                             </x-managers.ui.badge>
                         @endforeach
-                    </x-managers.table.cell>
-
-                    {{-- Unit Type --}}
-                    <x-managers.table.cell>
-                        @if ($unit->unitType)
-                            <span class="font-semibold">{{ $unit->unitType->name }}</span>
-                        @else
-                            <span class="text-gray-500">Tidak ada tipe unit</span>
-                        @endif
-                    </x-managers.table.cell>
-
-                    {{-- Cluster Unit --}}
-                    <x-managers.table.cell>
-                        @if ($unit->unitCluster)
-                            <span class="font-semibold">{{ $unit->unitCluster->name }}</span>
-                        @else
-                            <span class="text-gray-500">Tidak ada cluster unit</span>
-                        @endif
                     </x-managers.table.cell>
 
                     {{-- Unit Notes --}}

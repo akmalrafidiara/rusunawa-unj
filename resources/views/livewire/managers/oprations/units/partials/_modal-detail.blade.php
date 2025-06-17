@@ -63,6 +63,12 @@
                                 {{ chunk_split($virtualAccountNumber, 4, ' ') }}
                             </span>
                         </div>
+                        <div class="flex justify-between items-center py-2">
+                            <span class="text-zinc-600 dark:text-zinc-300">Keterangan</span>
+                            <span class="font-semibold text-zinc-800 dark:text-zinc-100">
+                                {{ $notes ?? 'Tidak ada' }}
+                            </span>
+                        </div>
                     </div>
                 </div>
 
@@ -137,7 +143,7 @@
                                             {{ ucfirst(str_replace('_', ' ', $rate['occupant_type'])) }}
                                         </td>
                                         <td class="py-3 px-4 text-zinc-600 dark:text-zinc-300">
-                                            {{ ucfirst(str_replace('_', ' ', is_string($rate['pricing_basis']) ? $rate['pricing_basis'] : $rate['pricing_basis']->value)) }}
+                                            {{ $rate['pricing_basis']->label() }}
                                         </td>
                                         <td class="py-3 px-4 text-right font-bold text-green-600 dark:text-green-400">
                                             Rp {{ number_format($rate['price'], 0, ',', '.') }}
