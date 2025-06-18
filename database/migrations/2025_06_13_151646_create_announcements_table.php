@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('title');
             $table->text('description');
             $table->string('image')->nullable();
+            // Menambahkan kolom 'category' dengan nilai enum yang telah ditentukan
+            $table->enum('category', ['important', 'appeal', 'maintenance', 'lost_and_found', 'general'])->default('general');
             $table->enum('status', ['draft', 'published', 'archived'])->default('published');
             $table->timestamps();
         });

@@ -17,6 +17,13 @@
         <span class="text-red-500 text-sm">{{ $message }}</span>
         @enderror
 
+        {{-- Input Kategori Pengumuman (Tambahkan bagian ini) --}}
+        <x-managers.form.label for="category">Kategori Pengumuman</x-managers.form.label>
+        <x-managers.form.select wire:model.live="category" :options="$categoryOptions" label="Pilih Kategori" id="category" />
+        @error('category')
+        <span class="text-red-500 text-sm">{{ $message }}</span>
+        @enderror
+
         <x-managers.form.label for="status">Status Pengumuman</x-managers.form.label>
         <x-managers.form.select wire:model.live="status" :options="$statusOptions" label="Pilih Status" id="status" />
         @error('status')

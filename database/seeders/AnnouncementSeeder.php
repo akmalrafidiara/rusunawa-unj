@@ -15,22 +15,46 @@ class AnnouncementSeeder extends Seeder
     {
         $announcements = [
             [
-                'title' => 'Welcome to Our Service',
-                'description' => 'We are excited to announce the launch of our new service. Stay tuned for more updates!',
+                'title' => 'Selamat Datang di Layanan Kami',
+                'description' => 'Kami sangat senang mengumumkan peluncuran layanan baru kami. Nantikan pembaruan lainnya!',
                 'image' => null,
                 'status' => 'published',
+                'category' => 'general', // Menambahkan kategori 'general'
             ],
             [
-                'title' => 'Maintenance Notice',
-                'description' => 'Scheduled maintenance will occur on the first Saturday of every month from 2 AM to 4 AM.',
+                'title' => 'Pemberitahuan Pemeliharaan Sistem',
+                'description' => 'Pemeliharaan terjadwal akan dilakukan pada setiap hari Sabtu pertama setiap bulan mulai pukul 02:00 hingga 04:00 WIB.',
                 'image' => null,
                 'status' => 'published',
+                'category' => 'maintenance', // Menambahkan kategori 'maintenance'
             ],
             [
-                'title' => 'New Features Coming Soon',
-                'description' => 'We are working on new features that will enhance your experience. More details will be shared soon.',
+                'title' => 'Fitur Baru Segera Hadir',
+                'description' => 'Kami sedang mengembangkan fitur-fitur baru yang akan meningkatkan pengalaman Anda. Detail lebih lanjut akan segera dibagikan.',
                 'image' => null,
                 'status' => 'draft',
+                'category' => 'general', // Menambahkan kategori 'general'
+            ],
+            [
+                'title' => 'Himbauan: Jaga Kebersihan Lingkungan',
+                'description' => 'Kami menghimbau seluruh penghuni untuk menjaga kebersihan lingkungan demi kenyamanan bersama. Buanglah sampah pada tempatnya.',
+                'image' => null,
+                'status' => 'published',
+                'category' => 'appeal', // Menambahkan kategori 'appeal'
+            ],
+            [
+                'title' => 'PENTING: Perubahan Kebijakan Privasi',
+                'description' => 'Harap diperhatikan adanya perubahan signifikan pada kebijakan privasi kami yang akan berlaku efektif mulai 1 Juli 2025.',
+                'image' => null,
+                'status' => 'published',
+                'category' => 'important', // Menambahkan kategori 'important'
+            ],
+            [
+                'title' => 'Ditemukan: Kunci Mobil',
+                'description' => 'Telah ditemukan satu set kunci mobil di area parkir. Pemilik dapat mengambilnya di bagian keamanan.',
+                'image' => null,
+                'status' => 'published',
+                'category' => 'lost_and_found', // Menambahkan kategori 'lost_and_found'
             ],
         ];
 

@@ -49,6 +49,18 @@
                         {{ $statusEnum?->label() }}
                     </x-managers.ui.badge>
                 </div>
+
+                {{-- Kategori (Tambahkan bagian ini) --}}
+                <div class="py-2">
+                    <span class="text-gray-600 font-semibold block mb-1">Kategori</span>
+                    @php
+                    $categoryEnum = \App\Enums\AnnouncementCategory::tryFrom($category);
+                    @endphp
+                    <x-managers.ui.badge :type="$categoryEnum?->value ?? 'default'" :color="$categoryEnum?->color()">
+                        {{ $categoryEnum?->label() }}
+                    </x-managers.ui.badge>
+                </div>
+
                 {{-- Judul --}}
                 <div class="py-2">
                     <span class="text-gray-600 font-semibold block mb-1">Judul</span>

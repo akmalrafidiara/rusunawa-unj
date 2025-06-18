@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\AnnouncementStatus;
+use App\Enums\AnnouncementCategory;
 use Illuminate\Database\Eloquent\Model;
 
 class Announcement extends Model
@@ -12,6 +13,7 @@ class Announcement extends Model
         'description',
         'image',
         'status',
+        'category',
     ];
 
     public function attachments()
@@ -21,5 +23,6 @@ class Announcement extends Model
 
     protected $casts = [
         'status' => AnnouncementStatus::class,
+        'category' => AnnouncementCategory::class,
     ];
 }
