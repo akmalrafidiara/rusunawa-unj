@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('caption');
             $table->string('image')->nullable();
+            $table->unsignedInteger('priority')->default(0); // Menambahkan kolom priority
             $table->timestamps();
         });
     }

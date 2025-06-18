@@ -2,29 +2,32 @@
 
 namespace App\Livewire\Managers;
 
-use App\Models\Galleries as GalleryModel;
+use App\Models\Galleries as GalleryModel; // Tetap Galleries sesuai preferensi Anda
 use Livewire\Component;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
+use Livewire\WithPagination;
 use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
-use Spatie\LivewireFilepond\WithFilePond;
+use Spatie\LivewireFilepond\WithFilePond; // Pastikan ini diinstal dan dikonfigurasi jika digunakan
 
 class Galleries extends Component
 {
     use WithFileUploads;
     use WithFilePond;
+    use withPagination;
 
     public $caption, $image, $temporaryImage;
     public $search = '';
-    public $orderBy = 'created_at';
-    public $sort = 'asc';
+    public $orderBy = 'priority'; // Ubah default order ke 'priority'
+    public $sort = 'asc'; // Default sort ascending
     public $showModal = false;
     public $galleryIdBeingEdited = null;
+    public $maxPriority = 0; // Tambahkan properti untuk prioritas maksimum
 
     protected $queryString = [
         'search' => ['except' => ''],
-        'orderBy' => ['except' => 'created_at'],
+        'orderBy' => ['except' => 'priority'], // Ubah default 'created_at' ke 'priority'
         'sort' => ['except' => 'asc'],
     ];
 
@@ -34,6 +37,9 @@ class Galleries extends Component
             ->when($this->search, fn($q) => $q->where('caption', 'like', "%{$this->search}%"))
             ->orderBy($this->orderBy, $this->sort)
             ->paginate(10);
+
+        // Hitung prioritas maksimum saat render
+        $this->maxPriority = GalleryModel::max('priority') ?? 0;
 
         return view('livewire.managers.contents.galleries.index', compact('galleries'));
     }
@@ -50,7 +56,7 @@ class Galleries extends Component
         $this->galleryIdBeingEdited = $gallery->id;
         $this->caption = $gallery->caption;
         $this->image = $gallery->image;
-        $this->temporaryImage = $gallery->image;
+        $this->temporaryImage = $gallery->image; // Ini akan menyimpan nama file lama
         $this->showModal = true;
     }
 
@@ -85,22 +91,32 @@ class Galleries extends Component
             'caption' => $this->caption,
         ];
 
-        // Only delete old image if a new image is being uploaded or the image is being cleared
-        if ($this->image !== $this->temporaryImage && $this->temporaryImage != null) {
-            Storage::disk('public')->delete($this->temporaryImage);
-            // If the new image is empty, ensure the database field is null
-            if (empty($this->image)) {
-                 $data['image'] = null;
+        // Logic untuk menghandle gambar
+        // Jika ada gambar baru diupload ATAU gambar lama dihapus (dikosongkan)
+        if ($this->image instanceof TemporaryUploadedFile) { // Jika ada file baru diupload
+            // Hapus gambar lama jika ada saat mode edit
+            if ($this->galleryIdBeingEdited && $this->temporaryImage) {
+                Storage::disk('public')->delete($this->temporaryImage);
             }
-        }
-
-        if ($this->image instanceof TemporaryUploadedFile) {
             $data['image'] = $this->image->store('galleries', 'public');
-        } elseif (empty($this->image) && $this->galleryIdBeingEdited && $this->temporaryImage != null) {
-            // This handles the case where an existing image is cleared without a new one
-            $data['image'] = null;
+        } elseif ($this->galleryIdBeingEdited && empty($this->image) && $this->temporaryImage) {
+            // Jika dalam mode edit, image dikosongkan (dihapus), dan sebelumnya ada gambar
+            Storage::disk('public')->delete($this->temporaryImage);
+            $data['image'] = null; // Set image di DB menjadi null
+        } elseif ($this->galleryIdBeingEdited && !empty($this->temporaryImage) && $this->image === $this->temporaryImage) {
+             // Jika dalam mode edit, tidak ada perubahan pada gambar
+             $data['image'] = $this->temporaryImage;
+        } else {
+            $data['image'] = null; // Jika ini mode create dan tidak ada gambar diupload, atau edit dan gambar kosong
         }
 
+        // --- Logika Priority Ditambahkan di Sini ---
+        if (!$this->galleryIdBeingEdited) {
+            $maxPriority = GalleryModel::max('priority');
+            // Jika tidak ada galeri, prioritas dimulai dari 1. Jika ada, prioritas maksimum + 1.
+            $data['priority'] = ($maxPriority !== null) ? $maxPriority + 1 : 1;
+        }
+        // --- Akhir Logika Priority ---
 
         GalleryModel::updateOrCreate(
             ['id' => $this->galleryIdBeingEdited],
@@ -117,28 +133,28 @@ class Galleries extends Component
         $this->showModal = false;
     }
 
-    // --- PERBAIKAN DIMULAI DI SINI ---
-    public function confirmDelete($id) // Ganti $data menjadi $id
+    public function confirmDelete($id)
     {
         LivewireAlert::title('Hapus galeri?')
             ->text('Apakah Anda yakin ingin menghapus galeri ini?')
             ->question()
             ->withCancelButton('Batalkan')
             ->withConfirmButton('Hapus!')
-            // Sekarang Anda melewatkan $id langsung ke array untuk deleteGallery
             ->onConfirm('deleteGallery', ['id' => $id])
             ->show();
     }
 
     public function deleteGallery($data)
     {
-        // $data sekarang DIJAMIN adalah array dengan kunci 'id' karena cara kita mengirimnya dari onConfirm
         $id = $data['id'];
         $gallery = GalleryModel::find($id);
         if ($gallery) {
             if ($gallery->image) {
                 Storage::disk('public')->delete($gallery->image);
             }
+            // --- Logika Priority Saat Menghapus ---
+            GalleryModel::where('priority', '>', $gallery->priority)->decrement('priority');
+            // --- Akhir Logika Priority ---
             $gallery->delete();
 
             LivewireAlert::title('Berhasil Dihapus')
@@ -149,7 +165,38 @@ class Galleries extends Component
                 ->show();
         }
     }
-    // --- PERBAIKAN BERAKHIR DI SINI ---
+
+    // --- Metode Prioritas (moveUp, moveDown) Ditambahkan ---
+    public function moveUp(GalleryModel $gallery)
+    {
+        $previousGallery = GalleryModel::where('priority', '<', $gallery->priority)
+                                        ->orderBy('priority', 'desc')
+                                        ->first();
+
+        if ($previousGallery) {
+            $tempPriority = $gallery->priority;
+            $gallery->update(['priority' => $previousGallery->priority]);
+            $previousGallery->update(['priority' => $tempPriority]);
+
+            LivewireAlert::success('Prioritas berhasil diubah.')->toast()->position('top-end');
+        }
+    }
+
+    public function moveDown(GalleryModel $gallery)
+    {
+        $nextGallery = GalleryModel::where('priority', '>', $gallery->priority)
+                                    ->orderBy('priority', 'asc')
+                                    ->first();
+
+        if ($nextGallery) {
+            $tempPriority = $gallery->priority;
+            $gallery->update(['priority' => $nextGallery->priority]);
+            $nextGallery->update(['priority' => $tempPriority]);
+
+            LivewireAlert::success('Prioritas berhasil diubah.')->toast()->position('top-end');
+        }
+    }
+    // --- Akhir Metode Prioritas ---
 
     public function resetForm()
     {
