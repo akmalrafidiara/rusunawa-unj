@@ -46,16 +46,16 @@ Route::prefix('managers')->middleware(['auth', 'verified'])->group(function () {
     });
 
     // Content
-    Route::view(('announcements'), 'modules.managers.contents.announcements.index')->name('announcements');
-    Route::view('contacts', 'modules.managers.contents.contacts.index')->name('contacts');
-    Route::view('galleries', 'modules.managers.contents.galleries.index')->name('galleries');
-    Route::view('regulations', 'modules.managers.contents.regulations.index')->name('regulations');
     Route::prefix('page-contents')->group(function () {
         Route::view('banner-footers', 'modules.managers.contents.banner-footer.index')->name('page-contents.banner-footer');
         Route::view('abouts', 'modules.managers.contents.abouts.index')->name('page-contents.abouts');
         Route::view('locations', 'modules.managers.contents.locations.index')->name('page-contents.locations');
+        Route::view('galleries', 'modules.managers.contents.galleries.index')->name('page-contents.galleries');
         Route::view('faqs', 'modules.managers.contents.faq.index')->name('page-contents.faq');
     });
+    Route::view(('announcements'), 'modules.managers.contents.announcements.index')->name('announcements');
+    Route::view('regulations', 'modules.managers.contents.regulations.index')->name('regulations');
+    Route::view('contacts', 'modules.managers.contents.contacts.index')->name('contacts');
 });
 
 require __DIR__.'/auth.php';

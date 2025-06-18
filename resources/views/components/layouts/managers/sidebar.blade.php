@@ -121,34 +121,6 @@ $adminSidebarMenu = [
         'group' => 'Manajemen Konten',
         'items' => [
             [
-                'icon' => 'megaphone',
-                'label' => __('Pengumuman'),
-                'route' => route('announcements'),
-                'current' => request()->routeIs('announcements'),
-                'badge' => null,
-            ],
-            [
-                'icon' => 'phone',
-                'label' => __('Kontak'),
-                'route' => route('contacts'),
-                'current' => request()->routeIs('contacts'),
-                'badge' => null,
-            ],
-            [
-                'icon' => 'photo',
-                'label' => __('Galeri'),
-                'route' => route('galleries'),
-                'current' => request()->routeIs('galleries'),
-                'badge' => null,
-            ],
-            [
-                'icon' => 'document-text',
-                'label' => __('Peraturan'),
-                'route' => route('regulations'),
-                'current' => request()->routeIs('requlations'),
-                'badge' => null,
-            ],
-            [
                 'expandable' => true,
                 'label' => __('Konten Halaman'),
                 'items' => [
@@ -168,11 +140,37 @@ $adminSidebarMenu = [
                         'current' => request()->routeIs('page-contents.locations'),
                     ],
                     [
+                        'label' => __('Galeri'),
+                        'route' => route('page-contents.galleries'),
+                        'current' => request()->routeIs('page-contents.galleries'),
+                    ],
+                    [
                         'label' => __('FAQ'),
                         'route' => route('page-contents.faq'),
                         'current' => request()->routeIs('page-contents.faq'),
                     ],
                 ],
+            ],
+            [
+                'icon' => 'megaphone',
+                'label' => __('Pengumuman'),
+                'route' => route('announcements'),
+                'current' => request()->routeIs('announcements'),
+                'badge' => null,
+            ],
+            [
+                'icon' => 'document-text',
+                'label' => __('Tata Tertib'),
+                'route' => route('regulations'),
+                'current' => request()->routeIs('requlations'),
+                'badge' => null,
+            ],
+            [
+                'icon' => 'phone',
+                'label' => __('Kontak Darurat'),
+                'route' => route('contacts'),
+                'current' => request()->routeIs('contacts'),
+                'badge' => null,
             ],
         ],
     ],
@@ -190,25 +188,25 @@ $adminSidebarMenu = [
     {{-- Dynamic Sidebar Menu --}}
     <flux:navlist variant="outline" class="space-y-4">
         @foreach ($adminSidebarMenu as $menu)
-            <flux:navlist.group :heading="__($menu['group'])" class="grid">
-                @foreach ($menu['items'] as $item)
-                    @if (isset($item['expandable']) && $item['expandable'])
-                        <flux:navlist.group :heading="$item['label']" expandable :expanded="false">
-                            @foreach ($item['items'] as $subItem)
-                                <flux:navlist.item :href="$subItem['route']" :current="$subItem['current']"
-                                    wire:navigate.hover>
-                                    {{ $subItem['label'] }}
-                                </flux:navlist.item>
-                            @endforeach
-                        </flux:navlist.group>
-                    @else
-                        <flux:navlist.item :icon="$item['icon']" :href="$item['route']" :current="$item['current']"
-                            wire:navigate.hover :badge="$item['badge']" badge-color="red">
-                            {{ $item['label'] }}
-                        </flux:navlist.item>
-                    @endif
+        <flux:navlist.group :heading="__($menu['group'])" class="grid">
+            @foreach ($menu['items'] as $item)
+            @if (isset($item['expandable']) && $item['expandable'])
+            <flux:navlist.group :heading="$item['label']" expandable :expanded="false">
+                @foreach ($item['items'] as $subItem)
+                <flux:navlist.item :href="$subItem['route']" :current="$subItem['current']"
+                    wire:navigate.hover>
+                    {{ $subItem['label'] }}
+                </flux:navlist.item>
                 @endforeach
             </flux:navlist.group>
+            @else
+            <flux:navlist.item :icon="$item['icon']" :href="$item['route']" :current="$item['current']"
+                wire:navigate.hover :badge="$item['badge']" badge-color="red">
+                {{ $item['label'] }}
+            </flux:navlist.item>
+            @endif
+            @endforeach
+        </flux:navlist.group>
         @endforeach
     </flux:navlist>
 
@@ -217,9 +215,9 @@ $adminSidebarMenu = [
     <!-- Desktop User Menu -->
     <flux:dropdown position="bottom" align="start">
         {{-- blade-formatter-disable --}}
-                <flux:profile :name="auth()->user()->name" :initials="auth()->user()->initials()"
-                    icon-trailing="chevrons-up-down" />
-                {{-- blade-formatter-enable --}}
+        <flux:profile :name="auth()->user()->name" :initials="auth()->user()->initials()"
+            icon-trailing="chevrons-up-down" />
+        {{-- blade-formatter-enable --}}
         <flux:menu class="w-[220px]">
             <flux:menu.radio.group>
                 <div class="p-0 text-sm font-normal">
@@ -243,7 +241,8 @@ $adminSidebarMenu = [
 
             <flux:menu.radio.group>
                 <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate.hover>
-                    {{ __('Settings') }}</flux:menu.item>
+                    {{ __('Settings') }}
+                </flux:menu.item>
             </flux:menu.radio.group>
 
             <flux:menu.separator />

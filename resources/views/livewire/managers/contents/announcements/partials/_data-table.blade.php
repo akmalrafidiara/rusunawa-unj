@@ -1,8 +1,7 @@
-<!-- Tabel Data -->
-
 <x-managers.ui.card class="p-0">
     <x-managers.table.table :headers="[
             'Judul',
+            'Kategori',  {{-- Tambahkan header Kategori --}}
             'Status',
             'Tanggal Dibuat',
             'Isi Pengumuman',
@@ -12,8 +11,18 @@
             @forelse ($announcements as $announcement)
             <x-managers.table.row wire:key="{{ $announcement->id }}">
                 {{-- Judul (diperbesar jadi w-1/4 atau 25%) --}}
-                <x-managers.table.cell class="w-1/3">
+                <x-managers.table.cell class="w-1/4"> {{-- Ubah width agar ada ruang untuk kategori --}}
                     <span class="font-bold" style="word-break: break-word;">{{ $announcement->title }}</span>
+                </x-managers.table.cell>
+
+                {{-- Kategori (ukuran baru) --}}
+                <x-managers.table.cell class="w-1/12"> {{-- Sesuaikan lebar kolom --}}
+                    @php
+                    $categoryEnum = \App\Enums\AnnouncementCategory::tryFrom($announcement->category->value);
+                    @endphp
+                    <x-managers.ui.badge :type="$categoryEnum?->value ?? 'default'" :color="$categoryEnum?->color()">
+                        {{ $categoryEnum?->label() }}
+                    </x-managers.ui.badge>
                 </x-managers.table.cell>
 
                 {{-- Status (sedikit mengecil jadi w-1/12 atau ~8.33%) --}}
@@ -33,24 +42,24 @@
                     </span>
                 </x-managers.table.cell>
 
-                {{-- Deskripsi (sedikit mengecil jadi w-1/3 atau ~33.33%) --}}
-                <x-managers.table.cell class="w-1/3">
+                {{-- Deskripsi (sedikit mengecil jadi w-1/4 atau ~25%, disesuaikan setelah penambahan kategori) --}}
+                <x-managers.table.cell class="w-1/4"> {{-- Ubah width agar ada ruang untuk kategori --}}
                     <div class="trix-content" style="word-break: break-word;">
                         @php
                         $description = $announcement->description;
-                        $maxLength = 200; // Adjust this character limit as needed
+                        $maxLength = 100; // Adjust this character limit as needed for smaller column
 
                         // Check if the description is longer than the max length
                         if (mb_strlen(strip_tags($description)) > $maxLength) {
-                        // Find the first space after the max length to avoid breaking words
-                        $truncatedDescription = mb_substr($description, 0, $maxLength);
-                        $lastSpace = mb_strrpos($truncatedDescription, ' ');
-                        if ($lastSpace !== false) {
-                        $truncatedDescription = mb_substr($truncatedDescription, 0, $lastSpace);
-                        }
-                        $truncatedDescription .= '...';
+                            // Find the first space after the max length to avoid breaking words
+                            $truncatedDescription = mb_substr($description, 0, $maxLength);
+                            $lastSpace = mb_strrpos($truncatedDescription, ' ');
+                            if ($lastSpace !== false) {
+                                $truncatedDescription = mb_substr($truncatedDescription, 0, $lastSpace);
+                            }
+                            $truncatedDescription .= '...';
                         } else {
-                        $truncatedDescription = $description;
+                            $truncatedDescription = $description;
                         }
                         @endphp
                         {!! $truncatedDescription !!}
@@ -100,7 +109,7 @@
             </x-managers.table.row>
             @empty
             <x-managers.table.row>
-                <x-managers.table.cell colspan="5" class="text-center text-gray-500">
+                <x-managers.table.cell colspan="6" class="text-center text-gray-500"> {{-- Ubah colspan --}}
                     Tidak ada data pengumuman ditemukan.
                 </x-managers.table.cell>
             </x-managers.table.row>

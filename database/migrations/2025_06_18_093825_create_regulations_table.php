@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('galleries', function (Blueprint $table) {
+        Schema::create('regulations', function (Blueprint $table) {
             $table->id();
-            $table->string('caption');
-            $table->string('image')->nullable();
-            $table->unsignedInteger('priority')->default(0); // Menambahkan kolom priority
+            $table->string('title');
+            $table->text('content');
+            $table->unsignedInteger('priority')->default(0); // Biarkan tetap 0, akan disesuaikan di seeder/Livewire
             $table->timestamps();
         });
     }
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('galleries');
+        Schema::dropIfExists('regulations');
     }
 };

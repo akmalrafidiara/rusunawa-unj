@@ -2,7 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\Galleries;
+use App\Livewire\Managers\Galleries;
+use App\Models\Galleries as ModelsGalleries;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -36,10 +37,14 @@ class GallerySeeder extends Seeder
             ],
         ];
 
-        foreach ($galleries as $gallery) {
-            Galleries::firstOrCreate(
-                ['caption' => $gallery['caption']], // Mencari berdasarkan caption
-                $gallery // Jika tidak ditemukan, buat dengan data ini
+        foreach ($galleries as $index => $galleryData) { // Tambahkan $index
+            ModelsGalleries::firstOrCreate( // Perbaikan: Gunakan model Gallery
+                ['caption' => $galleryData['caption']], // Mencari berdasarkan caption
+                [
+                    'caption' => $galleryData['caption'],
+                    'image' => $galleryData['image'],
+                    'priority' => $index + 1, // Menambahkan kolom priority
+                ]
             );
         }
     }

@@ -1,5 +1,3 @@
-<!-- Toolbar -->
-
 <div class="flex flex-col sm:flex-row gap-4">
 
     {{-- Search Form --}}
@@ -12,7 +10,7 @@
             Tambah Pengumuman
         </x-managers.ui.button>
 
-        {{-- Dropdown for Filters --}}
+        {{-- Dropdown for Filters and Sorting --}}
         <x-managers.ui.dropdown class="flex flex-col gap-2">
             <x-slot name="trigger">
                 <flux:icon.adjustments-horizontal />
@@ -28,8 +26,13 @@
 
             <x-managers.form.small>Filter</x-managers.form.small>
             <div class="flex gap-2">
+                {{-- Filter Status --}}
                 <x-managers.ui.dropdown-picker wire:model.live="statusFilter" :options="$statusOptions" label="Semua Status"
                     wire:key="dropdown-status" />
+
+                {{-- Filter Kategori (Tambahkan bagian ini) --}}
+                <x-managers.ui.dropdown-picker wire:model.live="categoryFilter" :options="$categoryOptions" label="Semua Kategori"
+                    wire:key="dropdown-category" />
             </div>
 
             {{-- Sort Filter --}}

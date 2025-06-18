@@ -17,6 +17,13 @@
         <span class="text-red-500 text-sm">{{ $message }}</span>
         @enderror
 
+        {{-- Input Kategori Pengumuman (Tambahkan bagian ini) --}}
+        <x-managers.form.label for="category">Kategori Pengumuman</x-managers.form.label>
+        <x-managers.form.select wire:model.live="category" :options="$categoryOptions" label="Pilih Kategori" id="category" />
+        @error('category')
+        <span class="text-red-500 text-sm">{{ $message }}</span>
+        @enderror
+
         <x-managers.form.label for="status">Status Pengumuman</x-managers.form.label>
         <x-managers.form.select wire:model.live="status" :options="$statusOptions" label="Pilih Status" id="status" />
         @error('status')
@@ -37,19 +44,24 @@
         @elseif ($image)
         <div class="relative w-full h-56 mb-2">
             <img src="{{ $image->temporaryUrl() }}" alt="Gambar Preview"
-                class="w-full h-full max-w-full max-h-full object-contain rounded border" />
+            class="w-full h-full max-w-full max-h-full object-contain rounded border" />
             <button type="button" wire:click="$set('image', null)"
-                class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600">
-                <flux:icon name="x-mark" class="w-3 h-3" />
+            class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600">
+            <flux:icon name="x-mark" class="w-3 h-3" />
             </button>
         </div>
         @endif
-        <input type="file" wire:model="image" class="block w-full text-sm text-gray-500
-                file:mr-4 file:py-2 file:px-4
-                file:rounded-full file:border-0
-                file:text-sm file:font-semibold
-                file:bg-blue-50 file:text-blue-700
-                hover:file:bg-blue-100" />
+
+        {{-- Filepond for single image --}}
+        <div wire:key="filepond-image-wrapper">
+            <x-filepond::upload
+            wire:model.live="image"
+            allow-multiple="false"
+            max-file-size="2MB"
+            accepted-file-types="image/jpeg,image/png,image/gif,image/webp"
+            />
+        </div>
+
         @error('image')
         <span class="text-red-500 text-sm">{{ $message }}</span>
         @else

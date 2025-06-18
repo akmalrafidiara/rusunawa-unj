@@ -3,6 +3,7 @@
 namespace App\Livewire\Managers;
 
 use App\Enums\AnnouncementStatus;
+use App\Enums\AnnouncementCategory; // Import AnnouncementCategory Enum
 use App\Models\Announcement as AnnouncementModel;
 use App\Models\Attachment;
 use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
@@ -25,6 +26,7 @@ class Announcement extends Component
         $title,
         $description,
         $status,
+        $category, // Tambahkan properti category
         $createdAt,
         $updatedAt;
 
@@ -39,10 +41,12 @@ class Announcement extends Component
 
     // Options properties
     public $statusOptions;
+    public $categoryOptions; // Tambahkan properti categoryOptions
 
     // Filter properties
     public $search = '';
     public $statusFilter = '';
+    public $categoryFilter = ''; // Tambahkan properti categoryFilter
 
     // Pagination and sorting properties
     public $perPage = 10;
@@ -58,6 +62,7 @@ class Announcement extends Component
     protected $queryString = [
         'search' => ['except' => ''],
         'statusFilter' => ['except' => ''],
+        'categoryFilter' => ['except' => ''], // Tambahkan categoryFilter ke query string
         'perPage' => ['except' => 10],
         'orderBy' => ['except' => 'created_at'],
         'sort' => ['except' => 'desc'],
@@ -69,6 +74,7 @@ class Announcement extends Component
     public function mount()
     {
         $this->statusOptions = AnnouncementStatus::options();
+        $this->categoryOptions = AnnouncementCategory::options(); // Muat opsi kategori
     }
 
     /**
@@ -83,6 +89,7 @@ class Announcement extends Component
             ->when($this->search, fn($q) => $q->where('title', 'like', "%{$this->search}%")
                                              ->orWhere('description', 'like', "%{$this->search}%"))
             ->when($this->statusFilter, fn($q) => $q->where("status", $this->statusFilter))
+            ->when($this->categoryFilter, fn($q) => $q->where("category", $this->categoryFilter)) // Tambahkan filter kategori
             ->orderBy($this->orderBy, $this->sort);
     }
 
@@ -156,6 +163,7 @@ class Announcement extends Component
         $this->title = $announcement->title;
         $this->description = $announcement->description;
         $this->status = $announcement->status->value;
+        $this->category = $announcement->category->value; // Isi category
 
         // Filling single image data
         $this->existingImage = $announcement->image; // Assuming 'image' column stores the path
@@ -184,6 +192,7 @@ class Announcement extends Component
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'status' => ['required', Rule::in(AnnouncementStatus::values())],
+            'category' => ['required', Rule::in(AnnouncementCategory::values())], // Tambahkan validasi category
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048', // Hanya 1 gambar, format gambar
             'attachments.*' => 'nullable|file|max:5120', // Bisa lebih dari satu, bisa gambar atau file lain
         ];
@@ -237,6 +246,7 @@ class Announcement extends Component
             'title' => $this->title,
             'description' => $this->description,
             'status' => $this->status,
+            'category' => $this->category, // Simpan category
         ];
 
         // Handle single image upload for 'image' column
@@ -415,6 +425,7 @@ class Announcement extends Component
         $this->title = '';
         $this->description = '';
         $this->status = '';
+        $this->category = ''; // Reset category
         $this->image = null;
         $this->existingImage = null;
         $this->attachments = [];
