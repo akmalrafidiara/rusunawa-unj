@@ -1,21 +1,52 @@
 <x-layouts.frontend>
+
+    {{-- Hero Section --}}
+    <div class="relative w-full h-[711px] bg-cover bg-center mb-20"
+        style="background-image: url('{{ asset('images/banner-image-main.jpg') }}');">
+        {{-- Gradient Overlay --}}
+        {{-- <div class="absolute inset-0 bg-gradient-to-r from-gray-900/80 to-transparent"></div> --}}
+
+        <div class="relative container mx-auto px-6 h-full flex flex-col justify-between">
+
+            {{-- Text --}}
+            <div class="absolute top-1/2 transform -translate-y-1/2">
+                <h1 class="text-5xl font-bold text-9ray-600 leading-tight">
+                    Rusunawa <br>Universitas Negeri Jakarta
+                </h1>
+                <p class="mt-4 text-lg text-gray-600 max-w-lg">
+                    Sebuah solusi tempat tinggal praktis di lingkungan kampus, ideal untuk mendukung aktivitas harian
+                    Anda.
+                </p>
+
+                {{-- Statistik --}}
+                <div class="mt-8 flex space-x-12">
+                    <div>
+                        <p class="text-4xl font-bold text-emerald-800">50+</p>
+                        <p class="text-sm text-gray-900">Kamar Siap Huni</p>
+                    </div>
+                    <div class="w-0.5 bg-gray-600"></div>
+                    <div>
+                        <p class="text-4xl font-bold text-emerald-800">20+</p>
+                        <p class="text-sm text-gray-900">Fasilitas Pendukung</p>
+                    </div>
+                    <div class="w-0.5 bg-gray-600"></div>
+                    <div>
+                        <p class="text-4xl font-bold text-emerald-800">1000+</p>
+                        <p class="text-sm text-gray-900">Penghuni dalam 3 Tahun Terakhir</p>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Form Kamar --}}
+            <div
+                class="absolute -bottom-20 left-1/2 transform -translate-x-1/2 max-w-10/12 bg-white dark:bg-zinc-800 p-6 rounded-lg shadow-lg w-full">
+                <livewire:frontend.unit-avaibility-check-form mode="redirect" />
+            </div>
+        </div>
+    </div>
+
+
     <div class="container mx-auto px-4 py-8">
-        <!-- Header Otentikasi -->
-        <header class="w-full max-w-full text-sm mb-6">
-            @if (Route::has('login'))
-                <nav class="flex items-center justify-end gap-4">
-                    @auth
-                        <flux:button variant="primary" :href="route('dashboard')" wire:navigate>
-                            Dashboard
-                        </flux:button>
-                    @else
-                        <flux:button variant="primary" :href="route('login')" wire:navigate>
-                            Masuk
-                        </flux:button>
-                    @endauth
-                </nav>
-            @endif
-        </header>
 
         <!-- Hero Section -->
         <section class="text-center py-16">

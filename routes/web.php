@@ -9,6 +9,8 @@ use Livewire\Volt\Volt;
 // })->name('home');
 Route::view('/', 'modules.frontend.home')->name('home');
 
+Route::view('tenancy', 'modules.frontend.tenancy.index')->name('tenancy');
+
 // Managers Dashboard
 Route::prefix('managers')->middleware(['auth', 'verified'])->group(function () {
 

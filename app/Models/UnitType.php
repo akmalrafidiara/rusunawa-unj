@@ -18,6 +18,11 @@ class UnitType extends Model
         'facilities' => 'array', // Ini yang sangat penting!
     ];
 
+    public function units()
+    {
+        return $this->hasMany(Unit::class);
+    }
+
     public function attachments()
     {
         return $this->morphMany(Attachment::class, 'attachable');

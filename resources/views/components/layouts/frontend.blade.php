@@ -6,6 +6,7 @@
     </head>
 
     <body class="min-h-screen bg-white dark:bg-zinc-800">
+        <x-layouts.frontend.navbar />
 
         {{ $slot }}
 
