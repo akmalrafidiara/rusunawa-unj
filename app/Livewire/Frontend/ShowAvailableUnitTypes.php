@@ -2,8 +2,11 @@
 
 namespace App\Livewire\Frontend;
 
+use App\Livewire\Managers\UnitRate;
+use App\Models\UnitRate as UnitRateModel;
 use App\Models\UnitType;
 use Livewire\Component;
+use Livewire\Attributes\On;
 
 class ShowAvailableUnitTypes extends Component
 {
@@ -20,30 +23,30 @@ class ShowAvailableUnitTypes extends Component
         ];
     }
     
+    #[On('filtersApplied')]
+    public function handleFiltersApplied($filters)
+    {
+        $this->filters = $filters;
+    }
+    
     public function render()
     {
-        // Ambil data Tipe Unit berdasarkan filter
-        $query = UnitType::query()
-            ->whereHas('units', function ($unitQuery) {
-                // Filter unit yang statusnya 'available'
-                $unitQuery->where('status', 'available')
-                    // DAN unit yang memiliki rate sesuai filter
-                    ->whereHas('rates', function ($rateQuery) {
-                        if (!empty($this->filters['occupantType'])) {
-                            $rateQuery->where('occupant_type', $this->filters['occupantType']);
-                        }
-                        if (!empty($this->filters['pricingBasis'])) {
-                            $rateQuery->where('pricing_basis', $this->filters['pricingBasis']);
-                        }
-                    });
-                
-                // Tambahkan logika pengecekan ketersediaan tanggal (booking) di sini jika diperlukan
-                // Ini adalah contoh sederhana, logika booking bisa sangat kompleks
-            });
+        $unitAvailables = UnitRateModel::query()
+            ->with(['unitTypes', 'unitTypes.attachments'])
+            ->whereHas('unitTypes', function ($q) {
+                $q->whereHas('units', function ($q) {
+                    $q->where('status', 'available');
+                });
+            })
+            ->when(!empty($this->filters['occupantType']), function ($q) {
+                $q->where('occupant_type', $this->filters['occupantType']);
+            })
+            ->when(!empty($this->filters['pricingBasis']), function ($q) {
+                $q->where('pricing_basis', $this->filters['pricingBasis']);
+            })
+            ->get();
 
-        return view('livewire.frontend.show-available-unit-types', [
-            'unitTypes' => $query->get() // Ambil 6 tipe unit per halaman
-        ]);
+        return view('livewire.frontend.show-available-unit-types', compact('unitAvailables'));
     }
 
     public function applyFilters($newFilters)

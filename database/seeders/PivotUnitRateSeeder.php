@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Unit;
+use App\Models\UnitType;
 use App\Models\UnitRate;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -17,12 +17,12 @@ class PivotUnitRateSeeder extends Seeder
      */
     public function run(): void
     {
-        $unitIds = Unit::pluck('id')->toArray();
+        $unitTypeIds = UnitType::pluck('id')->toArray();
         $rateIds = UnitRate::pluck('id')->toArray();
 
         $pivotData = [];
 
-        foreach ($unitIds as $unitId) {
+        foreach ($unitTypeIds as $unitId) {
             // Setiap unit punya 1-3 rate yang berbeda
             $randomRates = array_rand($rateIds, rand(1, count($rateIds)));
 
@@ -35,16 +35,14 @@ class PivotUnitRateSeeder extends Seeder
                 $rateId = $rateIds[$key];
 
                 $pivotData[] = [
-                    'unit_id' => $unitId,
+                    'unit_type_id' => $unitId,
                     'rate_id' => $rateId,
-                    'created_at' => now(),
-                    'updated_at' => now(),
                 ];
             }
         }
 
-        DB::table('unit_rate')->insert($pivotData);
+        DB::table('unit_type_rate')->insert($pivotData);
 
-        $this->command->info(count($pivotData) . ' relasi unit-rate berhasil disimpan.');
+        $this->command->info(count($pivotData) . ' relasi unit_type-rate berhasil disimpan.');
     }
 }

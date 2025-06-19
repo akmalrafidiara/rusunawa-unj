@@ -23,6 +23,11 @@ class UnitType extends Model
         return $this->hasMany(Unit::class);
     }
 
+    public function rates()
+    {
+        return $this->belongsToMany(UnitRate::class, 'unit_type_rate', 'unit_type_id', 'rate_id');
+    }
+
     public function attachments()
     {
         return $this->morphMany(Attachment::class, 'attachable');

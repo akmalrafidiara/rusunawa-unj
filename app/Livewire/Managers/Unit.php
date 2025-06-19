@@ -8,8 +8,6 @@ use App\Exports\UnitsExport;
 use App\Models\Unit as UnitModel;
 use App\Models\UnitCluster;
 use App\Models\UnitType;
-use App\Models\UnitRate;
-use App\Models\Attachment;
 use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -47,16 +45,11 @@ class Unit extends Component
     // Temporary image for editing
     public $temporaryImage;
 
-    // Rates properties
-    public $unitRates = [];
-    public $unitRatesId = [];
-
     // Options properties
     public $genderAllowedOptions;
     public $statusOptions;
     public $unitTypeOptions;
     public $unitClusterOptions;
-    public $rateOptions = [];
 
 
     // Filter properties
@@ -103,14 +96,7 @@ class Unit extends Component
             'value' => $unitCluster->id,
             'label' => $unitCluster->name,
         ])->toArray();
-
-        $this->rateOptions = UnitRate::select('id', 'price', 'occupant_type', 'pricing_basis')
-            ->get()
-            ->map(fn($rate) => [
-                'value' => $rate->id,
-                'label' => $rate->occupant_type . ' - Rp ' . number_format($rate->price) . ' (' . ucfirst(str_replace('_', ' ', $rate->pricing_basis->value)) . ')',
-            ])->toArray();
-        }
+    }
 
     /**
      * Membangun instance query builder untuk unit dengan semua filter dan sorting yang diterapkan.
@@ -196,19 +182,6 @@ class Unit extends Component
         $this->unitTypeId = $unit->unit_type_id;
         $this->unitClusterId = $unit->unit_cluster_id;
 
-        // Filling rates
-        $this->unitRates = $unit->rates->sortBy('occupant_type')->map(function ($rate) {
-            return [
-                'id' => $rate->id,
-                'price' => $rate->price,
-                'occupant_type' => $rate->occupant_type,
-                'pricing_basis' => $rate->pricing_basis,
-                'requires_verification' => $rate->requires_verification,
-            ];
-        })->values()->toArray();
-
-        $this->unitRatesId = $unit->rates->pluck('id')->toArray();
-
         // Filling images data
         $this->temporaryImage = $unit->image;
 
@@ -238,11 +211,6 @@ class Unit extends Component
             'image' => $this->unitIdBeingEdited && $this->image === $this->temporaryImage
                 ? 'nullable'
                 : 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            
-            'unitRatesId.*' => [
-                'nullable',
-                'exists:rates,id',
-            ],
         ];
     }
 
@@ -321,13 +289,6 @@ class Unit extends Component
             ['id' => $this->unitIdBeingEdited],
             $data
         );
-
-        // Unit Rates
-        if (!empty($this->unitRatesId)) {
-            $unit->rates()->sync($this->unitRatesId);
-        } else {
-            $unit->rates()->detach();
-        }
 
         // Flash message
         LivewireAlert::title($this->unitIdBeingEdited ? 'Data berhasil diperbarui.' : 'Unit berhasil ditambahkan.')

@@ -66,7 +66,7 @@ class UnitAvaibilityCheckForm extends Component
             return redirect()->route('tenancy.index', $validatedData);
         } else {
             // Jika di halaman sewa kamar, kirim event ke komponen induk
-            $this->dispatch('filtersApplied', $validatedData);
+            $this->dispatch('filtersApplied', filters: $validatedData);
         }
     }
 

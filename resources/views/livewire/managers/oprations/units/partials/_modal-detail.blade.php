@@ -114,64 +114,6 @@
                 </div>
             </div>
 
-            {{-- Unit Rates Card --}}
-            <div class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg p-4 shadow-sm">
-                <h4 class="text-lg font-semibold text-zinc-800 dark:text-zinc-100 mb-4 flex items-center gap-2">
-                    <flux:icon.currency-dollar class="w-5 h-5 text-amber-500 dark:text-amber-400" />
-                    Tarif Unit
-                </h4>
-                @if (!empty($unitRates))
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm">
-                            <thead>
-                                <tr class="border-b border-zinc-200 dark:border-zinc-600">
-                                    <th class="text-left py-3 px-4 font-semibold text-zinc-800 dark:text-zinc-100">Tipe
-                                        Penghuni</th>
-                                    <th class="text-left py-3 px-4 font-semibold text-zinc-800 dark:text-zinc-100">Basis
-                                        Harga</th>
-                                    <th class="text-right py-3 px-4 font-semibold text-zinc-800 dark:text-zinc-100">
-                                        Tarif</th>
-                                    <th class="text-right py-3 px-4 font-semibold text-zinc-800 dark:text-zinc-100">
-                                        Butuh Verifikasi?</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($unitRates as $rate)
-                                    <tr
-                                        class="border-b border-zinc-100 dark:border-zinc-600 last:border-b-0 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors">
-                                        <td class="py-3 px-4 font-medium text-zinc-800 dark:text-zinc-100">
-                                            {{ ucfirst(str_replace('_', ' ', $rate['occupant_type'])) }}
-                                        </td>
-                                        <td class="py-3 px-4 text-zinc-600 dark:text-zinc-300">
-                                            {{ $rate['pricing_basis']->label() }}
-                                        </td>
-                                        <td class="py-3 px-4 text-right font-bold text-green-600 dark:text-green-400">
-                                            Rp {{ number_format($rate['price'], 0, ',', '.') }}
-                                        </td>
-                                        <td class="py-3 px-4 text-right">
-                                            @if ($rate['requires_verification'])
-                                                <x-managers.ui.badge type="success">
-                                                    Ya
-                                                </x-managers.ui.badge>
-                                            @else
-                                                <x-managers.ui.badge type="danger">
-                                                    Tidak
-                                                </x-managers.ui.badge>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                @else
-                    <div class="text-center py-8 text-zinc-500 dark:text-zinc-400">
-                        <flux:icon.exclamation-triangle class="w-8 h-8 mx-auto mb-2 text-zinc-400 dark:text-zinc-500" />
-                        <p>Belum ada tarif yang ditetapkan untuk unit ini</p>
-                    </div>
-                @endif
-            </div>
-
             {{-- Timestamps Card --}}
             <div class="bg-zinc-50 dark:bg-zinc-700 border border-zinc-200 dark:border-zinc-600 rounded-lg p-4">
                 <h4 class="text-lg font-semibold text-zinc-800 dark:text-zinc-100 mb-4 flex items-center gap-2">

@@ -7,8 +7,8 @@
         ],
         'tenancy' => [
             'label' => 'Sewa Kamar',
-            'route' => route('tenancy'),
-            'active' => request()->routeIs('tenancy'),
+            'route' => route('tenancy.index'),
+            'active' => request()->routeIs('tenancy.index'),
         ],
         // 'complaint' => [
         //     'label' => 'Pengaduan',

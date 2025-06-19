@@ -11,20 +11,26 @@
     {{-- Daftar hasil pencarian Tipe Unit --}}
     <div class="container mx-auto px-6">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            @forelse ($unitTypes as $unitType)
+            @forelse ($unitAvailables as $unitAvailable)
                 {{-- Ini adalah card untuk setiap TIPE UNIT, sesuaikan dengan desain Anda --}}
                 <div class="border rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition">
-                    <img src="{{ $unitType->attachments->isNotEmpty() ? Storage::url($unitType->attachments->first()->path) : asset('images/placeholder.png') }}"
-                        alt="Gambar {{ $unitType->name }}" class="w-full h-48 object-cover">
+                    <img src="{{ $unitAvailable->unitTypes->first() && $unitAvailable->unitTypes->first()->attachments && $unitAvailable->unitTypes->first()->attachments->isNotEmpty() ? Storage::url($unitAvailable->unitTypes->first()->attachments->first()->path) : asset('images/placeholder.png') }}"
+                        alt="Gambar {{ $unitAvailable->unitTypes->first()->name ?? 'Unit Type' }}"
+                        class="w-full h-48 object-cover">
                     <div class="p-4">
-                        <h3 class="font-bold text-lg text-gray-800 dark:text-white">{{ $unitType['name'] }}</h3>
-                        <p class="text-sm text-gray-500 mb-2">{{ $unitType['units_available_count'] }} kamar tersedia
+                        <h3 class="font-bold text-lg text-gray-800 dark:text-white">
+                            {{ $unitAvailable->unitTypes->first()->name ?? 'N/A' }}
+                        </h3>
+                        <p class="text-sm text-gray-500 mb-2">
+                            {{ $unitAvailable->unitTypes->first()->available_units_count ?? 0 }} kamar
+                            tersedia
                         </p>
                         <p class="text-gray-600 dark:text-gray-300 text-sm mb-4">
-                            {{ Str::limit($unitType['description'], 100) }}</p>
+                            {{ Str::limit($unitAvailable->unitTypes->first()->description ?? '', 100) }}</p>
                         <div class="flex justify-between items-center">
                             <span class="text-xl font-semibold text-emerald-600">
-                                {{ $unitType['pricing'] ? 'Rp ' . number_format($unitType['pricing'], 0, ',', '.') : 'Harga Tidak Tersedia' }}
+                                Rp
+                                {{ number_format($unitAvailable->price, 0, ',', '.') }}/{{ $unitAvailable->pricing_basis->label() }}
                             </span>
                             <a href="#"
                                 class="bg-emerald-600 text-white px-4 py-2 rounded text-sm font-semibold hover:bg-emerald-700">Lihat

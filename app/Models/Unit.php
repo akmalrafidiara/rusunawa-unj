@@ -30,11 +30,6 @@ class Unit extends Model
         return $this->belongsTo(UnitCluster::class);
     }
 
-    public function rates()
-    {
-        return $this->belongsToMany(UnitRate::class, 'unit_rate', 'unit_id', 'rate_id');
-    }
-
     protected $casts = [
         'gender_allowed' => GenderAllowed::class,
         'status' => UnitStatus::class,

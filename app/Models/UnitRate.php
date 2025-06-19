@@ -16,9 +16,9 @@ class UnitRate extends Model
         'requires_verification',
     ];
 
-    public function units()
+    public function unitTypes()
     {
-        return $this->belongsToMany(Unit::class, 'unit_rate', 'rate_id', 'unit_id');
+        return $this->belongsToMany(UnitType::class, 'unit_type_rate', 'rate_id', 'unit_type_id');
     }
 
     public function getFormattedPriceAttribute()

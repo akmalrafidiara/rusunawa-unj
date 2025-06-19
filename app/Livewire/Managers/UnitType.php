@@ -4,6 +4,7 @@ namespace App\Livewire\Managers;
 
 use App\Models\UnitType as UnitTypeModel;
 use App\Models\Attachment;
+use App\Models\UnitRate;
 use Livewire\Component;
 use Illuminate\Support\Facades\Storage;
 use Livewire\WithFileUploads;
@@ -16,9 +17,19 @@ class UnitType extends Component
     use WithFilePond;
 
     // Main data properties
-    public $name, $description;
+    public 
+        $name, 
+        $description, 
+        $createdAt, 
+        $updatedAt;
+        
     public $facilities = []; // Pastikan ini selalu array
     public $newFacility = '';
+
+    // Rates properties
+    public $rates = [];
+    public $ratesId = [];
+    public $rateOptions = [];
 
     // Attachment properties
     public $attachments = []; // Untuk upload baru
@@ -33,14 +44,24 @@ class UnitType extends Component
     // Modal properties
     public $showModal = false;
     public $unitTypeIdBeingEdited = null;
-    public $modalType = ''; // Tambahkan properti untuk mengontrol tipe modal (create, edit, detail)
-    public $detailedUnitType; // Properti publik baru untuk menyimpan data tipe unit yang akan ditampilkan di modal detail
+    public $modalType = '';
+    public $detailedUnitType;
 
     protected $queryString = [
         'search' => ['except' => ''],
         'orderBy' => ['except' => 'created_at'],
         'sort' => ['except' => 'asc'],
     ];
+
+    public function mount()
+    {
+        $this->rateOptions = UnitRate::select('id', 'price', 'occupant_type', 'pricing_basis')
+            ->get()
+            ->map(fn($rate) => [
+                'value' => $rate->id,
+                'label' => $rate->occupant_type . ' - Rp ' . number_format($rate->price) . ' (' . ucfirst(str_replace('_', ' ', $rate->pricing_basis->value)) . ')',
+            ])->toArray();
+    }
 
     public function render()
     {
@@ -50,9 +71,7 @@ class UnitType extends Component
             ->paginate(10);
 
         $unitTypes->getCollection()->transform(function ($unitType) {
-            // Karena sudah di-cast di model, facilities seharusnya sudah array.
-            // Tambahkan pengecekan jika Anda khawatir data lama tidak valid.
-            $unitType->facilities = $unitType->facilities ?? []; // <-- Pastikan ini array
+            $unitType->facilities = $unitType->facilities ?? [];
             $unitType->attachments = $unitType->attachments()->get();
             return $unitType;
         });
@@ -62,6 +81,7 @@ class UnitType extends Component
 
     public function create()
     {
+        $this->search = '';
         $this->resetForm();
         $this->modalType = 'create'; // Set tipe modal
         $this->showModal = true;
@@ -69,50 +89,45 @@ class UnitType extends Component
 
     public function edit(UnitTypeModel $unitType)
     {
-        $this->unitTypeIdBeingEdited = $unitType->id;
-        $this->name = $unitType->name;
-        $this->description = $unitType->description;
-        // Ambil langsung, diasumsikan sudah array dari model casting.
-        // Tambahkan pengecekan null coalescing untuk memastikan selalu array.
-        $this->facilities = $unitType->facilities ?? []; // <-- Pastikan ini array
-        $this->existingAttachments = $unitType->attachments()->get();
-        $this->attachments = [];
-        $this->attachmentsToDelete = [];
-        $this->modalType = 'edit'; // Set tipe modal
+        $this->fillData($unitType);
+        $this->modalType = 'form';
         $this->showModal = true;
     }
 
-    /**
-     * Method to display the detail modal for a specific UnitType.
-     * @param int $unitTypeId The ID of the UnitType to display.
-     */
-    public function detail($unitTypeId)
+    public function detail(UnitTypeModel $unitType)
     {
-        // Temukan tipe unit berdasarkan ID
-        $unitType = UnitTypeModel::find($unitTypeId);
-
-        // Pastikan tipe unit ditemukan sebelum membuka modal
-        if ($unitType) {
-            // Memastikan facilities adalah array.
-            $unitType->facilities = $unitType->facilities ?? []; // <-- Pastikan ini array
-
-            // Muat attachment
-            $unitType->attachments = $unitType->attachments()->get();
-
-            $this->detailedUnitType = $unitType; // Set properti detailedUnitType
-            $this->modalType = 'detail'; // Set tipe modal ke 'detail'
-            $this->showModal = true;
-        } else {
-            // Handle jika tipe unit tidak ditemukan (opsional)
-            LivewireAlert::title('Error')
-                ->text('Tipe Unit tidak ditemukan.')
-                ->danger()
-                ->toast()
-                ->position('top-end')
-                ->show();
-        }
+        $this->fillData($unitType);
+        $this->modalType = 'detail';
+        $this->showModal = true;
     }
 
+    protected function fillData(UnitTypeModel $unitType)
+    {
+        $this->unitTypeIdBeingEdited = $unitType->id;
+        $this->name = $unitType->name;
+        $this->description = $unitType->description;
+        $this->facilities = $unitType->facilities ?? [];
+        $this->existingAttachments = $unitType->attachments()->get();
+        $this->attachments = [];
+        $this->attachmentsToDelete = [];
+        $this->createdAt = $unitType->created_at;
+        $this->updatedAt = $unitType->updated_at;
+
+        
+        // Filling rates
+        $this->rates = $unitType->rates->sortBy('occupant_type')->map(function ($rate) {
+            return [
+                'id' => $rate->id,
+                'price' => $rate->price,
+                'occupant_type' => $rate->occupant_type,
+                'pricing_basis' => $rate->pricing_basis,
+                'requires_verification' => $rate->requires_verification,
+            ];
+        })->values()->toArray();
+
+        $this->ratesId = $unitType->rates->pluck('id')->toArray();
+    }
+    
     public function rules()
     {
         return [
@@ -121,6 +136,10 @@ class UnitType extends Component
             'facilities' => 'array',
             'facilities.*' => 'string|max:255',
             'attachments.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'ratesId.*' => [
+                'nullable',
+                'exists:rates,id',
+            ],
         ];
     }
 
@@ -151,6 +170,13 @@ class UnitType extends Component
 
         // Upload attachment baru
         $this->handleAttachmentUploads($unitType);
+
+        // Unit Rates
+        if (!empty($this->ratesId)) {
+            $unitType->rates()->sync($this->ratesId);
+        } else {
+            $unitType->rates()->detach();
+        }
 
         LivewireAlert::title($this->unitTypeIdBeingEdited ? 'Data berhasil diperbarui.' : 'Tipe unit berhasil ditambahkan.')
         ->success()
