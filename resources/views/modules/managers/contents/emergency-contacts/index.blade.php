@@ -4,5 +4,7 @@
         <x-managers.ui.page-title title="Kontak Darurat Rusunawa"
             subtitle="Kelola data referensi Kontak Darurat untuk digunakan sebagai sarana informasi" />
 
+        {{-- Dynamic Content - Emergency Contacts --}}
+        <livewire:managers.emergency-contact />
     </div>
 </x-layouts.managers>
