@@ -79,7 +79,7 @@ class UnitType extends Component
     {
         $this->search = '';
         $this->resetForm();
-        $this->modalType = 'create'; // Set tipe modal
+        $this->modalType = 'form';
         $this->showModal = true;
     }
 
