@@ -77,21 +77,6 @@ class Announcement extends Component
         $this->categoryOptions = AnnouncementCategory::options(); // Muat opsi kategori
     }
 
-    /**
-     * Membangun instance query builder untuk pengumuman dengan semua filter dan sorting yang diterapkan.
-     * Ini adalah satu-satunya sumber untuk semua query pengumuman di komponen ini.
-     *
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    private function buildAnnouncementQuery()
-    {
-        return AnnouncementModel::query()
-            ->when($this->search, fn($q) => $q->where('title', 'like', "%{$this->search}%"))
-            ->when($this->statusFilter, fn($q) => $q->where("status", $this->statusFilter))
-            ->when($this->categoryFilter, fn($q) => $q->where("category", $this->categoryFilter)) // Tambahkan filter kategori
-            ->orderBy($this->orderBy, $this->sort);
-    }
-
     // Tambahkan listener untuk event dari Trix editor
     protected $listeners = ['contentChanged' => 'updateDescription'];
 
@@ -107,7 +92,12 @@ class Announcement extends Component
      */
     public function render()
     {
-        $announcements = $this->buildAnnouncementQuery()->paginate($this->perPage);
+        $announcements = AnnouncementModel::query()
+            ->when($this->search, fn($q) => $q->where('title', 'like', "%{$this->search}%"))
+            ->when($this->statusFilter, fn($q) => $q->where("status", $this->statusFilter))
+            ->when($this->categoryFilter, fn($q) => $q->where("category", $this->categoryFilter)) // Tambahkan filter kategori
+            ->orderBy($this->orderBy, $this->sort)
+            ->paginate($this->perPage); // Menggunakan $this->perPage
 
         return view('livewire.managers.contents.announcements.index', compact('announcements'));
     }
