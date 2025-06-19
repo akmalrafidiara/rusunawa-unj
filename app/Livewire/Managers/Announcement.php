@@ -86,8 +86,7 @@ class Announcement extends Component
     private function buildAnnouncementQuery()
     {
         return AnnouncementModel::query()
-            ->when($this->search, fn($q) => $q->where('title', 'like', "%{$this->search}%")
-                                             ->orWhere('description', 'like', "%{$this->search}%"))
+            ->when($this->search, fn($q) => $q->where('title', 'like', "%{$this->search}%"))
             ->when($this->statusFilter, fn($q) => $q->where("status", $this->statusFilter))
             ->when($this->categoryFilter, fn($q) => $q->where("category", $this->categoryFilter)) // Tambahkan filter kategori
             ->orderBy($this->orderBy, $this->sort);
