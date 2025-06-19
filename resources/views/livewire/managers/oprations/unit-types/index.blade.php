@@ -10,4 +10,7 @@
 
     {{-- Modal Detail --}}
     @include('livewire.managers.oprations.unit-types.partials._modal-detail')
+
+    {{-- Modal Manage Price --}}
+    @include('livewire.managers.oprations.unit-types.partials._modal-price')
 </div>

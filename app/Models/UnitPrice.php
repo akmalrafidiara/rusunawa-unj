@@ -5,20 +5,25 @@ namespace App\Models;
 use App\Enums\PricingBasis;
 use Illuminate\Database\Eloquent\Model;
 
-class UnitRate extends Model
+class UnitPrice extends Model
 {
-    protected $table = 'rates';
-
     protected $fillable = [
-        'price',
-        'occupant_type',
+        'unit_type_id',
+        'occupant_type_id',
         'pricing_basis',
-        'requires_verification',
+        'price',
+        'max_price',
+        'notes',
     ];
 
-    public function unitTypes()
+    public function unitType()
     {
-        return $this->belongsToMany(UnitType::class, 'unit_type_rate', 'rate_id', 'unit_type_id');
+        return $this->belongsTo(UnitType::class);
+    }
+
+    public function occupantType()
+    {
+        return $this->belongsTo(OccupantType::class);
     }
 
     public function getFormattedPriceAttribute()
@@ -28,6 +33,5 @@ class UnitRate extends Model
 
     protected $casts = [
         'pricing_basis' => PricingBasis::class,
-        'requires_verification' => 'boolean',
     ];
 }

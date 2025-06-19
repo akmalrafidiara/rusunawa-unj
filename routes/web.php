@@ -42,7 +42,7 @@ Route::prefix('managers')->middleware(['auth', 'verified'])->group(function () {
         Route::view('/', 'modules.managers.oprations.units.index')->name('units');
         Route::view('types', 'modules.managers.oprations.unit-types.index')->name('unit.types');
         Route::view('clusters', 'modules.managers.oprations.unit-clusters.index')->name('unit.clusters');
-        Route::view('rates', 'modules.managers.oprations.unit-rates.index')->name('unit.rates');
+        Route::view('occupant-types', 'modules.managers.oprations.occupant-types.index')->name('occupant.types');
     });
 
     // Content

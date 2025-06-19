@@ -15,7 +15,7 @@ class UnitType extends Model
     ];
 
     protected $casts = [
-        'facilities' => 'array', // Ini yang sangat penting!
+        'facilities' => 'array',
     ];
 
     public function units()
@@ -23,9 +23,9 @@ class UnitType extends Model
         return $this->hasMany(Unit::class);
     }
 
-    public function rates()
+    public function unitPrices()
     {
-        return $this->belongsToMany(UnitRate::class, 'unit_type_rate', 'unit_type_id', 'rate_id');
+        return $this->hasMany(UnitPrice::class);
     }
 
     public function attachments()

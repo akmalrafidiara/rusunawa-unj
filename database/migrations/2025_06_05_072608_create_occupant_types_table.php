@@ -11,10 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('unit_type_rate', function (Blueprint $table) {
+        Schema::create('occupant_types', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('unit_type_id')->constrained('unit_types')->onDelete('cascade');
-            $table->foreignId('rate_id')->constrained('rates')->onDelete('cascade');
+            $table->string('name')->unique();
+            $table->text('description')->nullable();
+            $table->boolean('requires_verification')->default(false);
+            $table->timestamps();
         });
     }
 
@@ -23,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('unit_type_rate');
+        Schema::dropIfExists('occupant_types');
     }
 };

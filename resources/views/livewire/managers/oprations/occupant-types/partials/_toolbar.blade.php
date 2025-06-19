@@ -2,13 +2,13 @@
 <div class="flex flex-col sm:flex-row gap-4">
 
     {{-- Search Form --}}
-    <x-managers.form.input wire:model.live="search" clearable placeholder="Cari tipe unit..." icon="magnifying-glass"
+    <x-managers.form.input wire:model.live="search" clearable placeholder="Cari tipe penghuni..." icon="magnifying-glass"
         class="w-full" />
 
     <div class="flex gap-4">
-        {{-- Add Unit Type Button --}}
+        {{-- Add Occupant Type Button --}}
         <x-managers.ui.button wire:click="create" variant="primary" icon="plus" class="w-full sm:w-auto">
-            Tambah Tipe Unit
+            Tambah Tipe Penghuni
         </x-managers.ui.button>
 
         {{-- Dropdown for Filters --}}
@@ -18,19 +18,12 @@
             </x-slot>
             @php
                 $orderByOptions = [
-                    ['value' => 'price', 'label' => 'Harga'],
-                    ['value' => 'occupant_type', 'label' => 'Tipe Penghuni'],
+                    ['value' => 'name', 'label' => 'Nama'],
                     ['value' => 'created_at', 'label' => 'Tanggal'],
                 ];
 
                 $sortOptions = [['value' => 'asc', 'label' => 'Menaik'], ['value' => 'desc', 'label' => 'Menurun']];
             @endphp
-            {{-- Filter --}}
-            <x-managers.form.small>Filter</x-managers.form.small>
-            <div class="flex gap-2">
-                <x-managers.ui.dropdown-picker wire:model.live="pricingBasisFilter" :options="$pricingBasisOptions"
-                    label="Semua Dasar Harga" wire:key="dropdown-role" />
-            </div>
 
             {{-- Sort --}}
             <x-managers.form.small>Urutkan</x-managers.form.small>

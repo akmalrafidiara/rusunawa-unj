@@ -25,8 +25,7 @@
                     <x-managers.table.cell class="text-right">
                         <div class="flex gap-2">
                             {{-- Detail Button --}}
-                            <x-managers.ui.button wire:click="detail({{ $unitType->id }})" variant="info"
-                                size="sm">
+                            <x-managers.ui.button wire:click="detail({{ $unitType->id }})" variant="info" size="sm">
                                 <flux:icon.eye class="w-4" />
                             </x-managers.ui.button>
 
@@ -34,6 +33,12 @@
                             <x-managers.ui.button wire:click="edit({{ $unitType->id }})" variant="secondary"
                                 size="sm">
                                 <flux:icon.pencil class="w-4" />
+                            </x-managers.ui.button>
+
+                            {{-- Manage Price Button --}}
+                            <x-managers.ui.button wire:click="price({{ $unitType->id }})" variant="secondary"
+                                size="sm">
+                                <flux:icon.banknotes class="w-4" />
                             </x-managers.ui.button>
 
                             {{-- Delete Button --}}

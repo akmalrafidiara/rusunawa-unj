@@ -26,10 +26,7 @@ class UnitType extends Component
     public $facilities = []; // Pastikan ini selalu array
     public $newFacility = '';
 
-    // Rates properties
-    public $rates = [];
-    public $ratesId = [];
-    public $rateOptions = [];
+    public $unitTypeData;
 
     // Attachment properties
     public $attachments = []; // Untuk upload baru
@@ -53,14 +50,13 @@ class UnitType extends Component
         'sort' => ['except' => 'asc'],
     ];
 
+    protected $listeners = [
+        'closeModal' => 'resetForm',
+    ];
+
     public function mount()
     {
-        $this->rateOptions = UnitRate::select('id', 'price', 'occupant_type', 'pricing_basis')
-            ->get()
-            ->map(fn($rate) => [
-                'value' => $rate->id,
-                'label' => $rate->occupant_type . ' - Rp ' . number_format($rate->price) . ' (' . ucfirst(str_replace('_', ' ', $rate->pricing_basis->value)) . ')',
-            ])->toArray();
+        // 
     }
 
     public function render()
@@ -101,6 +97,13 @@ class UnitType extends Component
         $this->showModal = true;
     }
 
+    public function price(UnitTypeModel $unitType)
+    {
+        $this->unitTypeData = $unitType;
+        $this->modalType = 'price';
+        $this->showModal = true;
+    }
+
     protected function fillData(UnitTypeModel $unitType)
     {
         $this->unitTypeIdBeingEdited = $unitType->id;
@@ -112,20 +115,6 @@ class UnitType extends Component
         $this->attachmentsToDelete = [];
         $this->createdAt = $unitType->created_at;
         $this->updatedAt = $unitType->updated_at;
-
-        
-        // Filling rates
-        $this->rates = $unitType->rates->sortBy('occupant_type')->map(function ($rate) {
-            return [
-                'id' => $rate->id,
-                'price' => $rate->price,
-                'occupant_type' => $rate->occupant_type,
-                'pricing_basis' => $rate->pricing_basis,
-                'requires_verification' => $rate->requires_verification,
-            ];
-        })->values()->toArray();
-
-        $this->ratesId = $unitType->rates->pluck('id')->toArray();
     }
     
     public function rules()
@@ -136,10 +125,6 @@ class UnitType extends Component
             'facilities' => 'array',
             'facilities.*' => 'string|max:255',
             'attachments.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'ratesId.*' => [
-                'nullable',
-                'exists:rates,id',
-            ],
         ];
     }
 
@@ -170,13 +155,6 @@ class UnitType extends Component
 
         // Upload attachment baru
         $this->handleAttachmentUploads($unitType);
-
-        // Unit Rates
-        if (!empty($this->ratesId)) {
-            $unitType->rates()->sync($this->ratesId);
-        } else {
-            $unitType->rates()->detach();
-        }
 
         LivewireAlert::title($this->unitTypeIdBeingEdited ? 'Data berhasil diperbarui.' : 'Tipe unit berhasil ditambahkan.')
         ->success()
@@ -228,6 +206,7 @@ class UnitType extends Component
         $this->existingAttachments = [];
         $this->attachmentsToDelete = [];
         $this->unitTypeIdBeingEdited = null;
+        $this->showModal = false;
         $this->modalType = ''; // Reset modal type
         $this->detailedUnitType = null; // Reset detailedUnitType
         $this->resetErrorBag();

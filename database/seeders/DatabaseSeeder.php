@@ -17,11 +17,11 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RoleSeeder::class,
             UserSeeder::class,
+            OccupantTypeSeeder::class,
             UnitTypeSeeder::class,
+            UnitPriceSeeder::class,
             UnitClusterSeeder::class,
-            UnitRateSeeder::class,
             UnitSeeder::class,
-            PivotUnitRateSeeder::class,
             FaqSeeder::class,
             AnnouncementSeeder::class,
             GallerySeeder::class,

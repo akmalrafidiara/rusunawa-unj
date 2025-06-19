@@ -90,14 +90,14 @@ $adminSidebarMenu = [
                         'current' => request()->routeIs('unit.types'),
                     ],
                     [
-                        'label' => __('Rate Unit'),
-                        'route' => route('unit.rates'),
-                        'current' => request()->routeIs('unit.rates'),
-                    ],
-                    [
                         'label' => __('Cluster Unit'),
                         'route' => route('unit.clusters'),
                         'current' => request()->routeIs('unit.clusters'),
+                    ],
+                    [
+                        'label' => __('Tipe Penghuni'),
+                        'route' => route('occupant.types'),
+                        'current' => request()->routeIs('occupant.types'),
                     ],
                 ],
             ],
@@ -193,25 +193,25 @@ $adminSidebarMenu = [
     {{-- Dynamic Sidebar Menu --}}
     <flux:navlist variant="outline" class="space-y-4">
         @foreach ($adminSidebarMenu as $menu)
-        <flux:navlist.group :heading="__($menu['group'])" class="grid">
-            @foreach ($menu['items'] as $item)
-            @if (isset($item['expandable']) && $item['expandable'])
-            <flux:navlist.group :heading="$item['label']" expandable :expanded="false">
-                @foreach ($item['items'] as $subItem)
-                <flux:navlist.item :href="$subItem['route']" :current="$subItem['current']"
-                    wire:navigate.hover>
-                    {{ $subItem['label'] }}
-                </flux:navlist.item>
+            <flux:navlist.group :heading="__($menu['group'])" class="grid">
+                @foreach ($menu['items'] as $item)
+                    @if (isset($item['expandable']) && $item['expandable'])
+                        <flux:navlist.group :heading="$item['label']" expandable :expanded="false">
+                            @foreach ($item['items'] as $subItem)
+                                <flux:navlist.item :href="$subItem['route']" :current="$subItem['current']"
+                                    wire:navigate.hover>
+                                    {{ $subItem['label'] }}
+                                </flux:navlist.item>
+                            @endforeach
+                        </flux:navlist.group>
+                    @else
+                        <flux:navlist.item :icon="$item['icon']" :href="$item['route']" :current="$item['current']"
+                            wire:navigate.hover :badge="$item['badge']" badge-color="red">
+                            {{ $item['label'] }}
+                        </flux:navlist.item>
+                    @endif
                 @endforeach
             </flux:navlist.group>
-            @else
-            <flux:navlist.item :icon="$item['icon']" :href="$item['route']" :current="$item['current']"
-                wire:navigate.hover :badge="$item['badge']" badge-color="red">
-                {{ $item['label'] }}
-            </flux:navlist.item>
-            @endif
-            @endforeach
-        </flux:navlist.group>
         @endforeach
     </flux:navlist>
 
