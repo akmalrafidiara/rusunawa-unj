@@ -4,8 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
-use App\Models\Faq;
-use App\Models\Regulation;
+
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -27,6 +26,7 @@ class DatabaseSeeder extends Seeder
             AnnouncementSeeder::class,
             GallerySeeder::class,
             RegulationSeeder::class,
+            EmergencyContactSeeder::class,
         ]);
     }
 }

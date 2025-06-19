@@ -1,12 +1,5 @@
 <x-managers.ui.card class="p-0">
-    <x-managers.table.table :headers="[
-            'Judul',
-            'Kategori',  {{-- Tambahkan header Kategori --}}
-            'Status',
-            'Tanggal Dibuat',
-            'Isi Pengumuman',
-            'Aksi',
-        ]">
+    <x-managers.table.table :headers="['Judul', 'Kategori', 'Status', 'Tanggal Dibuat', 'Isi Pengumuman', 'Aksi']">
         <x-managers.table.body>
             @forelse ($announcements as $announcement)
             <x-managers.table.row wire:key="{{ $announcement->id }}">
@@ -109,9 +102,9 @@
             </x-managers.table.row>
             @empty
             <x-managers.table.row>
-                <x-managers.table.cell colspan="6" class="text-center text-gray-500"> {{-- Ubah colspan --}}
+                <td colspan="6" class="px-6 py-4 whitespace-nowrap text-center text-gray-500">
                     Tidak ada data pengumuman ditemukan.
-                </x-managers.table.cell>
+                </td>
             </x-managers.table.row>
             @endforelse
         </x-managers.table.body>
