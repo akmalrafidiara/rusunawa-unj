@@ -122,7 +122,7 @@ $adminSidebarMenu = [
         'items' => [
             [
                 'expandable' => true,
-                'label' => __('Konten Halaman'),
+                'label' => __('Beranda'),
                 'items' => [
                     [
                         'label' => __('Banner & Footer'),
@@ -149,6 +149,11 @@ $adminSidebarMenu = [
                         'route' => route('page-contents.faq'),
                         'current' => request()->routeIs('page-contents.faq'),
                     ],
+                    [
+                        'label' => __('Kontak Kami'),
+                        'route' => route('page-contents.contacts'),
+                        'current' => request()->routeIs('page-contents.contacts'),
+                    ],
                 ],
             ],
             [
@@ -168,8 +173,8 @@ $adminSidebarMenu = [
             [
                 'icon' => 'phone',
                 'label' => __('Kontak Darurat'),
-                'route' => route('contacts'),
-                'current' => request()->routeIs('contacts'),
+                'route' => route('emergency.contacts'),
+                'current' => request()->routeIs('emergency.contacts'),
                 'badge' => null,
             ],
         ],
