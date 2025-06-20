@@ -3,8 +3,7 @@
 namespace App\Livewire\Frontend;
 
 use App\Enums\PricingBasis;
-use App\Models\Unit; // Pastikan Anda mengimpor Model Unit Anda
-use App\Models\UnitRate;
+use App\Models\OccupantType;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
 use Livewire\WithPagination; // Tambahkan ini untuk paginasi
@@ -19,8 +18,7 @@ class UnitAvaibilityCheckForm extends Component
     public $occupantType = '';
     public $pricingBasis = '';
     public $startDate = '';
-    public
-    $endDate = '';
+    public $endDate = '';
 
     // Properti untuk data dinamis di form
     public $totalDays;
@@ -37,12 +35,11 @@ class UnitAvaibilityCheckForm extends Component
 
     public function mount()
     {
+        // Mengisi opsi pricing basis (Harian/Bulanan)
         $this->pricingBasisOptions = PricingBasis::options();
-        $this->occupantTypeOptions = UnitRate::query()
-            ->select('occupant_type')
-            ->distinct()
-            ->pluck('occupant_type')
-            ->toArray();
+
+        // PERUBAHAN: Ambil data dari tabel occupant_types yang baru
+        $this->occupantTypeOptions = OccupantType::all(['id', 'name'])->toArray();
     }
 
     public function render()
@@ -73,7 +70,7 @@ class UnitAvaibilityCheckForm extends Component
     public function rules()
     {
         $rules = [
-            'occupantType' => ['required', 'string'],
+            'occupantType' => ['required', 'exists:occupant_types,id'],
             'pricingBasis' => ['required', Rule::in(array_column(PricingBasis::options(), 'value'))],
             'startDate' => ['nullable', 'date'],
             'endDate' => ['nullable', 'date', 'after_or_equal:startDate'],

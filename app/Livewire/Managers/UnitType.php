@@ -17,16 +17,17 @@ class UnitType extends Component
     use WithFilePond;
 
     // Main data properties
-    public 
-        $name, 
-        $description, 
-        $createdAt, 
+    public
+        $name,
+        $description,
+        $createdAt,
         $updatedAt;
-        
+
     public $facilities = []; // Pastikan ini selalu array
     public $newFacility = '';
 
     public $unitTypeData;
+    public $unitPrices;
 
     // Attachment properties
     public $attachments = []; // Untuk upload baru
@@ -56,7 +57,7 @@ class UnitType extends Component
 
     public function mount()
     {
-        // 
+        //
     }
 
     public function render()
@@ -93,6 +94,7 @@ class UnitType extends Component
     public function detail(UnitTypeModel $unitType)
     {
         $this->fillData($unitType);
+        $this->unitPrices = $unitType->unitPrices()->get();
         $this->modalType = 'detail';
         $this->showModal = true;
     }
@@ -116,7 +118,7 @@ class UnitType extends Component
         $this->createdAt = $unitType->created_at;
         $this->updatedAt = $unitType->updated_at;
     }
-    
+
     public function rules()
     {
         return [
