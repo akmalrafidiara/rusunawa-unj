@@ -17,9 +17,9 @@ Route::prefix('managers')->middleware(['auth', 'verified'])->group(function () {
     // Settings
     Route::redirect('settings', 'settings/profile');
 
-    Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
-    Volt::route('settings/password', 'settings.password')->name('settings.password');
-    Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
+    Volt::route('settings/profile', 'managers.settings.profile')->name('settings.profile');
+    Volt::route('settings/password', 'managers.settings.password')->name('settings.password');
+    Volt::route('settings/appearance', 'managers.settings.appearance')->name('settings.appearance');
 
     // Dashboard
     Route::view('/', 'modules.managers.overview')->name('dashboard');

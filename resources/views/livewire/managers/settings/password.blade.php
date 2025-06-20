@@ -5,8 +5,9 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
 use Livewire\Volt\Component;
+use Livewire\Attributes\Layout;
 
-new class extends Component {
+new #[Layout('components.layouts.managers')] class extends Component {
     public string $current_password = '';
     public string $password = '';
     public string $password_confirmation = '';
@@ -40,7 +41,7 @@ new class extends Component {
 <section class="w-full">
     @include('partials.settings-heading')
 
-    <x-settings.layout :heading="__('Update password')" :subheading="__('Ensure your account is using a long, random password to stay secure')">
+    <x-managers.settings.layout :heading="__('Update password')" :subheading="__('Ensure your account is using a long, random password to stay secure')">
         <form wire:submit="updatePassword" class="mt-6 space-y-6">
             <flux:input wire:model="current_password" :label="__('Current password')" type="password" required
                 autocomplete="current-password" />
@@ -59,5 +60,5 @@ new class extends Component {
                 </x-default.action-message>
             </div>
         </form>
-    </x-settings.layout>
+    </x-managers.settings.layout>
 </section>
