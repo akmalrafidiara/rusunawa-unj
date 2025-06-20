@@ -19,9 +19,9 @@
                 Penghuni</label>
             <select id="jenis-penghuni" wire:model.live="occupantType"
                 class="{{ $inputBaseClass }} {{ $errors->has('occupantType') ? 'border-red-500' : 'border-gray-300 dark:border-gray-600' }}">
-                <option value="">Tipe Penghuni</option>
+                <option value="">Semua Tipe Penghuni</option>
                 @foreach ($occupantTypeOptions as $option)
-                    <option value="{{ $option }}">{{ $option }}</option>
+                    <option value="{{ $option['id'] }}">{{ $option['name'] }}</option>
                 @endforeach
             </select>
             @error('occupantType')
