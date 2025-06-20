@@ -71,7 +71,7 @@
                     <flux:icon.currency-dollar class="w-5 h-5 text-amber-500 dark:text-amber-400" />
                     Tarif Tipe Unit
                 </h4>
-                @if (!empty($rates))
+                @if (!empty($unitPrices))
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm">
                             <thead>
@@ -87,20 +87,20 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($rates as $rate)
+                                @foreach ($unitPrices as $unitPrice)
                                     <tr
                                         class="border-b border-zinc-100 dark:border-zinc-600 last:border-b-0 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors">
                                         <td class="py-3 px-4 font-medium text-zinc-800 dark:text-zinc-100">
-                                            {{ ucfirst(str_replace('_', ' ', $rate['occupant_type'])) }}
+                                            {{ ucfirst(str_replace('_', ' ', $unitPrice->occupantType->name)) }}
                                         </td>
                                         <td class="py-3 px-4 text-zinc-600 dark:text-zinc-300">
-                                            {{ $rate['pricing_basis']->label() }}
+                                            {{ $unitPrice->pricing_basis->label() }}
                                         </td>
                                         <td class="py-3 px-4 text-right font-bold text-green-600 dark:text-green-400">
-                                            Rp {{ number_format($rate['price'], 0, ',', '.') }}
+                                            Rp {{ number_format($unitPrice->price, 0, ',', '.') }}
                                         </td>
                                         <td class="py-3 px-4 text-right">
-                                            @if ($rate['requires_verification'])
+                                            @if ($unitPrice->occupantType->requires_verification)
                                                 <x-managers.ui.badge type="success">
                                                     Ya
                                                 </x-managers.ui.badge>
