@@ -4,5 +4,7 @@
         <x-managers.ui.page-title title="Lokasi Rusunawa"
             subtitle="Kelola data Lokasi Rusunawa untuk digunakan sebagai sarana informasi" />
 
+        {{-- Dynamic Content - Locations --}}
+        <livewire:managers.location />
     </div>
 </x-layouts.managers>
