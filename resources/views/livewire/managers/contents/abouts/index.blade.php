@@ -1,30 +1,43 @@
 <div>
     <x-managers.ui.card title="Tentang Kami">
         <form wire:submit.prevent="save">
-            {{-- Foto Tentang Kami (Standard Livewire Upload) --}}
+            {{-- Foto Tentang Kami (Kustom Tailwind CSS untuk input file) --}}
             <div class="mb-3">
-                <x-managers.form.label for="aboutImage">Foto Tentang Kami <span class="text-danger">*</span></x-managers.form.label>
-                <div class="input-group">
-                    {{-- wire:model langsung ke properti aboutImage --}}
-                    <input type="file" class="form-control" id="aboutImage" wire:model="aboutImage" accept="image/jpeg,image/png">
-                    <span class="input-group-text">Pilih File</span> {{-- Ganti label Upload menjadi Pilih File --}}
+                <x-managers.form.label for="aboutImageInput">Foto Tentang Kami <span class="text-red-500">*</span></x-managers.form.label>
+                <div class="flex items-center space-x-2 border border-gray-300 rounded-md p-1"> {{-- Outline dan padding --}}
+                    <input
+                        type="file"
+                        wire:model="aboutImage"
+                        id="aboutImageInput" {{-- Ganti ID agar unik --}}
+                        accept="image/jpeg,image/png"
+                        maxlength="2048" {{-- Pastikan maxlength di sini jika ada validasi front-end --}}
+                        class="hidden" {{-- Sembunyikan input asli --}}
+                    >
+                    <button type="button"
+                            onclick="document.getElementById('aboutImageInput').click()"
+                            class="px-3 py-1 text-sm bg-green-600 text-white font-semibold rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                        Choose File
+                    </button>
+                    <span class="text-gray-700 dark:text-gray-300 text-sm truncate"> {{-- Nama file --}}
+                        {{ $aboutImage ? $aboutImage->getClientOriginalName() : 'No file chosen' }}
+                    </span>
                 </div>
-                <div class="form-text text-muted">
-                    Format file .jpg, .jpeg, .png (Maksimal 2MB)
-                </div>
-                @error('aboutImage') <span class="text-danger">{{ $message }}</span> @enderror
+                @error('aboutImage')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p> {{-- Styling error --}}
+                @enderror
+                <p class="text-gray-500 text-sm mt-1">Format file .jpg, .jpeg, .png (Maksimal 2MB)</p> {{-- Hint --}}
 
                 {{-- Pratinjau Gambar Sementara (saat diupload) --}}
                 @if ($aboutImage)
                     <div class="mt-2">
-                        <img src="{{ $aboutImage->temporaryUrl() }}" style="max-width: 200px; height: auto;" class="img-thumbnail">
-                        <p class="text-muted mt-1"><small>Preview gambar baru</small></p>
+                        <img src="{{ $aboutImage->temporaryUrl() }}" style="max-width: 200px; height: auto;" class="rounded-md border border-gray-200">
+                        <p class="text-gray-500 text-sm mt-1">Preview gambar baru</p>
                     </div>
                 {{-- Pratinjau Gambar yang Sudah Ada --}}
                 @elseif ($existingAboutImageUrl)
                     <div class="mt-2">
-                        <img src="{{ $existingAboutImageUrl }}" style="max-width: 200px; height: auto;" class="img-thumbnail">
-                        <p class="text-muted mt-1"><small>Gambar saat ini</small></p>
+                        <img src="{{ $existingAboutImageUrl }}" style="max-width: 200px; height: auto;" class="rounded-md border border-gray-200">
+                        <p class="text-gray-500 text-sm mt-1">Gambar saat ini</p>
                     </div>
                 @endif
             </div>
@@ -41,10 +54,10 @@
                 />
             </div>
 
-            {{-- Teks Banner --}}
+            {{-- Teks Tentang Kami --}}
             <div class="mb-3">
                 <flux:input
-                    label="Teks Banner"
+                    label="Teks Tentang Kami" {{-- Label diubah agar lebih spesifik --}}
                     type="textarea"
                     rows="5"
                     wire:model.live="aboutDescription"
@@ -54,7 +67,7 @@
                     :error="$errors->first('aboutDescription')"
                 >
                     <x-slot name="after">
-                        <div class="text-end text-muted mt-1">
+                        <div class="text-right text-gray-500 mt-1">
                             <small>{{ strlen($aboutDescription) }}/500</small>
                         </div>
                     </x-slot>
@@ -71,7 +84,7 @@
                                 wire:model.live="facilities.{{ $index }}"
                                 placeholder="Contoh: AC, Dapur"
                                 :error="$errors->first('facilities.' . $index)"
-                                class="flex-grow-1"
+                                class="flex-grow" {{-- flex-grow-1 diubah menjadi flex-grow untuk Tailwind --}}
                             />
                             <x-managers.ui.button
                                 wire:click="removeFacility({{ $index }})"
@@ -90,7 +103,7 @@
                         wire:model.live="newFacility"
                         placeholder="Masukkan fasilitas baru..."
                         :error="$errors->first('newFacility')"
-                        class="flex-grow-1"
+                        class="flex-grow" {{-- flex-grow-1 diubah menjadi flex-grow untuk Tailwind --}}
                     />
                     <x-managers.ui.button wire:click="addFacility()" variant="primary" size="sm" icon="plus">
                         Tambah
