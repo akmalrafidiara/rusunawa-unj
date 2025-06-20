@@ -90,14 +90,14 @@ $adminSidebarMenu = [
                         'current' => request()->routeIs('unit.types'),
                     ],
                     [
-                        'label' => __('Rate Unit'),
-                        'route' => route('unit.rates'),
-                        'current' => request()->routeIs('unit.rates'),
-                    ],
-                    [
                         'label' => __('Cluster Unit'),
                         'route' => route('unit.clusters'),
                         'current' => request()->routeIs('unit.clusters'),
+                    ],
+                    [
+                        'label' => __('Tipe Penghuni'),
+                        'route' => route('occupant.types'),
+                        'current' => request()->routeIs('occupant.types'),
                     ],
                 ],
             ],
