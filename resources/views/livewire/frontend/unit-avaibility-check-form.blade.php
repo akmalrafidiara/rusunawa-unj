@@ -17,31 +17,45 @@
         <div class="md:col-span-2">
             <label for="jenis-penghuni" class="text-sm font-medium text-gray-600 dark:text-gray-300">Pilih Tipe
                 Penghuni</label>
-            <select id="jenis-penghuni" wire:model.live="occupantType"
-                class="{{ $inputBaseClass }} {{ $errors->has('occupantType') ? 'border-red-500' : 'border-gray-300 dark:border-gray-600' }}">
-                <option value="">Semua Tipe Penghuni</option>
-                @foreach ($occupantTypeOptions as $option)
-                    <option value="{{ $option['id'] }}">{{ $option['name'] }}</option>
-                @endforeach
-            </select>
-            @error('occupantType')
-                <span class="text-red-600 text-xs mt-1">{{ $message }}</span>
-            @enderror
+            <div class="relative">
+                <select id="jenis-penghuni" wire:model.live="occupantType"
+                    class="{{ $inputBaseClass }} {{ $errors->has('occupantType') ? 'border-red-500' : 'border-gray-300 dark:border-gray-600' }}">
+                    <option value="">Semua Tipe Penghuni</option>
+                    @foreach ($occupantTypeOptions as $option)
+                        <option value="{{ $option['id'] }}">{{ $option['name'] }}</option>
+                    @endforeach
+                </select>
+                @error('occupantType')
+                    <div class="absolute z-10 bg-red-500 text-white text-xs rounded px-2 py-1 mt-1 shadow-lg">
+                        {{ $message }}
+                        <div class="absolute top-0 left-4 transform -translate-y-full">
+                            <div class="border-l-4 border-r-4 border-b-4 border-transparent border-b-red-500"></div>
+                        </div>
+                    </div>
+                @enderror
+            </div>
         </div>
 
         {{-- Dropdown Jenis Sewa --}}
         <div class="md:col-span-2">
             <label for="jenis-sewa" class="text-sm font-medium text-gray-600 dark:text-gray-300">Jenis Sewa</label>
-            <select id="jenis-sewa" wire:model.live="pricingBasis"
-                class="{{ $inputBaseClass }} {{ $errors->has('pricingBasis') ? 'border-red-500' : 'border-gray-300 dark:border-gray-600' }}">
-                <option value="">Jenis Sewa</option>
-                @foreach ($pricingBasisOptions as $option)
-                    <option value="{{ $option['value'] }}">{{ $option['label'] }}</option>
-                @endforeach
-            </select>
-            @error('pricingBasis')
-                <span class="text-red-600 text-xs mt-1">{{ $message }}</span>
-            @enderror
+            <div class="relative">
+                <select id="jenis-sewa" wire:model.live="pricingBasis"
+                    class="{{ $inputBaseClass }} {{ $errors->has('pricingBasis') ? 'border-red-500' : 'border-gray-300 dark:border-gray-600' }}">
+                    <option value="">Jenis Sewa</option>
+                    @foreach ($pricingBasisOptions as $option)
+                        <option value="{{ $option['value'] }}">{{ $option['label'] }}</option>
+                    @endforeach
+                </select>
+                @error('pricingBasis')
+                    <div class="absolute z-10 bg-red-500 text-white text-xs rounded px-2 py-1 mt-1 shadow-lg">
+                        {{ $message }}
+                        <div class="absolute top-0 left-4 transform -translate-y-full">
+                            <div class="border-l-4 border-r-4 border-b-4 border-transparent border-b-red-500"></div>
+                        </div>
+                    </div>
+                @enderror
+            </div>
         </div>
 
         {{-- Durasi Penginapan --}}
@@ -52,21 +66,31 @@
             </label>
             <div class="mt-1 grid grid-cols-2 gap-2">
                 {{-- Input Start Date --}}
-                <div>
+                <div class="relative">
                     <input wire:model.live="startDate" type="date" min="{{ date('Y-m-d') }}"
                         class="{{ $inputBaseClass }} {{ $disabledClasses }} {{ $errors->has('startDate') ? 'border-red-500' : 'border-gray-300 dark:border-gray-600' }} {{ !$startDate ? 'text-gray-400' : 'text-gray-900 dark:text-white' }}"
                         onchange="this.style.color = 'inherit';" {{ $isMonthly ? 'disabled' : '' }}>
                     @error('startDate')
-                        <span class="text-red-600 text-xs mt-1">{{ $message }}</span>
+                        <div class="absolute z-10 bg-red-500 text-white text-xs rounded px-2 py-1 mt-1 shadow-lg">
+                            {{ $message }}
+                            <div class="absolute top-0 left-4 transform -translate-y-full">
+                                <div class="border-l-4 border-r-4 border-b-4 border-transparent border-b-red-500"></div>
+                            </div>
+                        </div>
                     @enderror
                 </div>
                 {{-- Input End Date --}}
-                <div>
+                <div class="relative">
                     <input wire:model.live="endDate" type="date" min="{{ date('Y-m-d') }}"
                         class="{{ $inputBaseClass }} {{ $disabledClasses }} {{ $errors->has('endDate') ? 'border-red-500' : 'border-gray-300 dark:border-gray-600' }} {{ !$endDate ? 'text-gray-400' : 'text-gray-900 dark:text-white' }}"
                         onchange="this.style.color = 'inherit';" {{ $isMonthly ? 'disabled' : '' }}>
                     @error('endDate')
-                        <span class="text-red-600 text-xs mt-1">{{ $message }}</span>
+                        <div class="absolute z-10 bg-red-500 text-white text-xs rounded px-2 py-1 mt-1 shadow-lg">
+                            {{ $message }}
+                            <div class="absolute top-0 left-4 transform -translate-y-full">
+                                <div class="border-l-4 border-r-4 border-b-4 border-transparent border-b-red-500"></div>
+                            </div>
+                        </div>
                     @enderror
                 </div>
             </div>

@@ -47,6 +47,21 @@
                         {{ $menu['label'] }}
                     </a>
                 @endforeach
+                <div x-data="{ showThemeSelector: false }" class="relative">
+                    <button @click="showThemeSelector = !showThemeSelector"
+                        class="p-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition cursor-pointer">
+                        <flux:icon name="sun" class="w-5 h-5" />
+                    </button>
+
+                    <div x-show="showThemeSelector" x-transition @click.outside="showThemeSelector = false"
+                        class="absolute right-0 top-full mt-2 z-50 bg-white dark:bg-zinc-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-3">
+                        <flux:radio.group x-data variant="segmented" x-model="$flux.appearance">
+                            <flux:radio value="light" icon="sun">{{ __('Light') }}</flux:radio>
+                            <flux:radio value="dark" icon="moon">{{ __('Dark') }}</flux:radio>
+                            <flux:radio value="system" icon="computer-desktop">{{ __('System') }}</flux:radio>
+                        </flux:radio.group>
+                    </div>
+                </div>
             </nav>
 
             @if (Route::has('login'))

@@ -1,11 +1,16 @@
-<div class="mt-80">
+<div class="mt-92 md:mt-36">
     {{-- Tampilkan teks ringkasan filter --}}
-    <div class="container mx-auto px-6 text-center mb-8">
-        @if (!empty($filters['occupantType']))
-            <p>Menampilkan tipe kamar untuk penghuni <strong>{{ $filters['occupantType'] }}</strong> dengan sewa
-                <strong>{{ str_replace('_', ' ', $filters['pricingBasis']) }}</strong>
-            </p>
+    <div class="container mx-auto px-6 mb-8">
+        @if (!empty($occupantType) && !empty($pricingBasis))
+            <p>Menampilkan kamar untuk penghuni <strong>{{ $occupantType }}</strong>
+                dengan sewa
+                <strong>{{ $pricingBasis }}</strong>
+                @if (!empty($startDate) && !empty($endDate))
+                    , Periode <strong>{{ \Carbon\Carbon::parse($startDate)->format('d F Y') }} -
+                        {{ \Carbon\Carbon::parse($endDate)->format('d F Y') }}</strong>
+                @endif
         @endif
+        </p>
     </div>
 
     {{-- Daftar hasil pencarian Tipe Unit --}}
@@ -18,11 +23,9 @@
                     <div class="p-4">
                         <h3 class="font-bold text-lg text-gray-800 dark:text-white">
                             {{ $unitType->name }}
+                            <span class="font-light text-sm text-gray-500"> / Tersedia
+                                {{ $unitType->units()->where('status', 'available')->count() }} unit</span>
                         </h3>
-                        <p class="text-sm text-gray-500 mb-2">
-                            {{-- Anda bisa membuat accessor untuk ini di model UnitType --}}
-                            {{ $unitType->units()->where('status', 'available')->count() }} kamar tersedia
-                        </p>
                         <p class="text-gray-600 dark:text-gray-300 text-sm mb-4">
                             {{ Str::limit($unitType->description, 100) }}
                         </p>

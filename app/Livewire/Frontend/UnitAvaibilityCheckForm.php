@@ -47,10 +47,14 @@ class UnitAvaibilityCheckForm extends Component
         return view('livewire.frontend.unit-avaibility-check-form');
     }
 
-    public function updated($property)
+    public function updated($propertyName)
     {
-        if (in_array($property, ['startDate', 'endDate'])) {
+        if (in_array($propertyName, ['startDate', 'endDate'])) {
             $this->calculateTotalDays();
+        }
+
+        if (in_array($propertyName, array_keys($this->rules()))) {
+            $this->validateOnly($propertyName, $this->rules());
         }
     }
 
@@ -88,7 +92,7 @@ class UnitAvaibilityCheckForm extends Component
         if ($this->startDate && $this->endDate) {
             $start = \Carbon\Carbon::parse($this->startDate);
             $end = \Carbon\Carbon::parse($this->endDate);
-            $this->totalDays = $start->diffInDays($end) + 1; // +1 untuk inklusif
+            $this->totalDays = $start->diffInDays($end);
         } else {
             $this->totalDays = 0;
         }

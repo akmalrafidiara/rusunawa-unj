@@ -2,14 +2,23 @@
 
 namespace App\Livewire\Frontend;
 
+use App\Enums\PricingBasis;
+use App\Models\OccupantType;
 use App\Models\UnitRate as UnitRateModel;
 use App\Models\UnitType;
+use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 use Livewire\Component;
 use Livewire\Attributes\On;
 
 class ShowAvailableUnitTypes extends Component
 {
     public $filters = [];
+
+    public
+        $occupantType,
+        $pricingBasis,
+        $startDate,
+        $endDate;
 
     public function mount()
     {
@@ -26,6 +35,11 @@ class ShowAvailableUnitTypes extends Component
     public function handleFiltersApplied($filters)
     {
         $this->filters = $filters;
+
+        $this->occupantType = OccupantType::where('id', $this->filters['occupantType'])->first()->name;
+        $this->pricingBasis = PricingBasis::from($this->filters['pricingBasis'])->label();
+        $this->startDate = $this->filters['startDate'];
+        $this->endDate = $this->filters['endDate'];
     }
 
     public function render()
@@ -55,12 +69,17 @@ class ShowAvailableUnitTypes extends Component
                             }
                         ])->get();
 
+        LivewireAlert::title('Pencarian Berhasil')
+        ->success()
+        ->toast()
+        ->position('top-end')
+        ->show();
+
         return view('livewire.frontend.show-available-unit-types', compact('unitTypes'));
     }
 
     public function applyFilters($newFilters)
     {
         $this->filters = $newFilters;
-        $this->resetPage(); // Reset paginasi ke halaman 1
     }
 }
