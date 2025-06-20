@@ -4,5 +4,7 @@
         <x-managers.ui.page-title title="Banner & Footer"
             subtitle="Kelola data Banner dan Footer untuk digunakan sebagai sarana informasi" />
 
+        {{-- Dynamic Content - Banner Footer --}}
+        <livewire:managers.bannerfooter />
     </div>
 </x-layouts.managers>
