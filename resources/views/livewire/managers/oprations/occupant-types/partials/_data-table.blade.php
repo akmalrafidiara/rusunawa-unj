@@ -1,6 +1,6 @@
 <!-- Tabel Data -->
 <x-managers.ui.card class="p-0">
-    <x-managers.table.table :headers="['Nama', 'Desckripsi', 'Butuh Verifikasi?', 'Aksi']">
+    <x-managers.table.table :headers="['Nama', 'Desckripsi', 'Unit yang dapat diakses', 'Butuh Verifikasi?', 'Aksi']">
         <x-managers.table.body>
             @forelse ($occupantTypes as $occupantType)
                 <x-managers.table.row wire:key="{{ $occupantType->id }}">
@@ -11,6 +11,19 @@
 
                     <!-- Description -->
                     <x-managers.table.cell>{{ $occupantType->description }}</x-managers.table.cell>
+
+                    {{-- Accessable Cluster --}}
+                    <x-managers.table.cell>
+                        @if ($occupantType->accessibleClusters->isEmpty())
+                            <span class="text-gray-500">Tidak ada unit cluster yang dapat diakses</span>
+                        @else
+                            <ul class="list-disc pl-5 space-y-1">
+                                @foreach ($occupantType->accessibleClusters as $cluster)
+                                    <li>{{ $cluster->name }}</li>
+                                @endforeach
+                            </ul>
+                        @endif
+                    </x-managers.table.cell>
 
                     <!-- Requires Verification -->
                     <x-managers.table.cell>

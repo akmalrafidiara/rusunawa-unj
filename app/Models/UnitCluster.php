@@ -18,4 +18,9 @@ class UnitCluster extends Model
     {
         return $this->belongsTo(User::class, 'staff_id');
     }
+
+    public function allowedOccupantTypes()
+    {
+        return $this->belongsToMany(OccupantType::class, 'occupant_type_unit_cluster');
+    }
 }

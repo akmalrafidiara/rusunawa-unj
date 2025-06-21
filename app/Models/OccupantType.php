@@ -15,4 +15,9 @@ class OccupantType extends Model
     protected $casts = [
         'requires_verification' => 'boolean',
     ];
+
+    public function accessibleClusters()
+    {
+        return $this->belongsToMany(UnitCluster::class, 'occupant_type_unit_cluster');
+    }
 }

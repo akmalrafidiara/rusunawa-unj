@@ -3,6 +3,7 @@
 namespace App\Livewire\Managers;
 
 use App\Models\OccupantType as OccupantTypeModel;
+use App\Models\UnitCluster;
 use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 use Livewire\Component;
 
@@ -10,6 +11,8 @@ class OccupantType extends Component
 {
     // Main data properties
     public $name, $description, $requiresVerification;
+
+    public $accessibleClusters = [];
 
     // Toolbar properties
     public $search = '';
@@ -19,6 +22,9 @@ class OccupantType extends Component
     // Modal properties
     public $showModal = false;
     public $unitRateIdBeingEdited = null;
+
+    // Options Properties
+    public $unitClusterOptions = [];
 
     // Query string properties
     protected $queryString = [
@@ -32,7 +38,7 @@ class OccupantType extends Component
      */
     public function mount()
     {
-        // 
+        $this->unitClusterOptions = UnitCluster::all()->pluck('name', 'id')->toArray();
     }
 
     /**
@@ -71,6 +77,9 @@ class OccupantType extends Component
         $this->name = $occupantType->name;
         $this->description = $occupantType->description;
         $this->requiresVerification = $occupantType->requires_verification;
+
+        $this->accessibleClusters = $occupantType->accessibleClusters->pluck('id')->toArray();
+
         $this->showModal = true;
     }
 
@@ -101,10 +110,12 @@ class OccupantType extends Component
             'requires_verification' => $this->requiresVerification,
         ];
 
-        OccupantTypeModel::updateOrCreate(
+        $occupantType = OccupantTypeModel::updateOrCreate(
             ['id' => $this->unitRateIdBeingEdited],
             $data
         );
+
+        $occupantType->accessibleClusters()->sync($this->accessibleClusters);
 
         // Flash message
         LivewireAlert::title($this->unitRateIdBeingEdited ? 'Data berhasil diperbarui.' : 'Rate unit berhasil ditambahkan.')
@@ -164,5 +175,6 @@ class OccupantType extends Component
         $this->description = '';
         $this->requiresVerification = false;
         $this->unitRateIdBeingEdited = null;
+        $this->accessibleClusters = [];
     }
 }
