@@ -7,6 +7,7 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 class About extends Component
 {
@@ -26,7 +27,7 @@ class About extends Component
         'aboutDescription' => 'required|string|max:200',
         'aboutImage' => 'nullable|image|max:2048|mimes:jpg,jpeg,png', // Default ke nullable
         'dayaTariks' => 'array', // Menggunakan dayaTariks
-        'dayaTariks.*' => 'required|string|max:100', // Validasi untuk setiap item daya tarik
+        'dayaTariks.*' => 'nullable|string|max:100', // Validasi untuk setiap item daya tarik
         'newDayaTarik' => 'nullable|string|max:100|min:3', // Validasi untuk input daya tarik baru
     ];
 
@@ -66,9 +67,6 @@ class About extends Component
         // Mengubah content_key untuk daya tarik
         $dayaTariksContent = optional(Content::where('content_key', 'about_us_daya_tariks')->first())->content_value;
         $this->dayaTariks = is_array($dayaTariksContent) ? $dayaTariksContent : [];
-
-        // Pastikan daya tarik diurutkan saat dimuat untuk konsistensi
-        sort($this->dayaTariks);
     }
 
     public function addDayaTarik() // Mengubah nama metode dari addFacility menjadi addDayaTarik
@@ -81,7 +79,6 @@ class About extends Component
         if (!empty($this->newDayaTarik) && !in_array($normalizedNewDayaTarik, $normalizedExistingDayaTariks)) {
             $this->dayaTariks[] = trim($this->newDayaTarik); // Simpan versi asli (tanpa lowercase)
             $this->newDayaTarik = '';
-            sort($this->dayaTariks); // Urutkan setelah penambahan
 
             LivewireAlert::title('Daya tarik berhasil ditambahkan!')
             ->success()
@@ -132,7 +129,17 @@ class About extends Component
         }
 
         // Lakukan validasi dengan aturan yang sudah disesuaikan
-        $this->validate($rules);
+        try {
+            $this->validate($rules);
+        } catch (ValidationException $e) {
+            LivewireAlert::error()
+                ->title('Mohon lengkapi semua data yang wajib diisi pada bagian Banner!')
+                ->text('Harap periksa kembali kolom yang bertanda merah.')
+                ->toast()
+                ->position('top-end')
+                ->show();
+            throw $e;
+        }
 
         // 1. Simpan Judul Tentang Kami
         Content::updateOrCreate(
