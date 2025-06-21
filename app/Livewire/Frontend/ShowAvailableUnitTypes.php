@@ -12,9 +12,10 @@ use Livewire\Attributes\On;
 
 class ShowAvailableUnitTypes extends Component
 {
-    public $filters = [];
+    public $unitTypes;
 
     public
+        $occupantTypeId,
         $occupantType,
         $pricingBasis,
         $startDate,
@@ -22,64 +23,86 @@ class ShowAvailableUnitTypes extends Component
 
     public function mount()
     {
-        // Ambil filter dari URL saat halaman pertama kali dimuat
-        $this->filters = [
-            'occupantType' => request()->query('occupantType'),
-            'pricingBasis' => request()->query('pricingBasis'),
-            'startDate' => request()->query('startDate'),
-            'endDate' => request()->query('endDate'),
-        ];
+        $request = request()->query('ed');
+
+        try {
+            $data = $request ? decrypt($request) : [];
+            
+        } catch (\Exception $e) {
+            $data = [];
+        }
+
+        if ($data) {
+            $this->occupantTypeId = $data['occupantType'] ?? null;
+            $this->occupantType = OccupantType::find($this->occupantTypeId)->name ?? null;
+            $this->pricingBasis = $data['pricingBasis'] ?? null;
+            $this->startDate = $data['startDate'] ?? null;
+            $this->endDate = $data['endDate'] ?? null;
+            $this->queryFilters();
+        }
     }
-
+    
     #[On('filtersApplied')]
-    public function handleFiltersApplied($filters)
-    {
-        $this->filters = $filters;
+    public function FiltersApplied($filters)
+    {   
+        $this->occupantTypeId = $filters['occupantType'] ?? null;
 
-        $this->occupantType = OccupantType::where('id', $this->filters['occupantType'])->first()->name;
-        $this->pricingBasis = PricingBasis::from($this->filters['pricingBasis'])->label();
-        $this->startDate = $this->filters['startDate'];
-        $this->endDate = $this->filters['endDate'];
+        if (!empty($this->occupantTypeId)) {
+            $this->occupantType = OccupantType::where('id', $filters['occupantType'])->first()->name;
+        }
+        
+        // if (!empty($filters['pricingBasis'])) {
+        //     $this->pricingBasis = PricingBasis::from($filters['pricingBasis'])->label();
+        // }
+        
+        $this->pricingBasis = $filters['pricingBasis'] ?? null;
+        $this->startDate = $filters['startDate'] ?? null;
+        $this->endDate = $filters['endDate'] ?? null;
+
+        $this->queryFilters();
     }
 
     public function render()
     {
-        $unitTypes = UnitType::query()
-                        ->whereHas('units', function ($unitQuery) {
-                            $unitQuery->where('status', 'available');
-                        })
-                        ->whereHas('unitPrices', function ($priceQuery) {
-                            if (!empty($this->filters['occupantType'])) {
-                                $priceQuery->where('occupant_type_id', $this->filters['occupantType']);
-                            }
-                            if (!empty($this->filters['pricingBasis'])) {
-                                $priceQuery->where('pricing_basis', $this->filters['pricingBasis']);
-                            }
-                        })
-                        ->with([
-                            'attachments',
-                            // Ambil juga data harga yang sesuai dengan filter untuk ditampilkan
-                            'unitPrices' => function ($priceQuery) {
-                                if (!empty($this->filters['occupantType'])) {
-                                    $priceQuery->where('occupant_type_id', $this->filters['occupantType']);
+        return view('livewire.frontend.show-available-unit-types');
+    }
+
+    public function queryFilters()
+    {
+        $this->unitTypes = UnitType::query()
+                            ->whereHas('units', function ($unitQuery) {
+                                $unitQuery->where('status', 'available');
+                            })
+                            ->whereHas('unitPrices', function ($priceQuery) {
+                                if (!empty($this->occupantTypeId)) {
+                                    $priceQuery->where('occupant_type_id', $this->occupantTypeId);
                                 }
-                                if (!empty($this->filters['pricingBasis'])) {
-                                    $priceQuery->where('pricing_basis', $this->filters['pricingBasis']);
+                                if (!empty($this->pricingBasis)) {
+                                    $priceQuery->where('pricing_basis', $this->pricingBasis);
                                 }
-                            }
-                        ])->get();
+                            })
+                            ->with([
+                                'attachments',
+                                // Ambil juga data harga yang sesuai dengan filter untuk ditampilkan
+                                'unitPrices' => function ($priceQuery) {
+                                    if (!empty($this->occupantTypeId)) {
+                                        $priceQuery->where('occupant_type_id', $this->occupantTypeId);
+                                    }
+                                    if (!empty($this->pricingBasis)) {
+                                        $priceQuery->where('pricing_basis', $this->pricingBasis);
+                                    }
+                                }
+                            ])->get();
 
         LivewireAlert::title('Pencarian Berhasil')
         ->success()
         ->toast()
         ->position('top-end')
         ->show();
-
-        return view('livewire.frontend.show-available-unit-types', compact('unitTypes'));
     }
 
-    public function applyFilters($newFilters)
-    {
-        $this->filters = $newFilters;
-    }
+    // public function applyFilters($newFilters)
+    // {
+    //     $this->filters = $newFilters;
+    // }
 }

@@ -20,25 +20,33 @@ class UnitAvaibilityCheckForm extends Component
     public $startDate = '';
     public $endDate = '';
 
+    // ED (Encrypted Data)
+    public $ed = '';
+    
     // Properti untuk data dinamis di form
     public $totalDays;
     public $pricingBasisOptions = [];
     public $occupantTypeOptions = [];
 
-    // Sinkronkan properti dengan query string di URL
     public $queryString = [
-        'occupantType' => ['except' => ''],
-        'pricingBasis' => ['except' => ''],
-        'startDate' => ['except' => ''],
-        'endDate' => ['except' => ''],
+        'ed' => ['except' => ''],
     ];
 
     public function mount()
     {
-        // Mengisi opsi pricing basis (Harian/Bulanan)
+        try {
+            $data = $this->ed ? decrypt($this->ed) : [];
+        } catch (\Exception $e) {
+            $data = [];
+        }
+
+        $this->occupantType = $data['occupantType'] ?? null;
+        $this->pricingBasis = $data['pricingBasis'] ?? null;
+        $this->startDate = $data['startDate'] ?? null;
+        $this->endDate = $data['endDate'] ?? null;
+
         $this->pricingBasisOptions = PricingBasis::options();
 
-        // PERUBAHAN: Ambil data dari tabel occupant_types yang baru
         $this->occupantTypeOptions = OccupantType::all(['id', 'name'])->toArray();
     }
 
@@ -62,13 +70,13 @@ class UnitAvaibilityCheckForm extends Component
     {
         $validatedData = $this->validate($this->rules());
 
+        $this->ed = encrypt($validatedData);
+        
         if ($this->mode === 'redirect') {
-            // Jika di homepage, redirect ke halaman sewa kamar dengan membawa filter
-            return redirect()->route('tenancy.index', $validatedData);
-        } else {
-            // Jika di halaman sewa kamar, kirim event ke komponen induk
-            $this->dispatch('filtersApplied', filters: $validatedData);
+            $this->redirect(route('tenancy.index', ['ed' => $this->ed]), navigate: true);
         }
+        
+        $this->dispatch('filtersApplied', filters: $validatedData);
     }
 
     public function rules()

@@ -99,8 +99,12 @@
         {{-- Tombol Cari --}}
         <div class="md:col-span-1 self-end">
             <button wire:click="checkAvailability()" type="button"
-                class="w-full bg-green-600 hover:bg-green-700 text-white font-bold h-10 px-4 rounded-lg transition flex items-center justify-center cursor-pointer">
-                Cari Kamar
+                class="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-bold h-10 px-4 rounded-lg transition flex items-center justify-center cursor-pointer"
+                wire:loading.attr="disabled" wire:target="checkAvailability">
+                <span wire:loading.remove wire:target="checkAvailability">Cari Kamar</span>
+                <span wire:loading wire:target="checkAvailability" class="flex items-center">
+                    Mencari...
+                </span>
             </button>
         </div>
     </div>
