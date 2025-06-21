@@ -7,6 +7,7 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 class BannerFooter extends Component
 {
@@ -15,9 +16,9 @@ class BannerFooter extends Component
     // Banner Properties
     public $bannerTitle;
     public $bannerText;
-    public $newDayaTarikLabel = '';
     public $newDayaTarikValue = '';
-    public $dayaTariks = [];       // Array of associative arrays: [{'value': '...', 'label': '...'}]
+    public $newDayaTarikLabel = '';
+    public $dayaTariks = [];
     public $bannerImage;
     public $existingBannerImageUrl;
 
@@ -27,17 +28,17 @@ class BannerFooter extends Component
     public $footerTitle;
     public $footerText;
 
-    // Aturan validasi dasar - gambar/logo di sini nullable
+    // Aturan validasi dasar
     protected $rules = [
         'bannerTitle' => 'required|string|max:255',
         'bannerText' => 'required|string|max:200',
         'dayaTariks' => 'array',
-        'dayaTariks.*.value' => 'required|string|max:50',
-        'dayaTariks.*.label' => 'required|string|max:50',
-        'newDayaTarikValue' => 'nullable|string|max:50',
-        'newDayaTarikLabel' => 'nullable|string|max:50',
-        'bannerImage' => 'nullable|image|max:2048|mimes:jpg,jpeg,png', // KEMBALI KE NULLABLE DI SINI
-        'footerLogo' => 'nullable|image|max:2048|mimes:jpg,jpeg,png',   // KEMBALI KE NULLABLE DI SINI
+        'dayaTariks.*.value' => 'nullable|string|max:50', // DIUBAH DARI 'required' JADI 'nullable'
+        'dayaTariks.*.label' => 'nullable|string|max:50', // DIUBAH DARI 'required' JADI 'nullable'
+        'newDayaTarikValue' => 'nullable|string|max:50', // Ini akan divalidasi 'required' di addDayaTarik()
+        'newDayaTarikLabel' => 'nullable|string|max:50', // Ini akan divalidasi 'required' di addDayaTarik()
+        'bannerImage' => 'nullable|image|max:2048|mimes:jpg,jpeg,png',
+        'footerLogo' => 'nullable|image|max:2048|mimes:jpg,jpeg,png',
         'footerTitle' => 'required|string|max:255',
         'footerText' => 'required|string|max:200',
     ];
@@ -53,26 +54,25 @@ class BannerFooter extends Component
         'bannerText.max' => 'Teks Banner tidak boleh lebih dari :max karakter.',
 
         'dayaTariks.array' => 'Daya Tarik harus berupa daftar.',
-        'dayaTariks.*.value.required' => 'Nilai Daya Tarik tidak boleh kosong.',
+        // Pesan required untuk dayaTariks.*.value/label dihapus karena sekarang nullable
         'dayaTariks.*.value.string' => 'Nilai Daya Tarik harus berupa teks.',
         'dayaTariks.*.value.max' => 'Nilai Daya Tarik tidak boleh lebih dari :max karakter.',
-        'dayaTariks.*.label.required' => 'Label Daya Tarik tidak boleh kosong.',
         'dayaTariks.*.label.string' => 'Label Daya Tarik harus berupa teks.',
         'dayaTariks.*.label.max' => 'Label Daya Tarik tidak boleh lebih dari :max karakter.',
 
-        'newDayaTarikValue.required' => 'Nilai Daya Tarik harus diisi.',
+        'newDayaTarikValue.required' => 'Nilai Daya Tarik harus diisi.', // Tetap required untuk addDayaTarik()
         'newDayaTarikValue.string' => 'Nilai Daya Tarik harus berupa teks.',
         'newDayaTarikValue.max' => 'Nilai Daya Tarik tidak boleh lebih dari :max karakter.',
-        'newDayaTarikLabel.required' => 'Label Daya Tarik harus diisi.',
+        'newDayaTarikLabel.required' => 'Label Daya Tarik harus diisi.', // Tetap required untuk addDayaTarik()
         'newDayaTarikLabel.string' => 'Label Daya Tarik harus berupa teks.',
         'newDayaTarikLabel.max' => 'Label Daya Tarik tidak boleh lebih dari :max karakter.',
 
-        'bannerImage.required' => 'Foto Banner wajib diunggah.', // Pesan ini akan digunakan ketika required diaktifkan dinamis
+        'bannerImage.required' => 'Foto Banner wajib diunggah.',
         'bannerImage.image' => 'File harus berupa gambar.',
         'bannerImage.max' => 'Ukuran gambar banner tidak boleh lebih dari 2MB.',
         'bannerImage.mimes' => 'Format gambar banner yang diizinkan adalah JPG, JPEG, atau PNG.',
 
-        'footerLogo.required' => 'Logo Footer wajib diunggah.', // Pesan ini akan digunakan ketika required diaktifkan dinamis
+        'footerLogo.required' => 'Logo Footer wajib diunggah.',
         'footerLogo.image' => 'File logo harus berupa gambar.',
         'footerLogo.max' => 'Ukuran logo footer tidak boleh lebih dari 2MB.',
         'footerLogo.mimes' => 'Format logo footer yang diizinkan adalah JPG, JPEG, atau PNG.',
@@ -108,7 +108,7 @@ class BannerFooter extends Component
                 'label' => $item['label'] ?? '',
             ];
         })->filter(function($item) {
-            return !empty($item['value']) || !empty($item['label']);
+            return !empty($item['value']) || !empty($item['label']); // Tetap filter item yang benar-benar kosong saat mount
         })->toArray();
 
         $this->existingBannerImageUrl = optional(Content::where('content_key', 'banner_image_url')->first())->content_value ?? '';
@@ -119,6 +119,7 @@ class BannerFooter extends Component
 
     public function addDayaTarik()
     {
+        // Validasi ini akan tetap MEWAJIBKAN Value dan Label diisi saat tombol "Tambah Daya Tarik" diklik
         $this->validate([
             'newDayaTarikValue' => 'required|string|max:50',
             'newDayaTarikLabel' => 'required|string|max:50',
@@ -172,24 +173,26 @@ class BannerFooter extends Component
 
     public function saveBanner()
     {
-        // Salin aturan dasar
         $rules = $this->rules;
 
-        // Logika kondisional untuk bannerImage
-        // Jika tidak ada file baru yang diunggah DAN tidak ada URL gambar yang sudah ada
         if (!$this->bannerImage && empty($this->existingBannerImageUrl)) {
             $rules['bannerImage'] = 'required|image|max:2048|mimes:jpg,jpeg,png';
         } else {
-            // Jika ada file baru yang diunggah, atau tidak ada file baru tapi ada existing image,
-            // maka cukup ikuti aturan nullable image (karena kalau ada file baru, otomatis akan divalidasi).
-            // Kalau ada existing image tapi tidak upload baru, maka tidak perlu required.
             $rules['bannerImage'] = 'nullable|image|max:2048|mimes:jpg,jpeg,png';
         }
 
-        // Lakukan validasi dengan aturan yang sudah disesuaikan
-        $this->validate($rules);
+        try {
+            $this->validate($rules);
+        } catch (ValidationException $e) {
+            LivewireAlert::error()
+                ->title('Mohon lengkapi semua data yang wajib diisi pada bagian Banner!')
+                ->text('Harap periksa kembali kolom yang bertanda merah.')
+                ->toast()
+                ->position('top-end')
+                ->show();
+            throw $e;
+        }
 
-        // Jika validasi berhasil, lanjutkan penyimpanan
         Content::updateOrCreate(
             ['content_key' => 'banner_title'],
             ['content_value' => $this->bannerTitle, 'content_type' => 'text']
@@ -200,6 +203,7 @@ class BannerFooter extends Component
             ['content_value' => $this->bannerText, 'content_type' => 'text']
         );
 
+        // Daya Tarik akan disimpan meskipun ada item kosong, selama item tersebut 'nullable'
         Content::updateOrCreate(
             ['content_key' => 'banner_daya_tariks'],
             ['content_value' => $this->dayaTariks, 'content_type' => 'json']
@@ -226,21 +230,26 @@ class BannerFooter extends Component
 
     public function saveFooter()
     {
-        // Salin aturan dasar
         $rules = $this->rules;
 
-        // Logika kondisional untuk footerLogo
-        // Jika tidak ada file baru yang diunggah DAN tidak ada URL logo yang sudah ada
         if (!$this->footerLogo && empty($this->existingFooterLogoUrl)) {
             $rules['footerLogo'] = 'required|image|max:2048|mimes:jpg,jpeg,png';
         } else {
             $rules['footerLogo'] = 'nullable|image|max:2048|mimes:jpg,jpeg,png';
         }
 
-        // Lakukan validasi dengan aturan yang sudah disesuaikan
-        $this->validate($rules);
+        try {
+            $this->validate($rules);
+        } catch (ValidationException $e) {
+            LivewireAlert::error()
+                ->title('Mohon lengkapi semua data yang wajib diisi pada bagian Footer!')
+                ->text('Harap periksa kembali kolom yang bertanda merah.')
+                ->toast()
+                ->position('top-end')
+                ->show();
+            throw $e;
+        }
 
-        // Jika validasi berhasil, lanjutkan penyimpanan
         if ($this->footerLogo) {
             $logoPath = $this->footerLogo->store('uploads/footer', 'public');
             $logoUrl = Storage::url($logoPath);

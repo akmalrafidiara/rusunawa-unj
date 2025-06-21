@@ -14,6 +14,7 @@
                     type="text"
                     wire:model="bannerTitle"
                     placeholder="Rusunawa Universitas Negeri Jakarta"
+                    class="placeholder-gray-400" {{-- Ditambahkan --}}
                 />
                 @error('bannerTitle')
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -32,7 +33,7 @@
                     maxlength="200"
                     rows="3" {{-- Tinggi awal --}}
                     class="block w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50
-                           overflow-hidden resize-none" {{-- Penting: sembunyikan scrollbar dan nonaktifkan resize manual --}}
+                           overflow-hidden resize-none placeholder-gray-400" {{-- Ditambahkan --}}
                     x-data="{
                         resize() {
                             $el.style.height = 'auto'; // Reset height to recalculate
@@ -81,6 +82,7 @@
                             id="newDayaTarikValueInput"
                             wire:model.live="newDayaTarikValue"
                             placeholder="Contoh: 50+"
+                            class="placeholder-gray-400" {{-- Ditambahkan --}}
                         />
                         @error('newDayaTarikValue')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -94,6 +96,7 @@
                             id="newDayaTarikLabelInput"
                             wire:model.live="newDayaTarikLabel"
                             placeholder="Contoh: Kamar Siap Huni"
+                            class="placeholder-gray-400" {{-- Ditambahkan --}}
                         />
                         @error('newDayaTarikLabel')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -203,6 +206,7 @@
                         type="text"
                         wire:model="footerTitle"
                         placeholder="Rusunawa UNJ"
+                        class="placeholder-gray-400" {{-- Ditambahkan --}}
                     />
                     @error('footerTitle')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -221,7 +225,7 @@
                         maxlength="200"
                         rows="3" {{-- Tinggi awal --}}
                         class="block w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50
-                               overflow-hidden resize-none" {{-- Penting: sembunyikan scrollbar dan nonaktifkan resize manual --}}
+                               overflow-hidden resize-none placeholder-gray-400" {{-- Ditambahkan --}}
                         x-data="{
                             resize() {
                                 $el.style.height = 'auto'; // Reset height to recalculate
