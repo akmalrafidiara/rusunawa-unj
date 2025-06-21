@@ -6,77 +6,103 @@
         <form wire:submit.prevent="saveBanner">
             {{-- Judul Banner (input form) --}}
             <div class="mb-3">
+                <label for="bannerTitleInput" class="block font-medium text-sm text-gray-700 dark:text-gray-300">
+                    Judul Banner <span class='text-red-500'>*</span>
+                </label>
                 <flux:input
-                    label="Judul Banner"
+                    id="bannerTitleInput"
                     type="text"
                     wire:model="bannerTitle"
                     placeholder="Rusunawa Universitas Negeri Jakarta"
-                    required
-                    :error="$errors->first('bannerTitle')" />
+                    class="placeholder-gray-400" {{-- Ditambahkan --}}
+                />
+                @error('bannerTitle')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
-            {{-- Teks Banner --}}
+            {{-- Teks Banner (TEXTAREA BIASA DENGAN AUTO-RESIZE) --}}
             <div class="mb-3">
-                <flux:input
-                    label="Teks Banner"
-                    type="textarea"
-                    rows="3"
+                <label for="bannerTextInput" class="block font-medium text-sm text-gray-700 dark:text-gray-300">
+                    Teks Banner <span class='text-red-500'>*</span>
+                </label>
+                <textarea
+                    id="bannerTextInput"
                     wire:model.live="bannerText"
                     placeholder="Sebuah solusi tempat tinggal praktis di lingkungan kampus, ideal untuk mendukung aktivitas harian Anda"
-                    required
                     maxlength="200"
-                    :error="$errors->first('bannerText')">
-                    <x-slot name="after">
-                        <div class="text-right text-gray-500 mt-1">
-                            <small>{{ strlen($bannerText) }}/200</small>
-                        </div>
-                    </x-slot>
-                </flux:input>
+                    rows="3" {{-- Tinggi awal --}}
+                    class="block w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50
+                           overflow-hidden resize-none placeholder-gray-400" {{-- Ditambahkan --}}
+                    x-data="{
+                        resize() {
+                            $el.style.height = 'auto'; // Reset height to recalculate
+                            $el.style.height = $el.scrollHeight + 'px'; // Set height based on content
+                        }
+                    }"
+                    x-init="resize()" {{-- Panggil saat inisialisasi --}}
+                    @input="resize()" {{-- Panggil setiap kali input berubah --}}
+                ></textarea>
+                <div class="text-right text-gray-500 mt-1">
+                    <small>{{ strlen($bannerText) }}/200</small>
+                </div>
+                @error('bannerText')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
-            {{-- Daya Tarik Banner (Add: 2 input; Display: 2 input) --}}
+            {{-- Daya Tarik Banner --}}
             <div class="mb-3">
                 <x-managers.form.label>Daya Tarik</x-managers.form.label>
                 @if (!empty($dayaTariks))
-                @foreach ($dayaTariks as $index => $item)
-                <div class="flex items-center gap-2 mb-2" wire:key="daya-tarik-item-wrapper-{{ $index }}">
-                    {{-- Tampilan dan Edit item yang sudah ada: DUA INPUT TERPISAH --}}
-                    <flux:input
-                        wire:key="daya-tarik-value-{{ $index }}"
-                        wire:model.live="dayaTariks.{{ $index }}.value"
-                        placeholder="Value (Contoh: 50+)"
-                        :error="$errors->first('dayaTariks.' . $index . '.value')"
-                        class="flex-grow" />
-                    <flux:input
-                        wire:key="daya-tarik-label-{{ $index }}"
-                        wire:model.live="dayaTariks.{{ $index }}.label"
-                        placeholder="Label (Contoh: Kamar Siap Huni)"
-                        :error="$errors->first('dayaTariks.' . $index . '.label')"
-                        class="flex-grow" />
-                    <x-managers.ui.button
-                        wire:click="removeDayaTarik({{ $index }})"
-                        variant="danger"
-                        size="sm"
-                        icon="trash" />
-                </div>
-                @endforeach
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 mb-2">
+                        @foreach ($dayaTariks as $index => $item)
+                        <div class="flex items-center gap-2" wire:key="daya-tarik-item-wrapper-{{ $index }}">
+                            <p class="text-gray-700 dark:text-gray-300 flex-grow py-2 px-3 border border-gray-300 rounded-md">
+                                {{ $item['value'] ?? '' }} | {{ $item['label'] ?? '' }}
+                            </p>
+                            <x-managers.ui.button
+                                wire:click="removeDayaTarik({{ $index }})"
+                                variant="danger"
+                                size="sm"
+                                icon="trash" />
+                        </div>
+                        @endforeach
+                    </div>
                 @else
-                <p class="text-gray-500 dark:text-gray-400 text-sm">Belum ada daya tarik.</p>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm">Belum ada daya tarik.</p>
                 @endif
 
                 <div class="mt-3 flex gap-2">
-                    {{-- Form Tambah item baru: DUA INPUT --}}
-                    <flux:input
-                        wire:model.live="newDayaTarikValue"
-                        placeholder="Value (Contoh: 50+)"
-                        :error="$errors->first('newDayaTarikValue')"
-                        class="flex-grow" />
-                    <flux:input
-                        wire:model.live="newDayaTarikLabel"
-                        placeholder="Label (Contoh: Kamar Siap Huni)"
-                        :error="$errors->first('newDayaTarikLabel')"
-                        class="flex-grow" />
-                    <x-managers.ui.button wire:click="addDayaTarik()" variant="primary" size="sm" icon="plus">
+                    <div class="flex-grow">
+                        <label for="newDayaTarikValueInput" class="block font-medium text-sm text-gray-700 dark:text-gray-300">
+                            Value
+                        </label>
+                        <flux:input
+                            id="newDayaTarikValueInput"
+                            wire:model.live="newDayaTarikValue"
+                            placeholder="Contoh: 50+"
+                            class="placeholder-gray-400" {{-- Ditambahkan --}}
+                        />
+                        @error('newDayaTarikValue')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div class="flex-grow">
+                        <label for="newDayaTarikLabelInput" class="block font-medium text-sm text-gray-700 dark:text-gray-300">
+                            Label
+                        </label>
+                        <flux:input
+                            id="newDayaTarikLabelInput"
+                            wire:model.live="newDayaTarikLabel"
+                            placeholder="Contoh: Kamar Siap Huni"
+                            class="placeholder-gray-400" {{-- Ditambahkan --}}
+                        />
+                        @error('newDayaTarikLabel')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <x-managers.ui.button wire:click="addDayaTarik()" variant="primary" size="sm" icon="plus" class="self-end">
                         Tambah Daya Tarik
                     </x-managers.ui.button>
                 </div>
@@ -84,8 +110,8 @@
 
             {{-- Foto Update Banner (Kustom Tailwind CSS untuk input file) --}}
             <div class="mb-3">
-                <x-managers.form.label for="bannerImageInput">Foto Update</x-managers.form.label>
-                <div class="flex items-center space-x-2 border border-gray-300 rounded-md p-1"> {{-- Tambahkan outline di sini --}}
+                <x-managers.form.label for="bannerImageInput">Foto Update <span class="text-red-500">*</span></x-managers.form.label>
+                <div class="flex items-center space-x-2 border border-gray-300 rounded-md p-1">
                     <input
                         type="file"
                         wire:model="bannerImage"
@@ -95,17 +121,18 @@
                         class="hidden">
                     <button type="button"
                         onclick="document.getElementById('bannerImageInput').click()"
-                        class="px-3 py-1 text-sm bg-green-600 text-white font-semibold rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"> {{-- px-3 py-1 text-sm untuk ukuran kecil --}}
+                        class="px-3 py-1 text-sm bg-green-600 text-white font-semibold rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
                         Choose File
                     </button>
-                    <span class="text-gray-700 dark:text-gray-300 text-sm truncate"> {{-- text-sm dan truncate untuk nama file --}}
+                    <span class="text-gray-700 dark:text-gray-300 text-sm truncate">
                         {{ $bannerImage ? $bannerImage->getClientOriginalName() : 'No file chosen' }}
                     </span>
                 </div>
                 @error('bannerImage')
-                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @else
+                    <p class="text-gray-500 text-sm mt-1">Format file .jpg, .jpeg, .png (Maksimal 2MB)</p>
                 @enderror
-                <p class="text-gray-500 text-sm mt-1">Format file .jpg, .jpeg, .png (Maksimal 2MB)</p>
 
                 @if ($bannerImage)
                 <div class="mt-2">
@@ -132,8 +159,8 @@
             <form wire:submit.prevent="saveFooter">
                 {{-- Logo Footer (Kustom Tailwind CSS untuk input file) --}}
                 <div class="mb-3">
-                    <x-managers.form.label for="footerLogoInput">Logo Footer</x-managers.form.label>
-                    <div class="flex items-center space-x-2 border border-gray-300 rounded-md p-1"> {{-- Tambahkan outline di sini --}}
+                    <x-managers.form.label for="footerLogoInput">Logo Footer <span class="text-red-500">*</span></x-managers.form.label>
+                    <div class="flex items-center space-x-2 border border-gray-300 rounded-md p-1">
                         <input
                             type="file"
                             wire:model="footerLogo"
@@ -143,17 +170,18 @@
                             class="hidden">
                         <button type="button"
                             onclick="document.getElementById('footerLogoInput').click()"
-                            class="px-3 py-1 text-sm bg-green-600 text-white font-semibold rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"> {{-- px-3 py-1 text-sm untuk ukuran kecil --}}
+                            class="px-3 py-1 text-sm bg-green-600 text-white font-semibold rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
                             Choose File
                         </button>
-                        <span class="text-gray-700 dark:text-gray-300 text-sm truncate"> {{-- text-sm dan truncate untuk nama file --}}
+                        <span class="text-gray-700 dark:text-gray-300 text-sm truncate">
                             {{ $footerLogo ? $footerLogo->getClientOriginalName() : 'No file chosen' }}
                         </span>
                     </div>
                     @error('footerLogo')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @else
+                        <p class="text-gray-500 text-sm mt-1">Format file .jpg, .jpeg, .png (Maksimal 2MB)</p>
                     @enderror
-                    <p class="text-gray-500 text-sm mt-1">Format file .jpg, .jpeg, .png (Maksimal 2MB)</p>
 
                     @if ($footerLogo)
                     <div class="mt-2">
@@ -170,32 +198,49 @@
 
                 {{-- Judul Footer --}}
                 <div class="mb-3">
+                    <label for="footerTitleInput" class="block font-medium text-sm text-gray-700 dark:text-gray-300">
+                        Judul Footer <span class='text-red-500'>*</span>
+                    </label>
                     <flux:input
-                        label="Judul Footer"
+                        id="footerTitleInput"
                         type="text"
                         wire:model="footerTitle"
                         placeholder="Rusunawa UNJ"
-                        required
-                        :error="$errors->first('footerTitle')" />
+                        class="placeholder-gray-400" {{-- Ditambahkan --}}
+                    />
+                    @error('footerTitle')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
-                {{-- Teks Footer --}}
+                {{-- Teks Footer (DIUBAH MENJADI TEXTAREA BIASA DENGAN AUTO-RESIZE) --}}
                 <div class="mb-3">
-                    <flux:input
-                        label="Teks Footer"
-                        type="textarea"
-                        rows="3"
+                    <label for="footerTextInput" class="block font-medium text-sm text-gray-700 dark:text-gray-300">
+                        Teks Footer <span class='text-red-500'>*</span>
+                    </label>
+                    <textarea
+                        id="footerTextInput"
                         wire:model.live="footerText"
                         placeholder="Jl. Pemuda No. 10, Rawamangun, Jakarta Timur, DKI Jakarta 13220"
-                        required
                         maxlength="200"
-                        :error="$errors->first('footerText')">
-                        <x-slot name="after">
-                            <div class="text-right text-gray-500 mt-1">
-                                <small>{{ strlen($footerText) }}/200</small>
-                            </div>
-                        </x-slot>
-                    </flux:input>
+                        rows="3" {{-- Tinggi awal --}}
+                        class="block w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50
+                               overflow-hidden resize-none placeholder-gray-400" {{-- Ditambahkan --}}
+                        x-data="{
+                            resize() {
+                                $el.style.height = 'auto'; // Reset height to recalculate
+                                $el.style.height = $el.scrollHeight + 'px'; // Set height based on content
+                            }
+                        }"
+                        x-init="resize()" {{-- Panggil saat inisialisasi --}}
+                        @input="resize()" {{-- Panggil setiap kali input berubah --}}
+                    ></textarea>
+                    <div class="text-right text-gray-500 mt-1">
+                        <small>{{ strlen($footerText) }}/200</small>
+                    </div>
+                    @error('footerText')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <flux:button variant="primary" type="submit" class="mt-4">Update</flux:button>
