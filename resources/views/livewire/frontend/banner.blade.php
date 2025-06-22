@@ -40,7 +40,7 @@ mount(function () {
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-y-4 sm:gap-y-0 sm:gap-x-6 md:gap-y-8 mt-4 animate-fade-in-up-delay">
                 @foreach ($dayaTariks as $dt)
                 <div class="flex flex-col items-start">
-                    <span class="text-green-600 dark:text-green-400 text-3xl sm:text-4xl font-bold mb-0.5">{{ $dt['value'] ?? '' }}</span>
+                    <span class="text-green-600 dark:text-green-400 text-2xl sm:text-4xl font-bold mb-0.5">{{ $dt['value'] ?? '' }}</span>
                     <span class="text-gray-600 dark:text-gray-300 text-sm sm:text-base whitespace-nowrap overflow-hidden text-ellipsis">{{ $dt['label'] ?? '' }}</span>
                 </div>
                 @endforeach
