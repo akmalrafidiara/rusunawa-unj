@@ -10,4 +10,9 @@
             <livewire:frontend.unit-avaibility-check-form mode="redirect" />
         </div>
     </div>
+
+    {{-- Unit Types Section --}}
+    <section class="container mx-auto px-4 py-8">
+        <livewire:frontend.unit-type.index />
+    </section>
 </x-layouts.frontend>
