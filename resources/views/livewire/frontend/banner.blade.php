@@ -23,7 +23,7 @@ mount(function () {
 
 {{-- Konten HTML untuk menampilkan banner sesuai gambar --}}
 <div class="relative w-full min-h-[400px] sm:min-h-[450px] md:min-h-[600px] lg:min-h-[700px] bg-cover bg-center overflow-hidden shadow-lg flex items-center"
-    style="background-image: url('{{ $bannerImageUrl }}'), url('https://placehold.co/1200x450/ADD8E6/000?text=Gambar+Tidak+Ditemukan');">
+    style="background-image: url('{{ $bannerImageUrl ?: asset('images/placeholder.png') }}');">
     <div class="relative z-10 w-full px-4 sm:px-6 md:pl-20 py-10 sm:py-16 md:py-20 lg:py-24">
         <div class="text-left max-w-xl md:max-w-2xl w-full">
             {{-- Judul Banner dengan warna abu-abu --}}

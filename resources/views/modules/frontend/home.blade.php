@@ -1,7 +1,9 @@
 <x-layouts.frontend>
     {{-- Banner Section --}}
     <section id="banner" class="relative h-[500px] sm:h-[550px] md:h-[650px] lg:h-[700px] mb-10 sm:mb-20">
-        <livewire:frontend.banner />
+        <div class="w-full h-full">
+            <livewire:frontend.banner />
+        </div>
     </section>
 
     {{-- Form Kamar --}}
@@ -29,14 +31,13 @@
 
     {{-- About Us Section --}}
     <section id="about-us" class="container mx-auto px-4 py-8 relative overflow-hidden">
-        {{-- Perubahan utama ada di baris ini --}}
-        <div class="absolute top-8 right-0 md:top-12 md:right-2 lg:top-[8px] lg:right-0 pointer-events-none z-[-1] opacity-10 flex flex-col items-end">
+        <div class="absolute top-4 right-0 md:top-8 md:right-2 lg:top-[-20px] lg:right-0 pointer-events-none z-[-1] opacity-10 flex flex-col items-end">
             <span class="text-8xl md:text-[120px] lg:text-[250px] font-extrabold text-white
-                         [text-shadow:2px_2px_0_#9ca3af,-2px_-2px_0_#9ca3af,2px_-2px_0_#9ca3af,-2px_2px_0_#9ca3af,2px_0px_0_#9ca3af,-2px_0px_0_#9ca3af,0px_2px_0_#9ca3af,0px_-2px_0_#9ca3af]
-                         [white-space:nowrap]">TENTANG</span>
+                     [text-shadow:2px_2px_0_#9ca3af,-2px_-2px_0_#9ca3af,2px_-2px_0_#9ca3af,-2px_2px_0_#9ca3af,2px_0px_0_#9ca3af,-2px_0px_0_#9ca3af,0px_2px_0_#9ca3af,0px_-2px_0_#9ca3af]
+                     [white-space:nowrap]">TENTANG</span>
             <span class="text-8xl md:text-[120px] lg:text-[250px] font-extrabold text-white
-                         [text-shadow:2px_2px_0_#9ca3af,-2px_-2px_0_#9ca3af,2px_-2px_0_#9ca3af,-2px_2px_0_#9ca3af,2px_0px_0_#9ca3af,-2px_0px_0_#9ca3af,0px_2px_0_#9ca3af,0px_-2px_0_#9ca3af]
-                         [white-space:nowrap]">KAMI</span>
+                     [text-shadow:2px_2px_0_#9ca3af,-2px_-2px_0_#9ca3af,2px_-2px_0_#9ca3af,-2px_2px_0_#9ca3af,2px_0px_0_#9ca3af,-2px_0px_0_#9ca3af,0px_2px_0_#9ca3af,0px_-2px_0_#9ca3af]
+                     [white-space:nowrap]">KAMI</span>
         </div>
         <livewire:frontend.about-us />
     </section>
