@@ -2,25 +2,40 @@
 
 use function Livewire\Volt\{state, mount};
 use App\Models\Content;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Storage; // Tetap sertakan jika mungkin digunakan di bagian lain komponen Anda
 
 state([
     'aboutTitle' => '',
     'aboutDescription' => '',
     'aboutImageUrl' => '',
-    'aboutLink' => '',
     'dayaTariks' => [],
 ]);
 
 mount(function () {
-    $this->aboutTitle = optional(Content::where('content_key', 'about_us_title')->first())->content_value ?? '';
-    $this->aboutDescription = optional(Content::where('content_key', 'about_us_description')->first())->content_value ?? '';
-    $this->aboutImageUrl = optional(Content::where('content_key', 'about_us_image_url')->first())->content_value ?? '';
-    $this->aboutLink = optional(Content::where('content_key', 'about_us_link')->first())->content_value ?? '';
+    // Ambil semua konten yang relevan dalam satu query untuk efisiensi
+    // about_us_link dihapus dari daftar content_key yang diambil
+    $contentItems = Content::whereIn('content_key', [
+        'about_us_title',
+        'about_us_description',
+        'about_us_image_url',
+        'about_us_daya_tariks',
+    ])->get()->keyBy('content_key'); // Mengindeks hasil berdasarkan content_key
 
-    $loadedDayaTariks = optional(Content::where('content_key', 'about_us_daya_tariks')->first())->content_value;
-    // Ensure $loadedDayaTariks is an array, even if it's null or not an array from DB
-    $this->dayaTariks = is_array($loadedDayaTariks) ? $loadedDayaTariks : [];
+    // Mengisi state dengan nilai dari database atau nilai default yang bermakna
+    $this->aboutTitle = $contentItems->get('about_us_title')->content_value ?? 'Tentang Kami';
+    $this->aboutDescription = $contentItems->get('about_us_description')->content_value ?? 'Jelajahi lebih jauh tentang siapa kami, visi, misi, dan nilai-nilai yang kami junjung tinggi dalam memberikan layanan terbaik untuk Anda.';
+    
+    // Atur URL gambar. Jika kosong, gunakan placeholder langsung di sini.
+    $this->aboutImageUrl = $contentItems->get('about_us_image_url')->content_value ?? asset('images/placeholder.png');
+
+    // aboutLink telah dihapus karena tidak ada di DB
+    // $this->aboutLink = $contentItems->get('about_us_link')->content_value ?? '#'; 
+
+    // Penanganan daya tariks: Pastikan di-decode sebagai array
+    $loadedDayaTariks = $contentItems->get('about_us_daya_tariks')->content_value;
+    $this->dayaTariks = is_array($loadedDayaTariks) 
+                        ? $loadedDayaTariks 
+                        : (json_decode($loadedDayaTariks, true) ?? []); // Decode jika string JSON, atau array kosong
 
     // Definisikan array warna untuk latar belakang ikon
     $iconColors = ['bg-blue-500', 'bg-red-500', 'bg-purple-500', 'bg-yellow-500', 'bg-pink-500', 'bg-indigo-500'];
@@ -93,31 +108,36 @@ mount(function () {
             {{-- END: Bagian Gambar Mobile Baru --}}
 
             {{-- Deskripsi rata tengah di mobile, rata kiri di desktop --}}
-            <p class="text-gray-700 text-m md:text-xl leading-relaxed mb-8 text-center lg:text-left sm:pl-4">
+            <p class="text-gray-700 text-base md:text-xl leading-relaxed mb-8 text-center lg:text-left sm:pl-4">
                 {{ $aboutDescription }}
             </p>
 
             {{-- Menampilkan Keunggulan Kami (Daya Tarik) --}}
             @if (!empty($dayaTariks))
                 {{-- Tambahkan padding kiri untuk mobile --}}
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-2 gap-y-3.5 mb-8 sm:pl-4 lg:gap-4"> {{-- MENGUBAH: Menggunakan gap-x-2 dan gap-y-1 untuk mobile --}}
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 mb-8 sm:pl-4 lg:gap-x-8 lg:gap-y-5">
                     @foreach ($dayaTariks as $dayaTarik)
-                        <div class="flex items-center text-sm bg-white p-3 rounded-2xl shadow-md border border-gray-100 transform transition-transform duration-200 hover:scale-105 lg:text-base lg:p-4 lg:rounded-4xl">
-                            <div class="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center mr-2 {{ $dayaTarik['color'] }} lg:w-8 lg:h-8 lg:mr-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-white lg:w-5 lg:h-5">
+                        <div class="flex items-center text-sm transform transition-transform duration-200 hover:scale-105">
+                            {{-- Ikon tetap di luar bungkus --}}
+                            <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center mr-3 {{ $dayaTarik['color'] }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-white">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                                 </svg>
                             </div>
-                            <p class="text-gray-800 font-bold text-m lg:text-m">{{ $dayaTarik['text'] }}</p>
+                            {{-- Teks dan bungkusnya--}}
+                            <div class="flex-grow bg-white p-3 rounded-2xl shadow-md border border-gray-100">
+                                <p class="text-gray-800 font-semibold text-m leading-snug">
+                                    {{ $dayaTarik['text'] }}
+                                </p>
+                            </div>
                         </div>
                     @endforeach
                 </div>
             @endif
 
             {{-- Tombol Hubungi Kami --}}
-            {{-- Tambahkan padding kiri untuk mobile agar sejajar dengan teks di atasnya --}}
             <div class="sm:pl-4">
-                <a href="{{ $aboutLink ?: '#' }}"
+                <a href="#"
                    class="inline-flex items-center justify-center bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105">
                     Hubungi Kami
                 </a>
