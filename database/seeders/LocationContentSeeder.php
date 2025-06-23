@@ -33,7 +33,7 @@ class LocationContentSeeder extends Seeder
         Content::updateOrCreate(
             ['content_key' => 'location_embed_link'],
             [
-                'content_value' => '<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.3867623912165!2d106.8872242749877!3d-6.212009893766629!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f37c3b9b4f23%3A0x6e9f9b5c3e0e7a8!2sUniversitas%20Negeri%20Jakarta!5e0!3m2!1sid!2sid!4m2!3m1!1s0x2e69f37c3b9b4f23%3A0x6e9f9b5c3e0e7a8" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>',
+                'content_value' => '<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.543091543915!2d106.88764529999999!3d-6.1918353999999995!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f4eb2332d12b%3A0x378e50139887efcb!2sRusunawa%20Kampus%20B%20UNJ!5e0!3m2!1sid!2sid!4v1750680940005!5m2!1sid!2sid" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>',
                 'content_type' => 'html_embed'
             ]
         );
@@ -43,10 +43,10 @@ class LocationContentSeeder extends Seeder
             ['content_key' => 'location_nearby_locations'],
             [
                 'content_value' => json_encode([
-                    'Halte TransJakarta Pemuda Rawamangun – 100 m',
-                    'Mall Arion – 200 m',
-                    'Kampus A UNJ – 1 km',
-                    'Stasiun Jatinegara – 2 km',
+                    'Halte TransJakarta Pemuda Rawamangun - 100 m',
+                    'Mall Arion - 200 m',
+                    'Kampus A UNJ - 1 km',
+                    'Stasiun Jatinegara - 2 km',
                 ]),
                 'content_type' => 'json'
             ]
