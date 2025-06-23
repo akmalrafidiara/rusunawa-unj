@@ -1,26 +1,28 @@
 @php
-    // Definisikan kelas umum untuk semua input agar konsisten dan mudah diubah
     $inputBaseClass =
         'w-full mt-1 block py-2 px-3 border bg-white dark:bg-zinc-700 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition';
 
-    // Definisikan logika disabled di satu tempat
     $isMonthly = $pricingBasis === 'per_month';
     $disabledClasses = $isMonthly ? 'opacity-50 cursor-not-allowed' : '';
 @endphp
 
 <div>
-    <h3 class="text-2xl font-black text-gray-800 dark:text-white mb-4">Ingin sewa kamar? Yuk cek ketersediaannya</h3>
+    @if (request()->routeIs('home'))
+        <h3 class="text-2xl font-black text-gray-800 dark:text-white mb-4">Ingin sewa kamar? Yuk cek ketersediaannya</h3>
+    @else
+        <h3 class="text-2xl font-black text-gray-800 dark:text-white mb-4">Isi filter untuk melihat kamar tersedia</h3>
+    @endif
 
-    <div class="grid grid-cols-1 md:grid-cols-7 gap-x-4 gap-y-2 items-start">
+    <div class="flex flex-col md:flex-row gap-4">
 
         {{-- Dropdown Tipe Penghuni --}}
-        <div class="md:col-span-2">
-            <label for="jenis-penghuni" class="text-sm font-medium text-gray-600 dark:text-gray-300">Pilih Tipe
+        <div class="flex-1">
+            <label for="jenis-penghuni" class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Pilih Tipe
                 Penghuni</label>
             <div class="relative">
                 <select id="jenis-penghuni" wire:model.live="occupantType"
                     class="{{ $inputBaseClass }} {{ $errors->has('occupantType') ? 'border-red-500' : 'border-gray-300 dark:border-gray-600' }}">
-                    <option value="">Semua Tipe Penghuni</option>
+                    <option value="">Kamu tipe yang mana?</option>
                     @foreach ($occupantTypeOptions as $option)
                         <option value="{{ $option['id'] }}">{{ $option['name'] }}</option>
                     @endforeach
@@ -37,12 +39,13 @@
         </div>
 
         {{-- Dropdown Jenis Sewa --}}
-        <div class="md:col-span-2">
-            <label for="jenis-sewa" class="text-sm font-medium text-gray-600 dark:text-gray-300">Jenis Sewa</label>
+        <div class="flex-1">
+            <label for="jenis-sewa" class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Jenis
+                Sewa</label>
             <div class="relative">
                 <select id="jenis-sewa" wire:model.live="pricingBasis"
                     class="{{ $inputBaseClass }} {{ $errors->has('pricingBasis') ? 'border-red-500' : 'border-gray-300 dark:border-gray-600' }}">
-                    <option value="">Jenis Sewa</option>
+                    <option value="">Pilih jenis sewa</option>
                     @foreach ($pricingBasisOptions as $option)
                         <option value="{{ $option['value'] }}">{{ $option['label'] }}</option>
                     @endforeach
@@ -59,14 +62,14 @@
         </div>
 
         {{-- Durasi Penginapan --}}
-        <div class="md:col-span-2">
-            <label class="text-sm font-medium text-gray-600 dark:text-gray-300">
+        <div class="flex-1">
+            <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
                 Durasi Penginapan
                 <span class="font-bold">{{ $totalDays ? "($totalDays Hari)" : '' }}</span>
             </label>
-            <div class="mt-1 grid grid-cols-2 gap-2">
+            <div class="flex gap-2">
                 {{-- Input Start Date --}}
-                <div class="relative">
+                <div class="flex-1 relative">
                     <input wire:model.live="startDate" type="date" min="{{ date('Y-m-d') }}"
                         class="{{ $inputBaseClass }} {{ $disabledClasses }} {{ $errors->has('startDate') ? 'border-red-500' : 'border-gray-300 dark:border-gray-600' }} {{ !$startDate ? 'text-gray-400' : 'text-gray-900 dark:text-white' }}"
                         onchange="this.style.color = 'inherit';" {{ $isMonthly ? 'disabled' : '' }}>
@@ -79,8 +82,11 @@
                         </div>
                     @enderror
                 </div>
+
+                <span class="self-center px-2 text-gray-500">-</span>
+
                 {{-- Input End Date --}}
-                <div class="relative">
+                <div class="flex-1 relative">
                     <input wire:model.live="endDate" type="date" min="{{ date('Y-m-d') }}"
                         class="{{ $inputBaseClass }} {{ $disabledClasses }} {{ $errors->has('endDate') ? 'border-red-500' : 'border-gray-300 dark:border-gray-600' }} {{ !$endDate ? 'text-gray-400' : 'text-gray-900 dark:text-white' }}"
                         onchange="this.style.color = 'inherit';" {{ $isMonthly ? 'disabled' : '' }}>
@@ -97,11 +103,12 @@
         </div>
 
         {{-- Tombol Cari --}}
-        <div class="md:col-span-1 self-end">
+        <div class="flex-shrink-0 md:flex-shrink-0 md:self-end">
             <button wire:click="checkAvailability()" type="button"
-                class="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-bold h-10 px-4 rounded-lg transition flex items-center justify-center cursor-pointer"
+                class="w-full md:w-auto bg-green-600 hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-bold py-2 px-6 rounded-lg transition flex items-center justify-center min-h-[42px]"
                 wire:loading.attr="disabled" wire:target="checkAvailability">
-                <span wire:loading.remove wire:target="checkAvailability">Cari Kamar</span>
+                <span wire:loading.remove
+                    wire:target="checkAvailability">{{ request()->routeIs('home') ? 'Cari Kamar' : 'Terapkan Filter' }}</span>
                 <span wire:loading wire:target="checkAvailability" class="flex items-center">
                     Mencari...
                 </span>

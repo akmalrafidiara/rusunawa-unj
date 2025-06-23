@@ -18,12 +18,12 @@
                 {{-- Form Kamar --}}
                 <div
                     class="absolute -bottom-85 md:-bottom-25  left-1/2 transform -translate-x-1/2 max-w-full bg-white dark:bg-zinc-800 p-6 rounded-lg shadow-lg w-full">
-                    <livewire:frontend.unit-avaibility-check-form mode="filter" />
+                    <livewire:frontend.tenancy.avaibilityForm mode="filter" />
                 </div>
             </div>
         </div>
     </div>
 
 
-    <livewire:frontend.show-available-unit-types />
+    <livewire:frontend.tenancy.avaibilityList />
 </x-layouts.frontend>

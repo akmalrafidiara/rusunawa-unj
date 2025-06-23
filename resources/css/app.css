@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @import "../../vendor/livewire/flux/dist/flux.css";
 @import "flowbite/src/themes/default";
-@import 'trix/dist/trix.css';
+@import "trix/dist/trix.css";
 
 .trix-content a {
     color: #3b82f6 !important;
@@ -50,7 +50,6 @@
 }
 
 @layer base {
-
     *,
     ::after,
     ::before,
