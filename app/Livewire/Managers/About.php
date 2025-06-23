@@ -24,7 +24,7 @@ class About extends Component
     // Aturan validasi dasar
     protected $rules = [
         'aboutTitle' => 'required|string|max:255',
-        'aboutDescription' => 'required|string|max:200',
+        'aboutDescription' => 'required|string|max:500',
         'aboutImage' => 'nullable|image|max:2048|mimes:jpg,jpeg,png', // Default ke nullable
         'dayaTariks' => 'array', // Menggunakan dayaTariks
         'dayaTariks.*' => 'nullable|string|max:100', // Validasi untuk setiap item daya tarik

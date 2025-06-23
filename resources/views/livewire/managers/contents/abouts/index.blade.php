@@ -65,7 +65,7 @@
                     id="aboutDescriptionInput"
                     wire:model.live="aboutDescription"
                     placeholder="Rusunawa UNJ merupakan fasilitas hunian..."
-                    maxlength="200"
+                    maxlength="500"
                     rows="5"
                     class="block w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50
                            overflow-hidden resize-none"
@@ -79,7 +79,7 @@
                     @input="resize()"
                 ></textarea>
                 <div class="text-right text-gray-500 mt-1">
-                    <small>{{ strlen($aboutDescription) }}/200</small>
+                    <small>{{ strlen($aboutDescription) }}/500</small>
                 </div>
                 @error('aboutDescription')
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
