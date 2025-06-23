@@ -104,19 +104,15 @@ mount(function () {
             {{-- Menampilkan Keunggulan Kami (Daya Tarik) --}}
             @if (!empty($dayaTariks))
                 {{-- Tambahkan padding kiri untuk mobile --}}
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8 sm:pl-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-2 gap-y-3.5 mb-8 sm:pl-4 lg:gap-4"> {{-- MENGUBAH: Menggunakan gap-x-2 dan gap-y-1 untuk mobile --}}
                     @foreach ($dayaTariks as $dayaTarik)
-                        {{-- Mengubah rounded-xl menjadi rounded-2xl atau rounded-3xl --}}
-                        <div class="flex items-center text-base bg-white p-4 rounded-4xl shadow-md border border-gray-100 transform transition-transform duration-200 hover:scale-105">
-                            {{-- Memperbesar ukuran round ikon dari w-6 h-6 menjadi w-8 h-8 --}}
-                            <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center mr-3 {{ $dayaTarik['color'] }}">
-                                {{-- Memperbesar ukuran ikon SVG dari w-4 h-4 menjadi w-5 h-5 --}}
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-white">
+                        <div class="flex items-center text-sm bg-white p-3 rounded-2xl shadow-md border border-gray-100 transform transition-transform duration-200 hover:scale-105 lg:text-base lg:p-4 lg:rounded-4xl">
+                            <div class="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center mr-2 {{ $dayaTarik['color'] }} lg:w-8 lg:h-8 lg:mr-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-white lg:w-5 lg:h-5">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                                 </svg>
                             </div>
-                            {{-- Tambahkan kelas font-bold untuk membuat teks menjadi tebal --}}
-                            <p class="text-gray-800 font-bold text-m">{{ $dayaTarik['text'] }}</p>
+                            <p class="text-gray-800 font-bold text-m lg:text-m">{{ $dayaTarik['text'] }}</p>
                         </div>
                     @endforeach
                 </div>
