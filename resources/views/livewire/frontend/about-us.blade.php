@@ -21,11 +21,22 @@ mount(function () {
     $loadedDayaTariks = optional(Content::where('content_key', 'about_us_daya_tariks')->first())->content_value;
     // Ensure $loadedDayaTariks is an array, even if it's null or not an array from DB
     $this->dayaTariks = is_array($loadedDayaTariks) ? $loadedDayaTariks : [];
+
+    // Definisikan array warna untuk latar belakang ikon
+    $iconColors = ['bg-blue-500', 'bg-red-500', 'bg-purple-500', 'bg-yellow-500', 'bg-pink-500', 'bg-indigo-500'];
+
+    // Tambahkan warna ke setiap item daya tarik
+    $this->dayaTariks = array_map(function($item, $index) use ($iconColors) {
+        return [
+            'text' => $item,
+            'color' => $iconColors[$index % count($iconColors)] // Ambil warna secara berurutan, ulang jika item lebih banyak
+        ];
+    }, $this->dayaTariks, array_keys($this->dayaTariks));
 });
 
 ?>
 
-<div class="relative w-full py-8 px-4 sm:px-6 lg:px-8 overflow-hidden">
+<div class="relative w-full py-0 px-4 sm:px-6 lg:px-8 overflow-hidden">
     {{-- Background Overlay (Jika diperlukan, disesuaikan dengan gambar latar) --}}
     {{-- <div class="absolute inset-0 bg-pink-100 bg-opacity-70"></div> --}}
 
@@ -36,19 +47,19 @@ mount(function () {
             <div class="relative w-[600px] h-[500px] mx-auto"> {{-- Ukuran ditingkatkan untuk desktop --}}
                 {{-- Top-Left Kotak --}}
                 <div class="absolute top-0 left-0 w-[280px] h-[280px] rounded-2xl overflow-hidden shadow-xl transform rotate-3 z-10 border-2 border-teal-500"
-                     style="background-image: url('{{ $aboutImageUrl }}'), url('https://placehold.co/1200x450/ADD8E6/000?text=Gambar+Tidak+Ditemukan'); background-size: 200% auto; background-position: top 10% left 15%;">
+                    style="background-image: url('{{ $aboutImageUrl ?: asset('images/placeholder.png') }}'); background-size: 200% auto; background-position: top 10% left 15%;">
                 </div>
                 {{-- Top-Right Kotak --}}
                 <div class="absolute top-10 right-0 w-[350px] h-[180px] rounded-2xl overflow-hidden shadow-lg transform -rotate-2 z-20 border-2 border-teal-500"
-                     style="background-image: url('{{ $aboutImageUrl }}'), url('https://placehold.co/1200x450/ADD8E6/000?text=Gambar+Tidak+Ditemukan'); background-size: 200% auto; background-position: top 0% right 0%;">
+                    style="background-image: url('{{ $aboutImageUrl ?: asset('images/placeholder.png') }}'); background-size: 200% auto; background-position: top 0% right 0%;">
                 </div>
                 {{-- Bottom-Left Kotak --}}
                 <div class="absolute bottom-0 left-10 w-[300px] h-[220px] rounded-2xl overflow-hidden shadow-lg transform rotate-1 z-0 border-2 border-teal-500"
-                     style="background-image: url('{{ $aboutImageUrl }}'), url('https://placehold.co/1200x450/ADD8E6/000?text=Gambar+Tidak+Ditemukan'); background-size: 250% auto; background-position: bottom 30% left 20%;">
+                    style="background-image: url('{{ $aboutImageUrl ?: asset('images/placeholder.png') }}'); background-size: 250% auto; background-position: bottom 30% left 20%;">
                 </div>
                 {{-- Bottom-Right Kotak --}}
                 <div class="absolute bottom-5 right-10 w-[320px] h-[320px] rounded-2xl overflow-hidden shadow-lg transform -rotate-5 z-10 border-2 border-teal-500"
-                     style="background-image: url('{{ $aboutImageUrl }}'), url('https://placehold.co/1200x450/ADD8E6/000?text=Gambar+Tidak+Ditemukan'); background-size: 180% auto; background-position: bottom 20% right 30%;">
+                    style="background-image: url('{{ $aboutImageUrl ?: asset('images/placeholder.png') }}'); background-size: 180% auto; background-position: bottom 20% right 30%;">
                 </div>
             </div>
         </div>
@@ -58,7 +69,7 @@ mount(function () {
             {{-- Tambahkan padding kiri dan ubah warna teks menjadi hijau --}}
             <span class="text-sm font-semibold text-green-600 uppercase tracking-wider mb-2 block text-left sm:pl-4">Tentang Kami</span>
             {{-- Tambahkan padding kiri untuk mobile dan pastikan rata kiri --}}
-            <h3 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-6 leading-tight text-left sm:pl-4">
+            <h3 class="text-3xl md:text-5xl font-extrabold text-gray-900 mb-6 leading-tight text-left sm:pl-4">
                 {{ $aboutTitle }}
             </h3>
 
@@ -69,16 +80,16 @@ mount(function () {
                     <div class="relative w-full h-[320px] mx-auto">
                         {{-- Ukuran kotak-kotak gambar disesuaikan --}}
                         <div class="absolute top-0 left-0 w-[160px] h-[160px] rounded-2xl overflow-hidden shadow-xl transform rotate-3 z-10 border-2 border-teal-500"
-                             style="background-image: url('{{ $aboutImageUrl }}'), url('https://placehold.co/1200x450/ADD8E6/000?text=Gambar+Tidak+Ditemukan'); background-size: 200% auto; background-position: top 10% left 15%;">
+                            style="background-image: url('{{ $aboutImageUrl ?: asset('images/placeholder.png') }}'); background-size: 200% auto; background-position: top 10% left 15%;">
                         </div>
                         <div class="absolute top-8 right-0 w-[200px] h-[100px] rounded-2xl overflow-hidden shadow-lg transform -rotate-2 z-20 border-2 border-teal-500"
-                             style="background-image: url('{{ $aboutImageUrl }}'), url('https://placehold.co/1200x450/ADD8E6/000?text=Gambar+Tidak+Ditemukan'); background-size: 200% auto; background-position: top 0% right 0%;">
+                            style="background-image: url('{{ $aboutImageUrl ?: asset('images/placeholder.png') }}'); background-size: 200% auto; background-position: top 0% right 0%;">
                         </div>
                         <div class="absolute bottom-0 left-8 w-[180px] h-[120px] rounded-2xl overflow-hidden shadow-lg transform rotate-1 z-0 border-2 border-teal-500"
-                             style="background-image: url('{{ $aboutImageUrl }}'), url('https://placehold.co/1200x450/ADD8E6/000?text=Gambar+Tidak+Ditemukan'); background-size: 250% auto; background-position: bottom 30% left 20%;">
+                            style="background-image: url('{{ $aboutImageUrl ?: asset('images/placeholder.png') }}'); background-size: 250% auto; background-position: bottom 30% left 20%;">
                         </div>
                         <div class="absolute bottom-4 right-8 w-[190px] h-[190px] rounded-2xl overflow-hidden shadow-lg transform -rotate-5 z-10 border-2 border-teal-500"
-                             style="background-image: url('{{ $aboutImageUrl }}'), url('https://placehold.co/1200x450/ADD8E6/000?text=Gambar+Tidak+Ditemukan'); background-size: 180% auto; background-position: bottom 20% right 30%;">
+                            style="background-image: url('{{ $aboutImageUrl ?: asset('images/placeholder.png') }}'); background-size: 180% auto; background-position: bottom 20% right 30%;">
                         </div>
                     </div>
                 </div>
@@ -86,7 +97,7 @@ mount(function () {
             {{-- END: Bagian Gambar Mobile Baru --}}
 
             {{-- Deskripsi rata tengah di mobile, rata kiri di desktop --}}
-            <p class="text-gray-700 text-lg md:text-xl leading-relaxed mb-8 text-center lg:text-left sm:pl-4">
+            <p class="text-gray-700 text-m md:text-xl leading-relaxed mb-8 text-center lg:text-left sm:pl-4">
                 {{ $aboutDescription }}
             </p>
 
@@ -95,11 +106,17 @@ mount(function () {
                 {{-- Tambahkan padding kiri untuk mobile --}}
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8 sm:pl-4">
                     @foreach ($dayaTariks as $dayaTarik)
-                        <div class="flex items-start text-base bg-white p-4 rounded-lg shadow-md border border-gray-100 transform transition-transform duration-200 hover:scale-105">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-3 mt-1 text-green-600 flex-shrink-0">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.288 15.038a5.25 5.25 0 0 1 7.424 0M5.106 11.856c3.807-3.808 9.98-3.808 13.788 0M1.924 8.67c5.565-5.565 14.587-5.565 20.152 0M12.5 18.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
-                            </svg>
-                            <p class="text-gray-800">{{ $dayaTarik }}</p>
+                        {{-- Mengubah rounded-xl menjadi rounded-2xl atau rounded-3xl --}}
+                        <div class="flex items-center text-base bg-white p-4 rounded-4xl shadow-md border border-gray-100 transform transition-transform duration-200 hover:scale-105">
+                            {{-- Memperbesar ukuran round ikon dari w-6 h-6 menjadi w-8 h-8 --}}
+                            <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center mr-3 {{ $dayaTarik['color'] }}">
+                                {{-- Memperbesar ukuran ikon SVG dari w-4 h-4 menjadi w-5 h-5 --}}
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-white">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                                </svg>
+                            </div>
+                            {{-- Tambahkan kelas font-bold untuk membuat teks menjadi tebal --}}
+                            <p class="text-gray-800 font-bold text-m">{{ $dayaTarik['text'] }}</p>
                         </div>
                     @endforeach
                 </div>
