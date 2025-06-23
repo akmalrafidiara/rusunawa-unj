@@ -41,4 +41,16 @@
         </div>
         <livewire:frontend.about-us />
     </section>
+
+    <!-- Location Section -->
+    <section id="location" class="py-8 relative overflow-hidden mb-12"> {{-- Menambah section untuk Lokasi --}}
+        <div class="container mx-auto px-4"> {{-- Added container here --}}
+            <div class="absolute top-8 left-0 md:top-12 md:left-2 lg:top-1 lg:left-0 pointer-events-none z-[-1] opacity-10">
+                <span class="text-8xl md:text-[200px] lg:text-[300px] font-extrabold text-white
+                                [text-shadow:2px_2px_0_#9ca3af,-2px_-2px_0_#9ca3af,2px_-2px_0_#9ca3af,-2px_2px_0_#9ca3af,2px_0px_0_#9ca3af,-2px_0px_0_#9ca3af,0px_2px_0_#9ca3af,0px_-2px_0_#9ca3af]
+                                [white-space:nowrap]">LOKASI</span>
+            </div>
+        </div>
+        <livewire:frontend.location />
+    </section>
 </x-layouts.frontend>

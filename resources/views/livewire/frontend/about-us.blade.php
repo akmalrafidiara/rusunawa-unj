@@ -37,11 +37,7 @@ mount(function () {
 ?>
 
 <div class="relative w-full py-0 px-4 sm:px-6 lg:px-8 overflow-hidden">
-    {{-- Background Overlay (Jika diperlukan, disesuaikan dengan gambar latar) --}}
-    {{-- <div class="absolute inset-0 bg-pink-100 bg-opacity-70"></div> --}}
-
     <div class="container mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-
         {{-- Bagian Kiri: Gambar-gambar (Hanya untuk Desktop/Large Screens) --}}
         <div class="hidden lg:block relative -left-8">
             <div class="relative w-[600px] h-[500px] mx-auto"> {{-- Ukuran ditingkatkan untuk desktop --}}
