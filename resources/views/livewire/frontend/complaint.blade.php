@@ -58,9 +58,8 @@ mount(function () {
                          class="w-full h-auto max-w-lg object-cover mb-4">
                 @else
                     {{-- Placeholder jika tidak ada gambar --}}
-                    <div class="bg-gray-200 dark:bg-gray-700 w-full max-w-lg h-64 flex items-center justify-center text-gray-500 mb-4">
-                        Tidak ada gambar pengaduan.
-                    </div>
+                    <img src="{{ asset('images/placeholder.png') }}" alt="Placeholder Gambar"
+                         class="w-full h-auto max-w-lg object-cover mb-4">
                 @endif
             </div>
 
@@ -104,9 +103,8 @@ mount(function () {
                      class="w-full h-auto max-w-lg object-cover">
             @else
                 {{-- Placeholder jika tidak ada gambar --}}
-                <div class="bg-gray-200 dark:bg-gray-700 w-full max-w-lg h-64 flex items-center justify-center text-gray-500">
-                    Tidak ada gambar pengaduan.
-                </div>
+                <img src="{{ asset('images/placeholder.png') }}" alt="Placeholder Gambar"
+                         class="w-full h-auto max-w-lg object-cover mb-4">
             @endif
         </div>
     </div>
