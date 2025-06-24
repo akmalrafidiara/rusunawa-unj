@@ -32,6 +32,8 @@ class DatabaseSeeder extends Seeder
             BannerContentSeeder::class,
             AboutContentSeeder::class,
             ComplaintContentSeeder::class,
+            ContactContentSeeder::class,
+            FooterContentSeeder::class,
         ]);
     }
 }
