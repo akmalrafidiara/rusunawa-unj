@@ -99,4 +99,18 @@
         </div>
         <livewire:frontend.faq />
     </section>
+
+    {{-- FAQ Section --}}
+    <section id="contact" class="container mx-auto px-4 py-8 relative overflow-hidden">
+        <div class="container mx-auto px-4">
+            <div
+                class="absolute top-[-20px] left-0 md:top-8 md:left-2 lg:top-[-90px] lg:left-0 pointer-events-none z-[-1] opacity-10">
+                <span
+                    class="text-[120px] md:text-[200px] lg:text-[300px] font-extrabold text-white
+                                [text-shadow:2px_2px_0_#9ca3af,-2px_-2px_0_#9ca3af,2px_-2px_0_#9ca3af,-2px_2px_0_#9ca3af,2px_0px_0_#9ca3af,-2px_0px_0_#9ca3af,0px_2px_0_#9ca3af,0px_-2px_0_#9ca3af]
+                                [white-space:nowrap]">KONTAK</span>
+            </div>
+        </div>
+        <livewire:frontend.contact />
+    </section>
 </x-layouts.frontend>
