@@ -14,12 +14,12 @@ state([
 
 mount(function () {
     // Mengambil setiap bagian 'Lokasi Kami' secara terpisah berdasarkan content_key
-    $this->mainLocationTitle = optional(Content::where('content_key', 'location_main_title')->first())->content_value ?? '';
-    $this->subLocationTitle = optional(Content::where('content_key', 'location_sub_title')->first())->content_value ?? '';
-    $this->locationAddress = optional(Content::where('content_key', 'location_address')->first())->content_value ?? '';
+    $this->mainLocationTitle = optional(Content::where('content_key', 'location_main_title')->first())->content_value ?? 'Data belum tersedia';
+    $this->subLocationTitle = optional(Content::where('content_key', 'location_sub_title')->first())->content_value ?? 'Data belum tersedia';
+    $this->locationAddress = optional(Content::where('content_key', 'location_address')->first())->content_value ?? 'Data belum tersedia';
 
     // Mengambil link embed peta asli dari database
-    $rawEmbedLink = optional(Content::where('content_key', 'location_embed_link')->first())->content_value ?? '';
+    $rawEmbedLink = optional(Content::where('content_key', 'location_embed_link')->first())->content_value ?? 'Data belum tersedia';
     $this->locationEmbedLink = $rawEmbedLink;
 
     $modifiedEmbedLink = $rawEmbedLink;

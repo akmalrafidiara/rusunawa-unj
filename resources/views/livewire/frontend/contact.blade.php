@@ -14,9 +14,9 @@ state([
 
 mount(function () {
     // Mengambil data kontak utama dari CMS
-    $this->phoneNumber = optional(Content::where('content_key', 'contact_phone_number')->first())->content_value ?? '';
-    $this->email = optional(Content::where('content_key', 'contact_email')->first())->content_value ?? '';
-    $this->address = optional(Content::where('content_key', 'contact_address')->first())->content_value ?? 'Jl. Pemuda No.10, Rawamangun, Jakarta Timur, DKI Jakarta 13220';
+    $this->phoneNumber = optional(Content::where('content_key', 'contact_phone_number')->first())->content_value ?? 'Data belum tersedia';
+    $this->email = optional(Content::where('content_key', 'contact_email')->first())->content_value ?? 'Data belum tersedia';
+    $this->address = optional(Content::where('content_key', 'contact_address')->first())->content_value ?? 'Data belum tersedia';
     // Data operationalHours tidak lagi diambil atau ditampilkan
 });
 

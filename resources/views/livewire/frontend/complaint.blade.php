@@ -12,32 +12,35 @@ state([
 ]);
 
 mount(function () {
-    $contentItems = Content::whereIn('content_key', [
-        'complaint_service_title',
-        'complaint_service_description',
-        'complaint_service_image_url',
-        'complaint_service_advantages',
-    ])->get()->keyBy('content_key');
+    // Mengambil konten dari database
+    $this->complaintTitle = optional(Content::where('content_key', 'complaint_service_title')->first())->content_value ?? 'Data belum tersedia';
+    $this->complaintDescription = optional(Content::where('content_key', 'complaint_service_description')->first())->content_value ?? 'Data belum tersedia';
+    
+    // Atur URL gambar. Jika kosong, gunakan placeholder langsung di sini.
+    $this->complaintImageUrl = optional(Content::where('content_key', 'complaint_service_image_url')->first())->content_value ?? asset('images/placeholder.png');
 
-    $this->complaintTitle = $contentItems->get('complaint_service_title')->content_value ?? 'Layanan Pengaduan';
-    $this->complaintDescription = $contentItems->get('complaint_service_description')->content_value ?? 'Kami menyediakan layanan pengaduan yang mudah, cepat, dan transparan untuk memastikan setiap masukan Anda didengar dan ditindaklanjuti dengan serius.';
+    // Penanganan daya tariks: Pastikan di-decode sebagai array, sama seperti nearbyLocations
+    $advantagesContent = optional(Content::where('content_key', 'complaint_service_advantages')->first())->content_value;
 
-    $this->complaintImageUrl = $contentItems->get('complaint_service_image_url')->content_value ?? asset('images/default-complaint-banner.jpg');
-
-    $loadedAdvantages = $contentItems->get('complaint_service_advantages')->content_value;
-    $this->advantages = is_array($loadedAdvantages)
-        ? $loadedAdvantages
-        : (json_decode($loadedAdvantages, true) ?? []);
+    if (is_array($advantagesContent)) {
+        $loadedAdvantages = $advantagesContent;
+    } elseif (is_string($advantagesContent)) {
+        $decoded = json_decode($advantagesContent, true);
+        $loadedAdvantages = (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) ? $decoded : [];
+    } else {
+        $loadedAdvantages = [];
+    }
 
     // Definisikan array warna untuk latar belakang ikon (opsional, bisa disesuaikan)
     $iconColors = ['bg-red-600', 'bg-blue-600', 'bg-yellow-600', 'bg-green-600', 'bg-purple-600', 'bg-pink-600'];
 
-    $this->advantages = array_map(function ($item, $index) use ($iconColors) {
+    // Tambahkan warna ke setiap item daya tarik
+    $this->advantages = array_map(function($item, $index) use ($iconColors) {
         return [
             'text' => $item,
-            'color' => $iconColors[$index % count($iconColors)]
+            'color' => $iconColors[$index % count($iconColors)] // Ambil warna secara berurutan, ulang jika item lebih banyak
         ];
-    }, $this->advantages, array_keys($this->advantages));
+    }, $loadedAdvantages, array_keys($loadedAdvantages));
 });
 
 ?>

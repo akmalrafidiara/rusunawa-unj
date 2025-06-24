@@ -12,30 +12,24 @@ state([
 ]);
 
 mount(function () {
-    // Ambil semua konten yang relevan dalam satu query untuk efisiensi
-    // about_us_link dihapus dari daftar content_key yang diambil
-    $contentItems = Content::whereIn('content_key', [
-        'about_us_title',
-        'about_us_description',
-        'about_us_image_url',
-        'about_us_daya_tariks',
-    ])->get()->keyBy('content_key'); // Mengindeks hasil berdasarkan content_key
 
-    // Mengisi state dengan nilai dari database atau nilai default yang bermakna
-    $this->aboutTitle = $contentItems->get('about_us_title')->content_value ?? 'Tentang Kami';
-    $this->aboutDescription = $contentItems->get('about_us_description')->content_value ?? 'Jelajahi lebih jauh tentang siapa kami, visi, misi, dan nilai-nilai yang kami junjung tinggi dalam memberikan layanan terbaik untuk Anda.';
+    $this->aboutTitle = optional(Content::where('content_key', 'about_us_title')->first())->content_value ?? 'Data belum tersedia';
+    $this->aboutDescription = optional(Content::where('content_key', 'about_us_description')->first())->content_value ?? 'Data belum tersedia';
     
     // Atur URL gambar. Jika kosong, gunakan placeholder langsung di sini.
-    $this->aboutImageUrl = $contentItems->get('about_us_image_url')->content_value ?? asset('images/placeholder.png');
+    $this->aboutImageUrl = optional(Content::where('content_key', 'about_us_image_url')->first())->content_value ?? asset('images/placeholder.png');
 
-    // aboutLink telah dihapus karena tidak ada di DB
-    // $this->aboutLink = $contentItems->get('about_us_link')->content_value ?? '#'; 
+    // Penanganan daya tariks: Pastikan di-decode sebagai array, sama seperti nearbyLocations
+    $dayaTariksContent = optional(Content::where('content_key', 'about_us_daya_tariks')->first())->content_value;
 
-    // Penanganan daya tariks: Pastikan di-decode sebagai array
-    $loadedDayaTariks = $contentItems->get('about_us_daya_tariks')->content_value;
-    $this->dayaTariks = is_array($loadedDayaTariks) 
-                        ? $loadedDayaTariks 
-                        : (json_decode($loadedDayaTariks, true) ?? []); // Decode jika string JSON, atau array kosong
+    if (is_array($dayaTariksContent)) {
+        $loadedDayaTariks = $dayaTariksContent;
+    } elseif (is_string($dayaTariksContent)) {
+        $decoded = json_decode($dayaTariksContent, true);
+        $loadedDayaTariks = (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) ? $decoded : [];
+    } else {
+        $loadedDayaTariks = [];
+    }
 
     // Definisikan array warna untuk latar belakang ikon
     $iconColors = ['bg-blue-500', 'bg-red-500', 'bg-purple-500', 'bg-yellow-500', 'bg-pink-500', 'bg-indigo-500'];
@@ -46,7 +40,7 @@ mount(function () {
             'text' => $item,
             'color' => $iconColors[$index % count($iconColors)] // Ambil warna secara berurutan, ulang jika item lebih banyak
         ];
-    }, $this->dayaTariks, array_keys($this->dayaTariks));
+    }, $loadedDayaTariks, array_keys($loadedDayaTariks));
 });
 
 ?>
@@ -137,7 +131,7 @@ mount(function () {
 
             {{-- Tombol Hubungi Kami --}}
             <div class="sm:pl-4">
-                <a href="#"
+                <a href="#contact"
                    class="inline-flex items-center justify-center bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105">
                     Hubungi Kami
                 </a>

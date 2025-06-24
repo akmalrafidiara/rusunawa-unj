@@ -11,11 +11,11 @@ state([
 ]);
 
 mount(function () {
-    $this->bannerTitle = optional(Content::where('content_key', 'banner_title')->first())->content_value ?? '';
-    $this->bannerText = optional(Content::where('content_key', 'banner_text')->first())->content_value ?? '';
-    $this->bannerImageUrl = optional(Content::where('content_key', 'banner_image_url')->first())->content_value ?? '';
+    $this->bannerTitle = optional(Content::where('content_key', 'banner_title')->first())->content_value ?? 'Data belum tersedia';
+    $this->bannerText = optional(Content::where('content_key', 'banner_text')->first())->content_value ?? 'Data belum tersedia';
+    $this->bannerImageUrl = optional(Content::where('content_key', 'banner_image_url')->first())->content_value ?? asset('images/placeholder.png');
 
-    $loadedDayaTariks = optional(Content::where('content_key', 'banner_daya_tariks')->first())->content_value;
+    $loadedDayaTariks = optional(Content::where('content_key', 'banner_daya_tariks')->first())->content_value ?? [];
     $this->dayaTariks = is_array($loadedDayaTariks) ? $loadedDayaTariks : [];
 });
 
