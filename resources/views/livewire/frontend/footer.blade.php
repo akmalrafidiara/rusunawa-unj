@@ -80,10 +80,10 @@ mount(function () {
             <div class="px-4 lg:px-0 md:col-span-2 text-left">
                 <h4 class="text-green-700 text-lg font-semibold mb-4">Tautan Terkait</h4>
                 <ul class="space-y-3 text-gray-700">
-                    <li><a href="#" class="hover:text-green-600 transition-colors duration-200">Website BPU UNJ</a></li>
-                    <li><a href="#" class="hover:text-green-600 transition-colors duration-200">Website UNJ</a></li>
-                    <li><a href="#" class="hover:text-green-600 transition-colors duration-200">SSO UNJ</a></li>
-                    <li><a href="#" class="hover:text-green-600 transition-colors duration-200">Siakad UNJ</a></li>
+                    <li><a href="https://bpu.unj.ac.id" class="hover:text-green-600 transition-colors duration-200">Website BPU UNJ</a></li>
+                    <li><a href="https://unj.ac.id" class="hover:text-green-600 transition-colors duration-200">Website UNJ</a></li>
+                    <li><a href="https://sso.unj.ac.id" class="hover:text-green-600 transition-colors duration-200">SSO UNJ</a></li>
+                    <li><a href="https://siakad.unj.ac.id" class="hover:text-green-600 transition-colors duration-200">Siakad UNJ</a></li>
                 </ul>
             </div>
 
@@ -94,8 +94,8 @@ mount(function () {
                 <ul class="space-y-3 text-gray-700">
                     <li><a href="#" class="hover:text-green-600 transition-colors duration-200">Login Penghuni</a></li>
                     <li><a href="#" class="hover:text-green-600 transition-colors duration-200">Cek Pengaduan</a></li>
-                    <li><a href="#" class="hover:text-green-600 transition-colors duration-200">Sewa Kamar</a></li>
-                    <li><a href="#" class="hover:text-green-600 transition-colors duration-200">Tipe Kamar</a></li>
+                    <li><a href="/tenancy" class="hover:text-green-600 transition-colors duration-200">Sewa Kamar</a></li>
+                    <li><a href="#unit-types" class="hover:text-green-600 transition-colors duration-200">Tipe Kamar</a></li>
                 </ul>
             </div>
         </div>
