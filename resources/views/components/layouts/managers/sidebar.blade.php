@@ -145,6 +145,11 @@ $adminSidebarMenu = [
                         'current' => request()->routeIs('page-contents.galleries'),
                     ],
                     [
+                        'label' => __('Layanan Pengaduan'),
+                        'route' => route('page-contents.complaint-content'),
+                        'current' => request()->routeIs('page-contents.complaint-content'),
+                    ],
+                    [
                         'label' => __('FAQ'),
                         'route' => route('page-contents.faq'),
                         'current' => request()->routeIs('page-contents.faq'),

@@ -51,6 +51,7 @@ Route::prefix('managers')->middleware(['auth', 'verified'])->group(function () {
         Route::view('abouts', 'modules.managers.contents.abouts.index')->name('page-contents.abouts');
         Route::view('locations', 'modules.managers.contents.locations.index')->name('page-contents.locations');
         Route::view('galleries', 'modules.managers.contents.galleries.index')->name('page-contents.galleries');
+        Route::view('complaint-content', 'modules.managers.contents.complaint-page-content.index')->name('page-contents.complaint-content');
         Route::view('faqs', 'modules.managers.contents.faq.index')->name('page-contents.faq');
         Route::view('contacts', 'modules.managers.contents.contacts.index')->name('page-contents.contacts');
     });
