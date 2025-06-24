@@ -59,4 +59,16 @@
         </div>
         <livewire:frontend.location />
     </section>
+
+    {{-- Gallery Section --}}
+    <section id="gallery" class="container mx-auto px-4 py-2 md:py-6 relative overflow-hidden">
+        <div class="absolute top-8 left-0 md:top-0 md:left-2 lg:top-[20px] lg:left-2 pointer-events-none z-[-1] opacity-10
+                    **text-center w-full -mt-10 sm:mt-0**">
+            <span
+                class="text-8xl md:text-[200px] lg:text-[300px] font-extrabold text-white
+                                [text-shadow:2px_2px_0_#9ca3af,-2px_-2px_0_#9ca3af,2px_-2px_0_#9ca3af,-2px_2px_0_#9ca3af,2px_0px_0_#9ca3af,-2px_0px_0_#9ca3af,0px_2px_0_#9ca3af,0px_-2px_0_#9ca3af]
+                                [white-space:nowrap]">GALERI</span>
+        </div>
+        <livewire:frontend.gallery />
+    </section>
 </x-layouts.frontend>
