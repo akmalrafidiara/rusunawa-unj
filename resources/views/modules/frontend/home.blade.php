@@ -46,7 +46,7 @@
         <livewire:frontend.about-us />
     </section>
 
-    <!-- Location Section -->
+    {{-- Location Section --}}
     <section id="location" class="container mx-auto px-4 py-8 relative overflow-hidden"> {{-- Menambah section untuk Lokasi --}}
         <div class="container mx-auto px-4">
             <div
@@ -70,5 +70,19 @@
                                 [white-space:nowrap]">GALERI</span>
         </div>
         <livewire:frontend.gallery />
+    </section>
+
+    {{-- complaint Section --}}
+    <section id="complaint" class="container mx-auto px-4 py-8 relative overflow-hidden">
+        <div class="container mx-auto px-4">
+            <div
+                class="absolute top-8 left-0 md:top-12 md:left-2 lg:top-[-20px] lg:left-0 pointer-events-none z-[-1] opacity-10">
+                <span
+                    class="text-8xl md:text-[200px] lg:text-[300px] font-extrabold text-white
+                                [text-shadow:2px_2px_0_#9ca3af,-2px_-2px_0_#9ca3af,2px_-2px_0_#9ca3af,-2px_2px_0_#9ca3af,2px_0px_0_#9ca3af,-2px_0px_0_#9ca3af,0px_2px_0_#9ca3af,0px_-2px_0_#9ca3af]
+                                [white-space:nowrap]">Keluhan</span>
+            </div>
+        </div>
+        <livewire:frontend.complaint />
     </section>
 </x-layouts.frontend>
