@@ -25,7 +25,7 @@ class LocationContentSeeder extends Seeder
 
         Content::updateOrCreate(
             ['content_key' => 'location_address'],
-            ['content_value' => 'Jl. Pemuda No.10, Rawamangun, Jakarta Timur DKI Jakarta 13220', 'content_type' => 'text']
+            ['content_value' => 'Jl. Pemuda No.10, RT.8/RW.5, Rawamangun, Kec. Pulo Gadung, Kota Jakarta Timur, Daerah Khusus Ibukota Jakarta 13220', 'content_type' => 'text']
         );
 
         // Link embed Google Maps (Ganti dengan embed code Google Maps Anda yang sebenarnya)
