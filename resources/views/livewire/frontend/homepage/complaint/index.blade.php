@@ -45,7 +45,7 @@ mount(function () {
 
 ?>
 
-<div class="relative w-full py-6 px-4 sm:px-6 lg:px-8 overflow-hidden">
+<div class="relative w-full py-6 px-4 sm:px-6 lg:px-5 overflow-hidden">
     <div class="container mx-auto relative z-10 flex flex-col lg:flex-row items-center gap-12">
         {{-- Bagian Kiri: Teks Konten & Gambar Mobile --}}
         <div class="lg:w-1/2 text-center lg:text-left">

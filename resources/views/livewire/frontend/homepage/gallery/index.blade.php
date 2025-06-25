@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire; // Sesuaikan namespace jika berbeda
+namespace App\Livewire;
 
 use function Livewire\Volt\{state, mount};
 use App\Models\Galleries;
@@ -29,24 +29,20 @@ mount(function () {
 
     if ($priority1Image) {
         // Pisahkan item yang punya prioritas lebih rendah dari priority 1
-        // Ini adalah gambar-gambar yang akan muncul SETELAH priority 1 dalam urutan logis
         $itemsAfterPriority1 = $allGalleryItems->filter(function ($item) use ($priority1Image) {
             return $item->priority > $priority1Image->priority;
         })->values(); // Reset keys after filtering
 
         // Pisahkan item yang punya prioritas lebih tinggi dari priority 1
-        // Ini adalah gambar-gambar yang akan muncul SEBELUM priority 1 dalam urutan logis
         $itemsBeforePriority1 = $allGalleryItems->filter(function ($item) use ($priority1Image) {
             return $item->priority < $priority1Image->priority;
-        })->values(); // Reset keys after filtering
+        })->values(); 
 
         // Bangun ulang koleksi: item-item dengan prioritas lebih rendah, lalu priority 1, lalu item-item dengan prioritas lebih tinggi
-        // Ini akan menempatkan priority 1 di tengah secara logis
         $reorderedItems = $reorderedItems->merge($itemsBeforePriority1); // Item-item 2, 3, 4... (yang prioritasnya lebih tinggi)
         $reorderedItems->push($priority1Image); // Item priority 1
         $reorderedItems = $reorderedItems->merge($itemsAfterPriority1); // Item-item yang prioritasnya lebih rendah dari 1 (misal 0, -1, dst, jika ada)
-                                                                       // Dalam konteks prioritas positif (1, 2, 3...), ini akan menjadi 2, 3, 4...
-                                                                       // Jadi, urutan akhirnya adalah item >1, item 1, item <1
+                                                                        // Jadi, urutan akhirnya adalah item >1, item 1, item <1
         // Jika prioritas 1 adalah yang terkecil, maka itemsBeforePriority1 akan kosong.
         // Jika prioritas 1 adalah yang terbesar, maka itemsAfterPriority1 akan kosong.
 
@@ -81,26 +77,25 @@ mount(function () {
     $this->galleryItems = $finalGalleryItems;
 
     // Setel indeks gambar awal agar menunjuk ke gambar priority 1 yang sebenarnya
-    // Ini adalah `initialCenterIndex` (posisinya di `reorderedItems`) ditambah `numDuplicates` (karena kita menambahkan item di depan).
     $this->currentImageIndex = $initialCenterIndex + $numDuplicates;
 });
 
-// Function to handle gallery scrolling (called by next/prev buttons and dot indicators)
+// Fungsi buat ngatur scroll galeri (dipanggil sama tombol next/prev dan indikator titik)
 $scrollGallery = function ($directionOrIndex) {
     if ($this->galleryItems->isEmpty()) {
         return;
     }
 
-    // Get the count of original items from the database (not the duplicated array size)
+    // Ambil jumlah item asli dari database (bukan jumlah array yang udah diduplikasi)
     $originalCount = Galleries::count();
-    // Re-calculate numDuplicates to ensure consistency
+    // Hitung ulang numDuplicates biar tetap konsisten
     $numDuplicates = min($originalCount, 3);
 
     $newIndex = $this->currentImageIndex;
 
     if (is_numeric($directionOrIndex)) {
-        // If a number (dot indicator index), calculate the target index in the duplicated array
-        // The dot index (0, 1, 2...) maps directly to the original set, so add `numDuplicates` offset.
+        // Kalau dapet angka (index indikator titik), hitung index tujuan di array yang udah diduplikasi
+        // Index titik (0, 1, 2...) langsung nyambung ke set asli, jadi tinggal tambahin offset `numDuplicates`.
         $newIndex = (int) $directionOrIndex + $numDuplicates;
     } elseif ($directionOrIndex === 'next') {
         $newIndex++;
@@ -108,13 +103,8 @@ $scrollGallery = function ($directionOrIndex) {
         $newIndex--;
     }
 
-    // Update the Livewire state, which will then trigger Alpine.js's @entangle and $watch
+    // Update state Livewire, nanti otomatis nyambung ke @entangle dan $watch-nya Alpine.js
     $this->currentImageIndex = $newIndex;
-
-    // Dispatching the event is technically not strictly necessary anymore
-    // because @entangle and $watch handle the state changes and scrolling.
-    // However, it can be kept as an explicit trigger if needed for other Alpine.js listeners.
-    // $this->dispatch('scroll-gallery-to', index: $newIndex)->self();
 };
 
 ?>
