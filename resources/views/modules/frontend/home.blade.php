@@ -2,7 +2,7 @@
     {{-- Banner Section --}}
     <section id="banner" class="relative h-[500px] sm:h-[550px] md:h-[650px] lg:h-[700px] mb-10 sm:mb-20">
         <div class="w-full h-full">
-            <livewire:frontend.banner />
+            <livewire:frontend.homepage.banner.index />
         </div>
     </section>
 
@@ -26,7 +26,7 @@
 
         {{-- Render the Unit Type Listing component --}}
         <div>
-            <livewire:frontend.unit-type.index />
+            <livewire:frontend.homepage.unit-type.index />
         </div>
     </section>
 
@@ -43,7 +43,7 @@
                      [text-shadow:2px_2px_0_#9ca3af,-2px_-2px_0_#9ca3af,2px_-2px_0_#9ca3af,-2px_2px_0_#9ca3af,2px_0px_0_#9ca3af,-2px_0px_0_#9ca3af,0px_2px_0_#9ca3af,0px_-2px_0_#9ca3af]
                      [white-space:nowrap]">KAMI</span>
         </div>
-        <livewire:frontend.about-us />
+        <livewire:frontend.homepage.about-us.index />
     </section>
 
     {{-- Location Section --}}
@@ -57,7 +57,7 @@
                                 [white-space:nowrap]">LOKASI</span>
             </div>
         </div>
-        <livewire:frontend.location />
+        <livewire:frontend.homepage.location.index />
     </section>
 
     {{-- Gallery Section --}}
@@ -69,7 +69,7 @@
                                 [text-shadow:2px_2px_0_#9ca3af,-2px_-2px_0_#9ca3af,2px_-2px_0_#9ca3af,-2px_2px_0_#9ca3af,2px_0px_0_#9ca3af,-2px_0px_0_#9ca3af,0px_2px_0_#9ca3af,0px_-2px_0_#9ca3af]
                                 [white-space:nowrap]">GALERI</span>
         </div>
-        <livewire:frontend.gallery />
+        <livewire:frontend.homepage.gallery.index />
     </section>
 
     {{-- complaint Section --}}
@@ -83,7 +83,7 @@
                                 [white-space:nowrap]">Keluhan</span>
             </div>
         </div>
-        <livewire:frontend.complaint />
+        <livewire:frontend.homepage.complaint.index />
     </section>
 
     {{-- FAQ Section --}}
@@ -97,7 +97,7 @@
                                 [white-space:nowrap]">FAQ</span>
             </div>
         </div>
-        <livewire:frontend.faq />
+        <livewire:frontend.homepage.faq.index />
     </section>
 
     {{-- FAQ Section --}}
@@ -111,6 +111,6 @@
                                 [white-space:nowrap]">KONTAK</span>
             </div>
         </div>
-        <livewire:frontend.contact />
+        <livewire:frontend.homepage.contact.index />
     </section>
 </x-layouts.frontend>

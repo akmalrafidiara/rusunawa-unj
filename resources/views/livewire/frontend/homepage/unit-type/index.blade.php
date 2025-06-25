@@ -15,10 +15,10 @@
     </div>
 
     {{-- Render the Unit Type Listing component --}}
-    @livewire('frontend.unit-type.partials._data-listing')
+    @livewire('frontend.homepage.unit-type.partials._data-listing')
 
     {{-- Render the Unit Detail Modal component --}}
-    @livewire('frontend.unit-type.partials._modal-detail')
+    @livewire('frontend.homepage.unit-type.partials._modal-detail')
 </div>
 
 {{-- JavaScript to manage body scroll behavior when modals are open/closed --}}
