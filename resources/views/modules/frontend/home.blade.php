@@ -100,7 +100,7 @@
         <livewire:frontend.homepage.faq.index />
     </section>
 
-    {{-- FAQ Section --}}
+    {{-- Contact Section --}}
     <section id="contact" class="container mx-auto px-4 py-8 relative overflow-hidden">
         <div class="container mx-auto px-4">
             <div
