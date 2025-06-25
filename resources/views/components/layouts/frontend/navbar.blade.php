@@ -1,30 +1,30 @@
 @php
 $navMenu = [
 'home' => [
-'label' => 'Beranda',
-'route' => route('home'),
-'active' => request()->routeIs('home'),
+    'label' => 'Beranda',
+    'route' => route('home'),
+    'active' => request()->routeIs('home'),
 ],
 'tenancy' => [
-'label' => 'Sewa Kamar',
-'route' => route('tenancy.index'),
-'active' => request()->routeIs('tenancy.index'),
+    'label' => 'Sewa Kamar',
+    'route' => route('tenancy.index'),
+    'active' => request()->routeIs('tenancy.index'),
 ],
-// 'complaint' => [
-// 'label' => 'Pengaduan',
-// 'route' => route('complaint'),
-// 'active' => request()->routeIs('complaint'),
-// ],
-// 'announcement' => [
-// 'label' => 'Pengumuman',
-// 'route' => route('announcement'),
-// 'active' => request()->routeIs('announcement'),
-// ],
-// 'rules' => [
-// 'label' => 'Tata Tertib',
-// 'route' => route('rules'),
-// 'active' => request()->routeIs('rules'),
-// ],
+'complaint' => [
+    'label' => 'Pengaduan',
+    'route' => route('complaint.index'),
+    'active' => request()->routeIs('complaint.index'),
+],
+'announcement' => [
+    'label' => 'Pengumuman',
+    'route' => route('announcement.index'),
+    'active' => request()->routeIs('announcement.index'),
+],
+'rules' => [
+    'label' => 'Tata Tertib',
+    'route' => route('rules.index'),
+    'active' => request()->routeIs('rules.index'),
+],
 ];
 @endphp
 

@@ -11,6 +11,13 @@ Route::view('/', 'modules.frontend.home')->name('home');
 
 Route::view('tenancy', 'modules.frontend.tenancy.index')->name('tenancy.index');
 
+Route::view('complaint', 'modules.frontend.complaint.index')->name('complaint.index');
+
+Route::view('announcement', 'modules.frontend.announcement.index')->name('announcement.index');
+
+Route::view('rules', 'modules.frontend.rules.index')->name('rules.index');
+
+
 // Managers Dashboard
 Route::prefix('managers')->middleware(['auth', 'verified'])->group(function () {
 
