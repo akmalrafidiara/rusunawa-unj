@@ -162,6 +162,13 @@ $adminSidebarMenu = [
                 ],
             ],
             [
+                'icon' => 'chat-bubble-bottom-center-text',
+                'label' => __('Pertanyaan Pengunjung'),
+                'route' => route('guest.questions'),
+                'current' => request()->routeIs('guest.questions'),
+                'badge' => 4,
+            ],
+            [
                 'icon' => 'megaphone',
                 'label' => __('Pengumuman'),
                 'route' => route('announcements'),
