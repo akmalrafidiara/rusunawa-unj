@@ -14,11 +14,5 @@
                 </div>
             </div>
         </div>
-
-        <div class="container mx-auto px-6">
-            {{-- Tempatkan konten Anda di sini --}}
-            <p>Ini adalah area di mana konten pengumuman Anda akan ditempatkan.</p>
-            <p>Anda bisa menambahkan berbagai elemen seperti daftar pengumuman, detail, atau lainnya di sini.</p>
-        </div>
     </div>
 </x-layouts.frontend>
