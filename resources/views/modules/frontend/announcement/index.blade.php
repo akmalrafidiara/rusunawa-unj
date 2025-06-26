@@ -1,5 +1,5 @@
 <x-layouts.frontend>
-    <div class="relative w-full h-50 bg-cover bg-center mb-20"
+    <div class="relative w-full h-50 bg-cover bg-center mb-10"
         style="background-image: url('{{ asset('images/banner-image-main.jpg') }}');">
         {{-- Gradient Overlay --}}
         <div class="absolute inset-0 bg-gradient-to-r from-gray-900/80 to-transparent"></div>
@@ -15,4 +15,5 @@
             </div>
         </div>
     </div>
+    <livewire:frontend.announcement.announcement />
 </x-layouts.frontend>

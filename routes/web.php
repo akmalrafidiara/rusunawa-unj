@@ -1,5 +1,6 @@
 <?php
 
+use App\Livewire\Frontend\Announcement\ShowAnnouncement;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -14,6 +15,7 @@ Route::view('tenancy', 'modules.frontend.tenancy.index')->name('tenancy.index');
 Route::view('complaint', 'modules.frontend.complaint.index')->name('complaint.index');
 
 Route::view('announcement', 'modules.frontend.announcement.index')->name('announcement.index');
+Route::get('announcement/{announcement}', ShowAnnouncement::class)->name('announcement.show');
 
 Route::view('rules', 'modules.frontend.rules.index')->name('rules.index');
 
