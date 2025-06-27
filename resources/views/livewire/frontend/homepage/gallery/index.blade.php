@@ -13,7 +13,7 @@ state([
 ]);
 
 mount(function () {
-    // Ambil semua item galeri, diurutkan berdasarkan prioritas secara ascending (1, 2, 3...)
+    // Ambil semua item galeri, diurutkan berdasarkan prioritas dari 1
     $allGalleryItems = Galleries::orderBy('priority', 'asc')->get();
 
     if ($allGalleryItems->isEmpty()) {
@@ -24,14 +24,14 @@ mount(function () {
     $reorderedItems = collect();
     $initialCenterIndex = 0;
 
-    // Cari gambar dengan priority 1 untuk dijadikan pusat (jika ada)
+    // Cari gambar dengan priority 1 buat jadi gambar utama
     $priority1Image = $allGalleryItems->firstWhere('priority', 1);
 
     if ($priority1Image) {
         // Pisahkan item yang punya prioritas lebih rendah dari priority 1
         $itemsAfterPriority1 = $allGalleryItems->filter(function ($item) use ($priority1Image) {
             return $item->priority > $priority1Image->priority;
-        })->values(); // Reset keys after filtering
+        })->values();
 
         // Pisahkan item yang punya prioritas lebih tinggi dari priority 1
         $itemsBeforePriority1 = $allGalleryItems->filter(function ($item) use ($priority1Image) {
@@ -53,22 +53,19 @@ mount(function () {
 
     } else {
         // Jika tidak ada priority 1, urutkan berdasarkan prioritas secara ascending saja
-        $reorderedItems = $allGalleryItems; // Karena sudah diurutkan asc di awal
-        $initialCenterIndex = 0; // Default ke item pertama
+        $reorderedItems = $allGalleryItems;
+        $initialCenterIndex = 0;
     }
 
-    // Tentukan jumlah item yang akan diduplikasi untuk efek loop tanpa batas
-    // Kita duplikasi paling banyak 3 item dari setiap ujung
+    // Tentukan jumlah item yang akan diduplikasi buat efek loop tanpa batas
     $numDuplicates = min(count($reorderedItems), 3);
 
-    // Ambil item untuk duplikasi:
     // startDuplications adalah `numDuplicates` item terakhir dari set asli (untuk diletakkan di awal)
     $startDuplications = $reorderedItems->slice($reorderedItems->count() - $numDuplicates);
     // endDuplications adalah `numDuplicates` item pertama dari set asli (untuk diletakkan di akhir)
     $endDuplications = $reorderedItems->slice(0, $numDuplicates);
 
     // Bangun array final untuk galeri:
-    // [Duplikasi Akhir item] + [Item Asli] + [Duplikasi Awal item]
     $finalGalleryItems = collect();
     $finalGalleryItems = $finalGalleryItems->merge($startDuplications); // Tambahkan beberapa item terakhir di depan
     $finalGalleryItems = $finalGalleryItems->merge($reorderedItems);     // Item asli
@@ -95,7 +92,6 @@ $scrollGallery = function ($directionOrIndex) {
 
     if (is_numeric($directionOrIndex)) {
         // Kalau dapet angka (index indikator titik), hitung index tujuan di array yang udah diduplikasi
-        // Index titik (0, 1, 2...) langsung nyambung ke set asli, jadi tinggal tambahin offset `numDuplicates`.
         $newIndex = (int) $directionOrIndex + $numDuplicates;
     } elseif ($directionOrIndex === 'next') {
         $newIndex++;
@@ -112,8 +108,8 @@ $scrollGallery = function ($directionOrIndex) {
 <div class="relative w-full md:py-12 px-2 sm:px-4 lg:px-8 overflow-hidden">
     {{-- Gallery Header --}}
     <div class="text-center mb-8 sm:mb-10 md:mb-12">
-        <span class="text-sm font-semibold text-green-600 uppercase tracking-wider mb-1 sm:mb-2 block">Galeri</span> 
-        <h3 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight">
+        <span class="text-sm font-semibold text-green-600 dark:text-green-400 uppercase tracking-wider text-left lg:text-center mb-1 sm:mb-2 block">Galeri</span> 
+        <h3 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white text-left lg:text-center leading-tight">
             Lihat Kami Lebih Dekat
         </h3>
     </div>
@@ -199,23 +195,22 @@ $scrollGallery = function ($directionOrIndex) {
     class="relative">
         {{-- Scrollable Image Container --}}
         <div x-ref="galleryContainer"
-            @scroll.throttle.200ms="handleScroll()"
-            class="flex items-center overflow-x-scroll no-scrollbar pb-4 rounded-lg py-4 px-4 sm:px-8 md:px-16">
+            @scroll.throttle.100ms="handleScroll()"
+            class="flex items-center overflow-x-scroll no-scrollbar pb-4 py-4 px-4 sm:px-8 md:px-16">
             @foreach ($galleryItems as $index => $item)
-            <div class="flex-shrink-0 rounded-lg overflow-hidden group cursor-pointer transition-all duration-300 ease-in-out mr-8 sm:mr-10 md:mr-14" {{-- Margin kanan disesuaikan --}}
-                :class="{
+            <div class="flex-shrink-0 overflow-hidden group cursor-pointer transition-all duration-300 ease-in-out mr-8 sm:mr-10 md:mr-14"
+                 :class="{
                     // Ukuran gambar disesuaikan secara responsif.
-                    // Contoh: Default w-64 h-48 (lebih kecil untuk mobile)
-                    // sm:w-80 h-60, md:w-96 h-72, lg:w-[450px] lg:h-80, xl:w-[550px] xl:h-96
                     'w-64 h-48 sm:w-80 sm:h-60 md:w-96 md:h-72 lg:w-[450px] lg:h-80 xl:w-[550px] xl:h-96': true,
-                    'transform scale-110 shadow-xl z-10': currentIndex === {{ $index }}
-                }">
+                    'transform scale-110 z-10': currentIndex === {{ $index }}
+                 }">
                 <div class="relative w-full h-full">
                     <img src="{{ $item->image ? Storage::url($item->image) : asset('images/placeholder.png') }}"
                         alt="{{ $item->caption ?? 'Gambar Galeri' }}"
                         class="w-full h-full object-cover transition-all duration-300 group-hover:filter group-hover:brightness-50">
 
-                    <div class="absolute inset-0 flex flex-col items-start justify-end p-3 sm:p-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300"> {{-- Padding caption disesuaikan --}}
+                    <div class="absolute inset-0 flex flex-col items-start justify-end p-3 sm:p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300
+                                text-white dark:text-zinc-100">
                         <p class="text-base sm:text-lg md:text-xl font-semibold">{{ $item->caption ?? 'Foto Rusunawa' }}</p>
                     </div>
                 </div>
@@ -227,16 +222,22 @@ $scrollGallery = function ($directionOrIndex) {
         @if (Galleries::count() > 1)
         <div class="absolute inset-y-0 left-0 flex items-center pl-2 sm:pl-4">
             <button wire:click="scrollGallery('prev')"
-                class="bg-white p-1.5 sm:p-2 rounded-full shadow-md focus:outline-none hover:bg-gray-100 transition-colors duration-200"> {{-- Ukuran tombol disesuaikan --}}
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"> {{-- Ukuran ikon disesuaikan --}}
+                class="p-1.5 sm:p-2 rounded-full focus:outline-none transition-colors duration-200
+                       bg-white shadow-md hover:bg-gray-100
+                       dark:bg-zinc-900 dark:shadow-none dark:hover:bg-zinc-700
+                ">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 text-green-700 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                 </svg>
             </button>
         </div>
         <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:pr-4">
             <button wire:click="scrollGallery('next')"
-                class="bg-white p-1.5 sm:p-2 rounded-full shadow-md focus:outline-none hover:bg-gray-100 transition-colors duration-200"> {{-- Ukuran tombol disesuaikan --}}
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"> {{-- Ukuran ikon disesuaikan --}}
+                class="p-1.5 sm:p-2 rounded-full focus:outline-none transition-colors duration-200
+                       bg-white shadow-md hover:bg-gray-100
+                       dark:bg-zinc-900 dark:shadow-none dark:hover:bg-zinc-700
+                ">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 text-green-700 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                 </svg>
             </button>
@@ -252,7 +253,7 @@ $scrollGallery = function ($directionOrIndex) {
             @endphp
             @for ($i = 0; $i < $originalItemsCount; $i++)
                 <button wire:click="scrollGallery({{ $i }})"
-                :class="{ 'bg-green-600': currentIndex === {{ $i + $numDuplicates }}, 'bg-gray-300': currentIndex !== {{ $i + $numDuplicates }} }"
+                :class="{ 'bg-green-600 dark:bg-green-500': currentIndex === {{ $i + $numDuplicates }}, 'bg-gray-300 dark:bg-zinc-600': currentIndex !== {{ $i + $numDuplicates }} }"
                 class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full focus:outline-none transition-colors duration-200"></button>
             @endfor
         </div>
@@ -260,6 +261,6 @@ $scrollGallery = function ($directionOrIndex) {
 
     </div>
     @else
-    <p class="text-center text-gray-600 py-10">Belum ada item galeri yang tersedia saat ini.</p>
+    <p class="text-center text-gray-600 dark:text-zinc-400 py-10">Belum ada item galeri yang tersedia saat ini.</p>
     @endif
 </div>

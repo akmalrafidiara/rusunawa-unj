@@ -1,7 +1,7 @@
 <?php
 
 use function Livewire\Volt\{state, mount};
-use App\Models\Content; // Pastikan model Content ada di AppModels
+use App\Models\Content;
 
 state([
     'mainLocationTitle' => '',
@@ -24,11 +24,10 @@ mount(function () {
 
     $modifiedEmbedLink = $rawEmbedLink;
 
-    // Ganti atribut width dan height menjadi 100% menggunakan regex
+    // Proses link embed untuk memastikan tampil responsif
     $modifiedEmbedLink = preg_replace('/width="[^"]*"/i', 'width="100%"', $modifiedEmbedLink);
     $modifiedEmbedLink = preg_replace('/height="[^"]*"/i', 'height="100%"', $modifiedEmbedLink);
 
-    // Pastikan ada style="width:100%; height:100%;" untuk override jika ada inline style lain
     if (strpos($modifiedEmbedLink, 'style=') !== false) {
         $modifiedEmbedLink = preg_replace('/style="([^"]*)"/i', 'style="$1; width:100%; height:100%;"', $modifiedEmbedLink);
     } else {
@@ -70,34 +69,44 @@ mount(function () {
     <div class="container mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         {{-- Bagian Kiri: Detail Alamat dan Lokasi Terdekat (di desktop) --}}
         <div class="text-center lg:text-left">
-            <span class="text-sm font-semibold text-green-600 uppercase tracking-wider mb-2 block text-left">Lokasi Kami</span>
+            <span class="text-sm font-semibold text-green-600 dark:text-green-400 uppercase tracking-wider mb-2 block text-left">Lokasi Kami</span>
             @if ($mainLocationTitle)
-                <h3 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 leading-tight text-left">
+                <h3 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4 leading-tight text-left">
                     {{ $mainLocationTitle }}
                 </h3>
             @endif
 
             {{-- Peta Lokasi di sini untuk mobile --}}
             @if ($mapEmbedCode)
-                <div class="lg:hidden w-full h-80 sm:h-96 rounded-lg overflow-hidden shadow-2xl border-4 border-white mb-8">
+                <div class="lg:hidden w-full h-80 sm:h-96 rounded-lg overflow-hidden
+                            shadow-2xl border-4 border-white mb-8
+                            dark:shadow-none dark:border-zinc-700
+                ">
                     {!! $mapEmbedCode !!}
                 </div>
             @else
-                <div class="lg:hidden w-full h-80 sm:h-96 bg-gray-200 flex items-center justify-center rounded-lg shadow-lg text-gray-500 mb-8">
+                <div class="lg:hidden w-full h-80 sm:h-96 flex items-center justify-center rounded-lg
+                            bg-gray-200 shadow-lg text-gray-500 mb-8
+                            dark:bg-zinc-900 dark:shadow-none dark:text-zinc-400
+                ">
                     Peta Lokasi Tidak Tersedia
                 </div>
             @endif
 
             {{-- Lanjutkan dengan detail lokasi lainnya --}}
             @if ($subLocationTitle)
-                <p class="text-gray-800 text-2xl md:text-3xl font-semibold text-left mb-4">
+                <p class="text-2xl md:text-3xl font-semibold text-left mb-4
+                          text-gray-800 dark:text-zinc-200
+                ">
                     {{ $subLocationTitle }}
                 </p>
             @endif
 
             @if ($locationAddress)
                 <div class="mb-8">
-                    <p class="text-gray-700 text-base leading-relaxed text-left">{{ $locationAddress }}</p>
+                    <p class="text-base leading-relaxed text-left
+                              text-gray-700 dark:text-zinc-300
+                    ">{{ $locationAddress }}</p>
                 </div>
             @endif
 
@@ -108,8 +117,13 @@ mount(function () {
                             <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center mr-2 {{ $location['color'] }} sm:w-10 sm:h-10">
                                 <flux:icon name="map-pin" class="w-5 h-5 text-white sm:w-6 sm:h-6" />
                             </div>
-                            <div class="bg-white px-3 py-1.5 rounded-full shadow-sm border border-gray-100 sm:px-5 sm:py-3 min-w-0 max-w-[calc(100%-40px)]">
-                                <p class="text-gray-800 text-sm font-bold break-words text-left">{{ $location['text'] }}</p>
+                            <div class="px-3 py-1.5 rounded-full min-w-0 max-w-[calc(100%-40px)]
+                                        bg-white shadow-sm border border-gray-100 sm:px-5 sm:py-3
+                                        dark:bg-zinc-900 dark:shadow-none dark:border-zinc-700
+                            ">
+                                <p class="text-sm font-bold break-words text-left
+                                          text-gray-800 dark:text-zinc-100
+                                ">{!! $location['text'] !!}</p>
                             </div>
                         </div>
                     @endforeach
@@ -120,11 +134,17 @@ mount(function () {
         {{-- Bagian Kanan: Peta Lokasi (khusus desktop) --}}
         <div class="hidden lg:block">
             @if ($mapEmbedCode)
-                <div class="w-full h-80 sm:h-96 md:h-[450px] rounded-lg overflow-hidden shadow-2xl border-4 border-white">
+                <div class="w-full h-80 sm:h-96 md:h-[450px] rounded-lg overflow-hidden
+                            shadow-2xl border-4 border-white
+                            dark:shadow-none dark:border-zinc-700
+                ">
                     {!! $mapEmbedCode !!}
                 </div>
             @else
-                <div class="w-full h-80 sm:h-96 md:h-[450px] bg-gray-200 flex items-center justify-center rounded-lg shadow-lg text-gray-500">
+                <div class="w-full h-80 sm:h-96 md:h-[450px] flex items-center justify-center rounded-lg
+                            bg-gray-200 shadow-lg text-gray-500
+                            dark:bg-zinc-900 dark:shadow-none dark:text-zinc-400
+                ">
                     Peta Lokasi Tidak Tersedia
                 </div>
             @endif

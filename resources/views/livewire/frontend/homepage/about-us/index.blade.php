@@ -2,7 +2,7 @@
 
 use function Livewire\Volt\{state, mount};
 use App\Models\Content;
-use Illuminate\Support\Facades\Storage; // Tetap sertakan jika mungkin digunakan di bagian lain komponen Anda
+use Illuminate\Support\Facades\Storage;
 
 state([
     'aboutTitle' => '',
@@ -19,7 +19,6 @@ mount(function () {
     // Atur URL gambar. Jika kosong, gunakan placeholder langsung di sini.
     $this->aboutImageUrl = optional(Content::where('content_key', 'about_us_image_url')->first())->content_value ?? asset('images/placeholder.png');
 
-    // Penanganan daya tariks: Pastikan di-decode sebagai array, sama seperti nearbyLocations
     $dayaTariksContent = optional(Content::where('content_key', 'about_us_daya_tariks')->first())->content_value;
 
     if (is_array($dayaTariksContent)) {
@@ -47,23 +46,31 @@ mount(function () {
 
 <div class="relative w-full py-0 px-4 sm:px-6 lg:px-8 overflow-hidden">
     <div class="container mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-        {{-- Bagian Kiri: Gambar-gambar (Hanya untuk Desktop/Large Screens) --}}
+        {{-- Bagian Kiri: Gambar-gambar Mode Dekstop --}}
         <div class="hidden lg:block relative -left-8">
-            <div class="relative w-[600px] h-[500px] mx-auto"> {{-- Ukuran ditingkatkan untuk desktop --}}
+            <div class="relative w-[600px] h-[500px] mx-auto">
                 {{-- Top-Left Kotak --}}
-                <div class="absolute top-0 left-0 w-[280px] h-[280px] rounded-2xl overflow-hidden shadow-xl transform rotate-3 z-10 border-2 border-teal-500"
+                <div class="absolute top-0 left-0 w-[280px] h-[280px] rounded-2xl overflow-hidden
+                            shadow-xl transform rotate-3 z-10 border-2 border-teal-500
+                            dark:shadow-none dark:border-zinc-700"
                     style="background-image: url('{{ $aboutImageUrl ?: asset('images/placeholder.png') }}'); background-size: 200% auto; background-position: top 10% left 15%;">
                 </div>
                 {{-- Top-Right Kotak --}}
-                <div class="absolute top-10 right-0 w-[350px] h-[180px] rounded-2xl overflow-hidden shadow-lg transform -rotate-2 z-20 border-2 border-teal-500"
+                <div class="absolute top-10 right-0 w-[350px] h-[180px] rounded-2xl overflow-hidden
+                            shadow-lg transform -rotate-2 z-20 border-2 border-teal-500
+                            dark:shadow-none dark:border-zinc-700"
                     style="background-image: url('{{ $aboutImageUrl ?: asset('images/placeholder.png') }}'); background-size: 200% auto; background-position: top 0% right 0%;">
                 </div>
                 {{-- Bottom-Left Kotak --}}
-                <div class="absolute bottom-0 left-10 w-[300px] h-[220px] rounded-2xl overflow-hidden shadow-lg transform rotate-1 z-0 border-2 border-teal-500"
+                <div class="absolute bottom-0 left-10 w-[300px] h-[220px] rounded-2xl overflow-hidden
+                            shadow-lg transform rotate-1 z-0 border-2 border-teal-500
+                            dark:shadow-none dark:border-zinc-700"
                     style="background-image: url('{{ $aboutImageUrl ?: asset('images/placeholder.png') }}'); background-size: 250% auto; background-position: bottom 30% left 20%;">
                 </div>
                 {{-- Bottom-Right Kotak --}}
-                <div class="absolute bottom-5 right-10 w-[320px] h-[320px] rounded-2xl overflow-hidden shadow-lg transform -rotate-5 z-10 border-2 border-teal-500"
+                <div class="absolute bottom-5 right-10 w-[320px] h-[320px] rounded-2xl overflow-hidden
+                            shadow-lg transform -rotate-5 z-10 border-2 border-teal-500
+                            dark:shadow-none dark:border-zinc-700"
                     style="background-image: url('{{ $aboutImageUrl ?: asset('images/placeholder.png') }}'); background-size: 180% auto; background-position: bottom 20% right 30%;">
                 </div>
             </div>
@@ -71,56 +78,64 @@ mount(function () {
 
         {{-- Bagian Kanan: Teks Konten --}}
         <div class="text-center lg:text-left">
-            {{-- Tambahkan padding kiri dan ubah warna teks menjadi hijau --}}
-            <span class="text-sm font-semibold text-green-600 uppercase tracking-wider mb-2 block text-left sm:pl-4">Tentang Kami</span>
-            {{-- Tambahkan padding kiri untuk mobile dan pastikan rata kiri --}}
-            <h3 class="text-3xl md:text-5xl font-extrabold text-gray-900 mb-6 leading-tight text-left sm:pl-4">
+            <span class="text-sm font-semibold text-green-600 dark:text-green-400 uppercase tracking-wider mb-2 block text-left sm:pl-4">Tentang Kami</span>
+            <h3 class="text-3xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-6 leading-tight text-left sm:pl-4">
                 {{ $aboutTitle }}
             </h3>
 
-            {{-- START: Bagian Gambar Mobile Baru --}}
+            {{-- Bagian Gambar Mobile --}}
             @if ($aboutImageUrl)
-                {{-- Mengurangi max-width dan height di mobile --}}
                 <div class="lg:hidden relative mt-8 mb-8 mx-auto" style="width: 100%; max-width: 380px;">
                     <div class="relative w-full h-[320px] mx-auto">
-                        {{-- Ukuran kotak-kotak gambar disesuaikan --}}
-                        <div class="absolute top-0 left-0 w-[160px] h-[160px] rounded-2xl overflow-hidden shadow-xl transform rotate-3 z-10 border-2 border-teal-500"
+                        <div class="absolute top-0 left-0 w-[160px] h-[160px] rounded-2xl overflow-hidden
+                                    shadow-xl transform rotate-3 z-10 border-2 border-teal-500 {{-- Light mode defaults --}}
+                                    dark:shadow-none dark:border-zinc-700 {{-- Dark mode overrides --}}"
                             style="background-image: url('{{ $aboutImageUrl ?: asset('images/placeholder.png') }}'); background-size: 200% auto; background-position: top 10% left 15%;">
                         </div>
-                        <div class="absolute top-8 right-0 w-[200px] h-[100px] rounded-2xl overflow-hidden shadow-lg transform -rotate-2 z-20 border-2 border-teal-500"
+                        <div class="absolute top-8 right-0 w-[200px] h-[100px] rounded-2xl overflow-hidden
+                                    shadow-lg transform -rotate-2 z-20 border-2 border-teal-500 {{-- Light mode defaults --}}
+                                    dark:shadow-none dark:border-zinc-700 {{-- Dark mode overrides --}}"
                             style="background-image: url('{{ $aboutImageUrl ?: asset('images/placeholder.png') }}'); background-size: 200% auto; background-position: top 0% right 0%;">
                         </div>
-                        <div class="absolute bottom-0 left-8 w-[180px] h-[120px] rounded-2xl overflow-hidden shadow-lg transform rotate-1 z-0 border-2 border-teal-500"
+                        <div class="absolute bottom-0 left-8 w-[180px] h-[120px] rounded-2xl overflow-hidden
+                                    shadow-lg transform rotate-1 z-0 border-2 border-teal-500 {{-- Light mode defaults --}}
+                                    dark:shadow-none dark:border-zinc-700 {{-- Dark mode overrides --}}"
                             style="background-image: url('{{ $aboutImageUrl ?: asset('images/placeholder.png') }}'); background-size: 250% auto; background-position: bottom 30% left 20%;">
                         </div>
-                        <div class="absolute bottom-4 right-8 w-[190px] h-[190px] rounded-2xl overflow-hidden shadow-lg transform -rotate-5 z-10 border-2 border-teal-500"
+                        <div class="absolute bottom-4 right-8 w-[190px] h-[190px] rounded-2xl overflow-hidden
+                                    shadow-lg transform -rotate-5 z-10 border-2 border-teal-500 {{-- Light mode defaults --}}
+                                    dark:shadow-none dark:border-zinc-700 {{-- Dark mode overrides --}}"
                             style="background-image: url('{{ $aboutImageUrl ?: asset('images/placeholder.png') }}'); background-size: 180% auto; background-position: bottom 20% right 30%;">
                         </div>
                     </div>
                 </div>
             @endif
-            {{-- END: Bagian Gambar Mobile Baru --}}
 
-            {{-- Deskripsi rata tengah di mobile, rata kiri di desktop --}}
-            <p class="text-gray-700 text-base md:text-xl leading-relaxed mb-8 text-center lg:text-left sm:pl-4">
+            {{-- Deskripsi Tentang Kami --}}
+
+            <p class="text-base md:text-xl leading-relaxed mb-8 text-left sm:pl-4
+                      text-gray-700 dark:text-zinc-300
+            ">
                 {{ $aboutDescription }}
             </p>
 
             {{-- Menampilkan Keunggulan Kami (Daya Tarik) --}}
             @if (!empty($dayaTariks))
-                {{-- Tambahkan padding kiri untuk mobile --}}
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 mb-8 sm:pl-4 lg:gap-x-8 lg:gap-y-5">
                     @foreach ($dayaTariks as $dayaTarik)
                         <div class="flex items-center text-sm transform transition-transform duration-200 hover:scale-105">
-                            {{-- Ikon tetap di luar bungkus --}}
                             <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center mr-3 {{ $dayaTarik['color'] }}">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-white">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                                 </svg>
                             </div>
-                            {{-- Teks dan bungkusnya--}}
-                            <div class="flex-grow bg-white p-3 rounded-2xl shadow-md border border-gray-100">
-                                <p class="text-gray-800 font-semibold text-m leading-snug">
+                            <div class="flex-grow p-3 rounded-2xl
+                                        bg-white shadow-md border border-gray-100
+                                        dark:bg-zinc-900 dark:shadow-none dark:border-zinc-700
+                            ">
+                                <p class="font-semibold text-m leading-snug
+                                          text-gray-800 dark:text-zinc-100
+                                ">
                                     {{ $dayaTarik['text'] }}
                                 </p>
                             </div>
@@ -132,7 +147,10 @@ mount(function () {
             {{-- Tombol Hubungi Kami --}}
             <div class="sm:pl-4">
                 <a href="#contact"
-                   class="inline-flex items-center justify-center bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105">
+                   class="inline-flex items-center justify-center font-semibold py-3 px-8 rounded-full transition duration-300 ease-in-out transform hover:scale-105
+                          bg-green-600 hover:bg-green-700 text-white shadow-lg
+                          dark:bg-green-500 dark:hover:bg-green-600 dark:text-white dark:shadow-none
+                ">
                     Hubungi Kami
                 </a>
             </div>

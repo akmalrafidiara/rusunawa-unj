@@ -19,7 +19,6 @@ mount(function () {
     // Atur URL gambar. Jika kosong, gunakan placeholder langsung di sini.
     $this->complaintImageUrl = optional(Content::where('content_key', 'complaint_service_image_url')->first())->content_value ?? asset('images/placeholder.png');
 
-    // Penanganan daya tariks: Pastikan di-decode sebagai array, sama seperti nearbyLocations
     $advantagesContent = optional(Content::where('content_key', 'complaint_service_advantages')->first())->content_value;
 
     if (is_array($advantagesContent)) {
@@ -31,7 +30,7 @@ mount(function () {
         $loadedAdvantages = [];
     }
 
-    // Definisikan array warna untuk latar belakang ikon (opsional, bisa disesuaikan)
+    // Definisikan array warna untuk latar belakang ikon
     $iconColors = ['bg-red-600', 'bg-blue-600', 'bg-yellow-600', 'bg-green-600', 'bg-purple-600', 'bg-pink-600'];
 
     // Tambahkan warna ke setiap item daya tarik
@@ -49,7 +48,7 @@ mount(function () {
     <div class="container mx-auto relative z-10 flex flex-col lg:flex-row items-center gap-12">
         {{-- Bagian Kiri: Teks Konten & Gambar Mobile --}}
         <div class="lg:w-1/2 text-center lg:text-left">
-            <span class="text-sm font-semibold text-green-600 uppercase tracking-wider mb-2 block text-left sm:pl-4">Layanan Pengaduan Terintegrasi</span>
+            <span class="text-sm font-semibold text-green-600 dark:text-green-400 uppercase tracking-wider mb-2 block text-left sm:pl-4">Layanan Pengaduan Terintegrasi</span>
             <h3 class="text-3xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-6 leading-tight text-left sm:pl-4">
                 {{ $complaintTitle }}
             </h3>
@@ -66,7 +65,7 @@ mount(function () {
                 @endif
             </div>
 
-            <p class="text-gray-700 dark:text-gray-300 text-base md:text-xl leading-relaxed mb-8 text-center lg:text-left sm:pl-4">
+            <p class="text-gray-700 dark:text-zinc-300 text-base md:text-xl leading-relaxed mb-8 text-center lg:text-left sm:pl-4 text-left">
                 {{ $complaintDescription }}
             </p>
 
@@ -80,8 +79,8 @@ mount(function () {
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                                 </svg>
                             </div>
-                            <div class="flex-grow bg-white dark:bg-gray-800 p-3 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700">
-                                <p class="text-gray-800 dark:text-gray-200 font-semibold text-m leading-snug text-justify"> {{-- TAMBAH text-left DI SINI --}}
+                            <div class="flex-grow bg-white dark:bg-zinc-900 p-3 rounded-2xl shadow-md border border-gray-100 dark:border-zinc-900">
+                                <p class="text-gray-800 dark:text-zinc-100 font-semibold text-m leading-snug text-justify">
                                     {{ $advantage['text'] }}
                                 </p>
                             </div>
@@ -92,8 +91,11 @@ mount(function () {
 
             {{-- Tombol Kirim Pengaduan --}}
             <div class="sm:pl-4">
-                <a href="/kirim-pengaduan"
-                   class="inline-flex items-center justify-center bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105">
+                <a href="/complaint"
+                   class="inline-flex items-center justify-center
+                          bg-green-600 hover:bg-green-700
+                          dark:bg-green-500 dark:hover:bg-green-600
+                          text-white font-semibold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105">
                     Kirim Pengaduan Anda
                 </a>
             </div>
@@ -107,7 +109,7 @@ mount(function () {
             @else
                 {{-- Placeholder jika tidak ada gambar --}}
                 <img src="{{ asset('images/placeholder.png') }}" alt="Placeholder Gambar"
-                         class="w-full h-auto max-w-lg object-cover mb-4">
+                     class="w-full h-auto max-w-lg object-cover mb-4">
             @endif
         </div>
     </div>
