@@ -258,7 +258,7 @@ $adminSidebarMenu = [
 
             <flux:menu.radio.group>
                 <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate.hover>
-                    {{ __('Settings') }}
+                    {{ __('Pengaturan Akun') }}
                 </flux:menu.item>
             </flux:menu.radio.group>
 
@@ -267,7 +267,7 @@ $adminSidebarMenu = [
             <form method="POST" action="{{ route('logout') }}" class="w-full">
                 @csrf
                 <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle" class="w-full">
-                    {{ __('Log Out') }}
+                    {{ __('Keluar') }}
                 </flux:menu.item>
             </form>
         </flux:menu>
