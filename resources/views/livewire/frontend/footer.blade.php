@@ -33,7 +33,7 @@ mount(function () {
             <div class="px-4 md:col-span-4 text-left">
                 @if ($footerLogoUrl)
                     {{-- Menampilkan logo jika ada URL yang valid --}}
-                    <img src="{{ Storage::url($footerLogoUrl) }}" alt="{{ $footerTitle }}" class="h-16 md:mx-0 mb-4 rounded-lg">
+                    <img src="{{ url($footerLogoUrl) }}" alt="{{ $footerTitle }}" class="h-16 md:mx-0 mb-4 rounded-lg">
                 @else
                     {{-- Placeholder jika tidak ada logo --}}
                     <div class="h-16 w-16 md:mx-0 mb-4 bg-gray-200 dark:bg-zinc-700 text-gray-500 dark:text-gray-400 flex items-center justify-center rounded-lg text-lg font-bold">

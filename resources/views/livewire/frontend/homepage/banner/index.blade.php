@@ -21,7 +21,7 @@ mount(function () {
 
 ?>
 
-<div class="relative w-full min-h-[650px] sm:min-h-[450px] md:min-h-[600px] lg:min-h-[700px] overflow-hidden shadow-lg flex md:items-center md:bg-cover md:bg-center"
+<div class="relative w-full min-h-[650px] sm:min-h-[600px] md:min-h-[600px] lg:min-h-[700px] overflow-hidden shadow-lg flex md:items-center md:bg-cover md:bg-center"
      style="background-image: url('{{ $bannerImageUrl ?: asset('images/placeholder.png') }}');">
 
     {{-- Gambar latar belakang untuk layar kecil (mobile) --}}

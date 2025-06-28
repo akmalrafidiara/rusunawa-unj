@@ -7,7 +7,7 @@
     </section>
 
     {{-- Form Kamar --}}
-    <div class="container mx-auto px-4 mt-8 -mt-32 sm:-mt-42 md:-mt-46 lg:-mt-43 relative z-20">
+    <div class="container mx-auto px-4 mt-8 -mt-32 sm:-mt-15 md:-mt-55 lg:-mt-43 relative z-20">
         <div class="max-w-7xl mx-auto bg-white dark:bg-zinc-800 p-4 sm:p-6 rounded-lg shadow-lg w-full">
             <livewire:frontend.tenancy.avaibilityForm mode="redirect" />
         </div>
