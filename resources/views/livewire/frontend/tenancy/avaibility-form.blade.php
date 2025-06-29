@@ -7,16 +7,17 @@
 @endphp
 
 <div>
+
     @if (request()->routeIs('home'))
         <h3 class="text-2xl font-black text-gray-800 dark:text-white mb-4">Ingin sewa kamar? Yuk cek ketersediaannya</h3>
     @else
         <h3 class="text-2xl font-black text-gray-800 dark:text-white mb-4">Isi filter untuk melihat kamar tersedia</h3>
     @endif
 
-    <div class="flex flex-col md:flex-row gap-4">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-end">
 
         {{-- Dropdown Tipe Penghuni --}}
-        <div class="flex-1">
+        <div class="w-full lg:col-span-3">
             <label for="jenis-penghuni" class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Pilih Tipe
                 Penghuni</label>
             <div class="relative">
@@ -27,19 +28,15 @@
                         <option value="{{ $option['id'] }}">{{ $option['name'] }}</option>
                     @endforeach
                 </select>
+                {{-- Pesan error yang lebih simpel --}}
                 @error('occupantType')
-                    <div class="absolute z-10 bg-red-500 text-white text-xs rounded px-2 py-1 mt-1 shadow-lg">
-                        {{ $message }}
-                        <div class="absolute top-0 left-4 transform -translate-y-full">
-                            <div class="border-l-4 border-r-4 border-b-4 border-transparent border-b-red-500"></div>
-                        </div>
-                    </div>
+                    <div class="text-red-600 text-xs mt-1">{{ $message }}</div>
                 @enderror
             </div>
         </div>
 
         {{-- Dropdown Jenis Sewa --}}
-        <div class="flex-1">
+        <div class="w-full lg:col-span-3">
             <label for="jenis-sewa" class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Jenis
                 Sewa</label>
             <div class="relative">
@@ -51,67 +48,50 @@
                     @endforeach
                 </select>
                 @error('pricingBasis')
-                    <div class="absolute z-10 bg-red-500 text-white text-xs rounded px-2 py-1 mt-1 shadow-lg">
-                        {{ $message }}
-                        <div class="absolute top-0 left-4 transform -translate-y-full">
-                            <div class="border-l-4 border-r-4 border-b-4 border-transparent border-b-red-500"></div>
-                        </div>
-                    </div>
+                    <div class="text-red-600 text-xs mt-1">{{ $message }}</div>
                 @enderror
             </div>
         </div>
 
         {{-- Durasi Penginapan --}}
-        <div class="flex-1">
+        <div class="w-full lg:col-span-4">
             <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
-                Durasi Penginapan
-                <span class="font-bold">{{ $totalDays ? "($totalDays Hari)" : '' }}</span>
+                Durasi Penginapan <span class="font-bold">{{ $totalDays ? "($totalDays Hari)" : '' }}</span>
             </label>
-            <div class="flex gap-2">
+
+            <div class="flex items-start gap-2">
                 {{-- Input Start Date --}}
-                <div class="flex-1 relative">
+                <div class="relative min-w-0 flex-1">
                     <input wire:model.live="startDate" type="date" min="{{ date('Y-m-d') }}"
                         class="{{ $inputBaseClass }} {{ $disabledClasses }} {{ $errors->has('startDate') ? 'border-red-500' : 'border-gray-300 dark:border-gray-600' }} {{ !$startDate ? 'text-gray-400' : 'text-gray-900 dark:text-white' }}"
                         onchange="this.style.color = 'inherit';" {{ $isMonthly ? 'disabled' : '' }}>
                     @error('startDate')
-                        <div class="absolute z-10 bg-red-500 text-white text-xs rounded px-2 py-1 mt-1 shadow-lg">
-                            {{ $message }}
-                            <div class="absolute top-0 left-4 transform -translate-y-full">
-                                <div class="border-l-4 border-r-4 border-b-4 border-transparent border-b-red-500"></div>
-                            </div>
-                        </div>
+                        <div class="text-red-600 text-xs mt-1">{{ $message }}</div>
                     @enderror
                 </div>
 
-                <span class="self-center px-2 text-gray-500">-</span>
+                <span class="pt-2 text-gray-500">-</span>
 
                 {{-- Input End Date --}}
-                <div class="flex-1 relative">
+                <div class="relative min-w-0 flex-1">
                     <input wire:model.live="endDate" type="date" min="{{ date('Y-m-d') }}"
                         class="{{ $inputBaseClass }} {{ $disabledClasses }} {{ $errors->has('endDate') ? 'border-red-500' : 'border-gray-300 dark:border-gray-600' }} {{ !$endDate ? 'text-gray-400' : 'text-gray-900 dark:text-white' }}"
                         onchange="this.style.color = 'inherit';" {{ $isMonthly ? 'disabled' : '' }}>
                     @error('endDate')
-                        <div class="absolute z-10 bg-red-500 text-white text-xs rounded px-2 py-1 mt-1 shadow-lg">
-                            {{ $message }}
-                            <div class="absolute top-0 left-4 transform -translate-y-full">
-                                <div class="border-l-4 border-r-4 border-b-4 border-transparent border-b-red-500"></div>
-                            </div>
-                        </div>
+                        <div class="text-red-600 text-xs mt-1">{{ $message }}</div>
                     @enderror
                 </div>
             </div>
         </div>
 
         {{-- Tombol Cari --}}
-        <div class="flex-shrink-0 md:flex-shrink-0 md:self-end">
+        <div class="w-full lg:col-span-2">
             <button wire:click="checkAvailability()" type="button"
-                class="w-full md:w-auto bg-green-600 hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-bold py-2 px-6 rounded-lg transition flex items-center justify-center min-h-[42px]"
+                class="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-bold h-10 px-6 rounded-lg transition flex items-center justify-center"
                 wire:loading.attr="disabled" wire:target="checkAvailability">
                 <span wire:loading.remove
-                    wire:target="checkAvailability">{{ request()->routeIs('home') ? 'Cari Kamar' : 'Terapkan Filter' }}</span>
-                <span wire:loading wire:target="checkAvailability" class="flex items-center">
-                    Mencari...
-                </span>
+                    wire:target="checkAvailability">{{ request()->routeIs('home') ? 'Cari Kamar' : 'Terapkan' }}</span>
+                <span wire:loading wire:target="checkAvailability">Mencari...</span>
             </button>
         </div>
     </div>

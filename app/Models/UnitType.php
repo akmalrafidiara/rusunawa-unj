@@ -28,6 +28,20 @@ class UnitType extends Model
         return $this->hasMany(UnitPrice::class);
     }
 
+    public function availableUnitsCount($unitClusterIds = null)
+    {
+        if (is_null($unitClusterIds)) {
+            return $this->units()
+                ->where('status', 'available')
+                ->count();
+        
+            }  
+        return $this->units()
+            ->where('status', 'available')
+            ->whereIn('unit_cluster_id', $unitClusterIds)
+            ->count();
+    }
+
     public function attachments()
     {
         return $this->morphMany(Attachment::class, 'attachable');

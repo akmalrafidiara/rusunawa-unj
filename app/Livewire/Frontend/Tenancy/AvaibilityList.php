@@ -6,6 +6,7 @@ use App\Enums\PricingBasis;
 use App\Models\OccupantType;
 use App\Models\UnitRate as UnitRateModel;
 use App\Models\UnitType;
+use Illuminate\Support\Str;
 use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 use Livewire\Component;
 use Livewire\Attributes\On;
@@ -77,7 +78,7 @@ class AvaibilityList extends Component
         }
 
         $this->unitTypes = UnitType::query()
-        
+
             ->when($occupantTypeId, function ($query) use ($occupantTypeId, $pricingBasis, $accessibleClusterIds) {
 
                 $query->whereHas('units', function ($unitQuery) use ($accessibleClusterIds) {
@@ -117,5 +118,31 @@ class AvaibilityList extends Component
             ->toast()
             ->position('top-end')
             ->show();
+    }
+
+    public function redirectDetailUnit($unitTypeId)
+    {
+        $unitType = UnitType::find($unitTypeId);
+
+        if (!$unitType) {
+            LivewireAlert::title('Unit Type Tidak Ditemukan')
+                ->error()
+                ->toast()
+                ->position('top-end')
+                ->show();
+            return;
+        }
+
+        $queryParams = [
+            'occupantType' => $this->occupantTypeId,
+            'pricingBasis' => $this->pricingBasis,
+            'startDate' => $this->startDate,
+            'endDate' => $this->endDate,
+        ];
+
+        return $this->redirect(route('frontend.tenancy.unit.detail', [
+            'type' => $unitType,
+            'ed' => encrypt($queryParams),
+        ]), navigate: true);
     }
 }
