@@ -12,8 +12,8 @@ $navMenu = [
 ],
 'complaint' => [
     'label' => 'Pengaduan',
-    'route' => route('complaint.index'),
-    'active' => request()->routeIs('complaint.index'),
+    'route' => route('complaint.track-complaint'),
+    'active' => request()->routeIs('complaint.track-complaint'),
 ],
 'announcement' => [
     'label' => 'Pengumuman',

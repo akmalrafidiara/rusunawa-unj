@@ -91,7 +91,7 @@ mount(function () {
 
             {{-- Tombol Kirim Pengaduan --}}
             <div class="sm:pl-4">
-                <a href="/complaint"
+                <a href="/complaint/create-complaint"
                    class="inline-flex items-center justify-center
                           bg-green-600 hover:bg-green-700
                           dark:bg-green-500 dark:hover:bg-green-600

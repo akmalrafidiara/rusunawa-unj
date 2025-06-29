@@ -4,7 +4,7 @@
         {{-- Gradient Overlay --}}
         <div class="absolute inset-0 bg-gradient-to-r from-gray-900/80 to-transparent"></div>
 
-        <div class="container mx-auto px-6 lg:px-12 md:px-6 h-full">
+        <div class="container mx-auto px-6 lg:px-12 h-full">
             <div class="relative h-full flex flex-col justify-between">
                 {{-- Text --}}
                 <div class="absolute top-1/2 transform -translate-y-1/3">
