@@ -3,6 +3,9 @@
         {{-- Main Announcement Content --}}
         @include('livewire.frontend.announcement.announcement-detail.partials._main-content', ['announcement' => $announcement])
 
+        {{-- Separator for mobile --}}
+        <div class="lg:hidden border-b border-gray-300"></div>
+
         {{-- Related Announcements Sidebar --}}
         @include('livewire.frontend.announcement.announcement-detail.partials._sidebar-announcement', ['relatedAnnouncements' => $relatedAnnouncements])
     </div>

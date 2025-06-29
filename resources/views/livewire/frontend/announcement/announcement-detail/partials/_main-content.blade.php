@@ -1,4 +1,4 @@
-<div class="lg:w-2/3 lg:pl-12">
+<div class="lg:w-2/3 px-5 lg:px-12">
     {{-- Tombol Kembali --}}
     <button onclick="history.back()"
         class="inline-flex items-center text-green-600 hover:text-green-800 dark:text-white dark:hover:text-zinc-900 mb-6 font-medium">
