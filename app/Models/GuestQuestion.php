@@ -13,5 +13,10 @@ class GuestQuestion extends Model
         'formPhoneNumber',
         'formEmail',
         'message',
+        'is_read',
+    ];
+
+    protected $attributes = [
+        'is_read' => false,
     ];
 }

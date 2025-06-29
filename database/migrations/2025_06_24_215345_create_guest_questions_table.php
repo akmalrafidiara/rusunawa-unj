@@ -16,7 +16,8 @@ return new class extends Migration
             $table->string('fullName');
             $table->string('formPhoneNumber');
             $table->string('formEmail');
-            $table->text('message');                    
+            $table->text('message');
+            $table->boolean('is_read')->default(false); // Default value for is_read                    
             $table->timestamps();
         });
     }

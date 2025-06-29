@@ -2,95 +2,170 @@
 
 namespace App\Livewire\Managers;
 
-use App\Models\GuestQuestion as GuestQuestionModel; // Use alias to avoid conflicts
+use App\Models\GuestQuestion as GuestQuestionModel;
 use Livewire\Component;
+use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 use Livewire\WithPagination;
 
 class GuestQuestions extends Component
 {
-    // Traits
     use WithPagination;
 
-    // Filter properties (for search filtering)
+    // Data properties
     public $search = '';
-    // roleFilter property removed as it's not in GuestQuestion model
-
-    // Pagination and sorting properties
+    public $readFilter = '';
     public $perPage = 10;
-    public $orderBy = 'created_at'; // Common for models, assuming GuestQuestion has this timestamp
-    public $sort = 'desc'; // 'desc' or 'asc'
+    public $orderBy = 'created_at';
+    public $sort = 'desc';
 
-    // Query string properties to keep the URL updated with filter, sort, and pagination state
+    // Modal & confirmation properties
+    public $showModal = false;
+    public $modalType = ''; // 'detail'
+    public $selectedQuestionId = null;
+
+    // Query string
     protected $queryString = [
         'search' => ['except' => ''],
-        // 'roleFilter' removed from queryString
+        'readFilter' => ['except' => ''],
         'perPage' => ['except' => 10],
         'orderBy' => ['except' => 'created_at'],
         'sort' => ['except' => 'desc'],
     ];
 
+    // Listeners for LivewireAlert
+    protected $listeners = [
+        'markAsReadConfirmed',
+        'deleteQuestionConfirmed',
+    ];
+
     /**
-     * Resets the pagination to the first page when any of the filter or sort
-     * properties change. This is a Livewire lifecycle hook.
-     *
-     * @param string $propertyName The name of the property that was updated.
-     * @return void
+     * Reset pagination when filter/search changes.
      */
     public function updating($propertyName)
     {
-        // Check if the updated property is part of our filters or sorting criteria.
-        // If so, reset the page to 1 to ensure a consistent experience when changing filters/sorts.
-        if (in_array($propertyName, ['search', 'perPage', 'orderBy', 'sort'])) {
+        if (in_array($propertyName, ['search', 'readFilter', 'perPage', 'orderBy', 'sort'])) {
             $this->resetPage();
         }
     }
 
     /**
-     * Render the component view.
-     * This method fetches the data based on the current search, filter,
-     * sorting, and pagination parameters.
-     *
-     * @return \Illuminate\View\View
+     * Show detail modal.
+     */
+    public function showDetail($questionId)
+    {
+        $this->selectedQuestionId = $questionId;
+        $this->modalType = 'detail';
+        $this->showModal = true;
+    }
+
+    /**
+     * Confirm before marking as read.
+     */
+    public function confirmMarkAsRead($questionId)
+    {
+        $question = GuestQuestionModel::find($questionId);
+        if (!$question) return;
+
+        LivewireAlert::title('Konfirmasi')
+            ->text('Tandai pertanyaan dari "' . $question->fullName . '" sebagai sudah dibaca?')
+            ->question()
+            ->withCancelButton('Batal')
+            ->withConfirmButton('Ya, tandai sudah dibaca')
+            ->onConfirm('markAsReadConfirmed', ['id' => $questionId])
+            ->show();
+    }
+
+    /**
+     * Execute after confirmation to mark as read.
+     */
+    public function markAsReadConfirmed($data)
+    {
+        $id = $data['id'] ?? null;
+        $question = GuestQuestionModel::find($id);
+        if ($question && !$question->is_read) {
+            $question->is_read = true;
+            $question->save();
+
+            LivewireAlert::title('Berhasil')
+                ->text('Pertanyaan berhasil ditandai sudah dibaca.')
+                ->success()
+                ->toast()
+                ->position('top-end')
+                ->show();
+        }
+    }
+
+    /**
+     * Confirm before deleting.
+     */
+    public function confirmDeleteQuestion($questionId)
+    {
+        $question = GuestQuestionModel::find($questionId);
+        if (!$question) return;
+
+        LivewireAlert::title('Konfirmasi')
+            ->text('Hapus pertanyaan dari "' . $question->fullName . '" secara permanen?')
+            ->question()
+            ->withCancelButton('Batal')
+            ->withConfirmButton('Ya, hapus')
+            ->onConfirm('deleteQuestionConfirmed', ['id' => $questionId])
+            ->show();
+    }
+
+    /**
+     * Execute after confirmation to delete.
+     */
+    public function deleteQuestionConfirmed($data)
+    {
+        $id = $data['id'] ?? null;
+        $question = GuestQuestionModel::find($id);
+        if ($question) {
+            $name = $question->fullName;
+            $question->delete();
+
+            LivewireAlert::title('Berhasil Dihapus')
+                ->text('Pertanyaan dari "' . $name . '" telah dihapus.')
+                ->success()
+                ->toast()
+                ->position('top-end')
+                ->show();
+        }
+    }
+
+    /**
+     * Render the component.
      */
     public function render()
     {
-        // Build the query for guest questions
-        $guestQuestions = GuestQuestionModel::query() // Changed to GuestQuestionModel
-            // Apply search filter if 'search' property is not empty
+        $guestQuestions = GuestQuestionModel::query()
             ->when($this->search, function ($query) {
-                // Search by fullName (case-insensitive and partial match)
-                // Assuming you want to search by fullName based on your GuestQuestion model
-                $query->where('fullName', 'like', "%{$this->search}%");
+                $query->where('fullName', 'like', "%{$this->search}%")
+                      ->orWhere('formEmail', 'like', "%{$this->search}%")
+                      ->orWhere('message', 'like', "%{$this->search}%");
             })
-            // roleFilter logic removed as GuestQuestion model doesn't have a 'role' field
-            // Apply sorting based on 'orderBy' and 'sort' properties
+            ->when($this->readFilter === 'read', function ($query) {
+                $query->where('is_read', true);
+            })
+            ->when($this->readFilter === 'unread', function ($query) {
+                $query->where('is_read', false);
+            })
             ->orderBy($this->orderBy, $this->sort)
-            // Paginate the results with 'perPage' items per page
             ->paginate($this->perPage);
 
-        // Return the view, passing the paginated guest questions data to it
-        // You'll need to adapt your Blade view to iterate over $guestQuestions instead of $contacts
         return view('livewire.managers.contents.guest-questions.index', compact('guestQuestions'));
     }
 
     /**
-     * Method to change the sorting column.
-     * If the new column is the same as the current, toggle the sort direction.
-     * Otherwise, set the new column and default to ascending sort.
-     *
-     * @param string $column The column name to sort by.
-     * @return void
+     * Sorting logic.
      */
     public function sortBy($column)
     {
         if ($this->orderBy === $column) {
-            // If clicking the same column, toggle sort direction
             $this->sort = ($this->sort === 'asc') ? 'desc' : 'asc';
         } else {
-            // If clicking a new column, set it as orderBy and default to asc
             $this->orderBy = $column;
             $this->sort = 'asc';
         }
-        $this->resetPage(); // Reset pagination when sorting changes
+        $this->resetPage();
     }
 }
