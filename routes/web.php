@@ -3,14 +3,14 @@
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
-// Web
-// Route::get('/', function () {
-//     return view('welcome');
-// })->name('home');
+// === SCOPE FRONTEND ROUTES ===
 Route::view('/', 'modules.frontend.home')->name('home');
 
 Route::view('tenancy', 'modules.frontend.tenancy.index')->name('tenancy.index');
+Route::view('tenancy/unit-detail', 'modules.frontend.tenancy.unit-detail')->name('frontend.tenancy.unit.detail');
 
+
+// === SCOPE MANAGERS ROUTES ===
 // Managers Dashboard
 Route::prefix('managers')->middleware(['auth', 'verified'])->group(function () {
 
