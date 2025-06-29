@@ -1,5 +1,6 @@
 <?php
 
+use App\Livewire\Frontend\Announcement\ShowAnnouncement;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -9,6 +10,16 @@ Route::view('/', 'modules.frontend.home')->name('home');
 Route::view('tenancy', 'modules.frontend.tenancy.index')->name('tenancy.index');
 Route::view('tenancy/unit-detail', 'modules.frontend.tenancy.unit-detail')->name('frontend.tenancy.unit.detail');
 
+Route::redirect('complaint', 'complaint/track-complaint');
+    Volt::route('complaint/track-complaint', 'frontend.complaint.track-complaint')->name('complaint.track-complaint');
+    Volt::route('complaint/create-complaint', 'frontend.complaint.create-complaint')->name('complaint.create-complaint');
+    Volt::route('complaint/ongoing-complaint', 'frontend.complaint.ongoing-complaint')->name('complaint.ongoing-complaint');
+    Volt::route('complaint/complaint-history', 'frontend.complaint.complaint-history')->name('complaint.complaint-history');
+
+Route::view('announcement', 'modules.frontend.announcement.index')->name('announcement.index');
+Route::get('announcement/{announcement}', ShowAnnouncement::class)->name('announcement.show');
+
+Route::view('rules', 'modules.frontend.rules.index')->name('rules.index');
 
 // === SCOPE MANAGERS ROUTES ===
 // Managers Dashboard
@@ -51,9 +62,11 @@ Route::prefix('managers')->middleware(['auth', 'verified'])->group(function () {
         Route::view('abouts', 'modules.managers.contents.abouts.index')->name('page-contents.abouts');
         Route::view('locations', 'modules.managers.contents.locations.index')->name('page-contents.locations');
         Route::view('galleries', 'modules.managers.contents.galleries.index')->name('page-contents.galleries');
+        Route::view('complaint-content', 'modules.managers.contents.complaint-page-content.index')->name('page-contents.complaint-content');
         Route::view('faqs', 'modules.managers.contents.faq.index')->name('page-contents.faq');
         Route::view('contacts', 'modules.managers.contents.contacts.index')->name('page-contents.contacts');
     });
+    Route::view(('guest-questions'), 'modules.managers.contents.guest-questions.index')->name('guest.questions');
     Route::view(('announcements'), 'modules.managers.contents.announcements.index')->name('announcements');
     Route::view('regulations', 'modules.managers.contents.regulations.index')->name('regulations');
     Route::view('emergency-contacts', 'modules.managers.contents.emergency-contacts.index')->name('emergency.contacts');

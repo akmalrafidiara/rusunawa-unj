@@ -145,6 +145,11 @@ $adminSidebarMenu = [
                         'current' => request()->routeIs('page-contents.galleries'),
                     ],
                     [
+                        'label' => __('Layanan Pengaduan'),
+                        'route' => route('page-contents.complaint-content'),
+                        'current' => request()->routeIs('page-contents.complaint-content'),
+                    ],
+                    [
                         'label' => __('FAQ'),
                         'route' => route('page-contents.faq'),
                         'current' => request()->routeIs('page-contents.faq'),
@@ -155,6 +160,13 @@ $adminSidebarMenu = [
                         'current' => request()->routeIs('page-contents.contacts'),
                     ],
                 ],
+            ],
+            [
+                'icon' => 'chat-bubble-bottom-center-text',
+                'label' => __('Pertanyaan Pengunjung'),
+                'route' => route('guest.questions'),
+                'current' => request()->routeIs('guest.questions'),
+                'badge' => 4,
             ],
             [
                 'icon' => 'megaphone',
@@ -246,7 +258,7 @@ $adminSidebarMenu = [
 
             <flux:menu.radio.group>
                 <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate.hover>
-                    {{ __('Settings') }}
+                    {{ __('Pengaturan Akun') }}
                 </flux:menu.item>
             </flux:menu.radio.group>
 
@@ -255,7 +267,7 @@ $adminSidebarMenu = [
             <form method="POST" action="{{ route('logout') }}" class="w-full">
                 @csrf
                 <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle" class="w-full">
-                    {{ __('Log Out') }}
+                    {{ __('Keluar') }}
                 </flux:menu.item>
             </form>
         </flux:menu>

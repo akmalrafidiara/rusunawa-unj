@@ -28,19 +28,13 @@ class BannerFooter extends Component
     public $footerTitle;
     public $footerText;
 
-    // Aturan validasi dasar
+    // Aturan validasi dasar (dibuat lebih umum agar tidak spesifik untuk banner atau footer)
     protected $rules = [
-        'bannerTitle' => 'required|string|max:255',
-        'bannerText' => 'required|string|max:200',
         'dayaTariks' => 'array',
-        'dayaTariks.*.value' => 'nullable|string|max:50', // DIUBAH DARI 'required' JADI 'nullable'
-        'dayaTariks.*.label' => 'nullable|string|max:50', // DIUBAH DARI 'required' JADI 'nullable'
-        'newDayaTarikValue' => 'nullable|string|max:50', // Ini akan divalidasi 'required' di addDayaTarik()
-        'newDayaTarikLabel' => 'nullable|string|max:50', // Ini akan divalidasi 'required' di addDayaTarik()
-        'bannerImage' => 'nullable|image|max:2048|mimes:jpg,jpeg,png',
-        'footerLogo' => 'nullable|image|max:2048|mimes:jpg,jpeg,png',
-        'footerTitle' => 'required|string|max:255',
-        'footerText' => 'required|string|max:200',
+        'dayaTariks.*.value' => 'nullable|string|max:50',
+        'dayaTariks.*.label' => 'nullable|string|max:50',
+        'newDayaTarikValue' => 'nullable|string|max:50',
+        'newDayaTarikLabel' => 'nullable|string|max:50',
     ];
 
     // PESAN VALIDASI DALAM BAHASA INDONESIA
@@ -54,16 +48,15 @@ class BannerFooter extends Component
         'bannerText.max' => 'Teks Banner tidak boleh lebih dari :max karakter.',
 
         'dayaTariks.array' => 'Daya Tarik harus berupa daftar.',
-        // Pesan required untuk dayaTariks.*.value/label dihapus karena sekarang nullable
         'dayaTariks.*.value.string' => 'Nilai Daya Tarik harus berupa teks.',
         'dayaTariks.*.value.max' => 'Nilai Daya Tarik tidak boleh lebih dari :max karakter.',
         'dayaTariks.*.label.string' => 'Label Daya Tarik harus berupa teks.',
         'dayaTariks.*.label.max' => 'Label Daya Tarik tidak boleh lebih dari :max karakter.',
 
-        'newDayaTarikValue.required' => 'Nilai Daya Tarik harus diisi.', // Tetap required untuk addDayaTarik()
+        'newDayaTarikValue.required' => 'Nilai Daya Tarik harus diisi.',
         'newDayaTarikValue.string' => 'Nilai Daya Tarik harus berupa teks.',
         'newDayaTarikValue.max' => 'Nilai Daya Tarik tidak boleh lebih dari :max karakter.',
-        'newDayaTarikLabel.required' => 'Label Daya Tarik harus diisi.', // Tetap required untuk addDayaTarik()
+        'newDayaTarikLabel.required' => 'Label Daya Tarik harus diisi.',
         'newDayaTarikLabel.string' => 'Label Daya Tarik harus berupa teks.',
         'newDayaTarikLabel.max' => 'Label Daya Tarik tidak boleh lebih dari :max karakter.',
 
@@ -108,7 +101,7 @@ class BannerFooter extends Component
                 'label' => $item['label'] ?? '',
             ];
         })->filter(function($item) {
-            return !empty($item['value']) || !empty($item['label']); // Tetap filter item yang benar-benar kosong saat mount
+            return !empty($item['value']) || !empty($item['label']);
         })->toArray();
 
         $this->existingBannerImageUrl = optional(Content::where('content_key', 'banner_image_url')->first())->content_value ?? '';
@@ -119,7 +112,6 @@ class BannerFooter extends Component
 
     public function addDayaTarik()
     {
-        // Validasi ini akan tetap MEWAJIBKAN Value dan Label diisi saat tombol "Tambah Daya Tarik" diklik
         $this->validate([
             'newDayaTarikValue' => 'required|string|max:50',
             'newDayaTarikLabel' => 'required|string|max:50',
@@ -173,16 +165,24 @@ class BannerFooter extends Component
 
     public function saveBanner()
     {
-        $rules = $this->rules;
+        // Aturan validasi khusus untuk Banner
+        $bannerRules = [
+            'bannerTitle' => 'required|string|max:255',
+            'bannerText' => 'required|string|max:200',
+            'dayaTariks' => 'array',
+            'dayaTariks.*.value' => 'nullable|string|max:50',
+            'dayaTariks.*.label' => 'nullable|string|max:50',
+        ];
 
+        // Tambahkan aturan validasi untuk bannerImage jika diperlukan
         if (!$this->bannerImage && empty($this->existingBannerImageUrl)) {
-            $rules['bannerImage'] = 'required|image|max:2048|mimes:jpg,jpeg,png';
+            $bannerRules['bannerImage'] = 'required|image|max:2048|mimes:jpg,jpeg,png';
         } else {
-            $rules['bannerImage'] = 'nullable|image|max:2048|mimes:jpg,jpeg,png';
+            $bannerRules['bannerImage'] = 'nullable|image|max:2048|mimes:jpg,jpeg,png';
         }
 
         try {
-            $this->validate($rules);
+            $this->validate($bannerRules); // Hanya validasi properti banner
         } catch (ValidationException $e) {
             LivewireAlert::error()
                 ->title('Mohon lengkapi semua data yang wajib diisi pada bagian Banner!')
@@ -203,7 +203,6 @@ class BannerFooter extends Component
             ['content_value' => $this->bannerText, 'content_type' => 'text']
         );
 
-        // Daya Tarik akan disimpan meskipun ada item kosong, selama item tersebut 'nullable'
         Content::updateOrCreate(
             ['content_key' => 'banner_daya_tariks'],
             ['content_value' => $this->dayaTariks, 'content_type' => 'json']
@@ -230,16 +229,21 @@ class BannerFooter extends Component
 
     public function saveFooter()
     {
-        $rules = $this->rules;
+        // Aturan validasi khusus untuk Footer
+        $footerRules = [
+            'footerTitle' => 'required|string|max:255',
+            'footerText' => 'required|string|max:200',
+        ];
 
+        // Tambahkan aturan validasi untuk footerLogo jika diperlukan
         if (!$this->footerLogo && empty($this->existingFooterLogoUrl)) {
-            $rules['footerLogo'] = 'required|image|max:2048|mimes:jpg,jpeg,png';
+            $footerRules['footerLogo'] = 'required|image|max:2048|mimes:jpg,jpeg,png';
         } else {
-            $rules['footerLogo'] = 'nullable|image|max:2048|mimes:jpg,jpeg,png';
+            $footerRules['footerLogo'] = 'nullable|image|max:2048|mimes:jpg,jpeg,png';
         }
 
         try {
-            $this->validate($rules);
+            $this->validate($footerRules); // Hanya validasi properti footer
         } catch (ValidationException $e) {
             LivewireAlert::error()
                 ->title('Mohon lengkapi semua data yang wajib diisi pada bagian Footer!')

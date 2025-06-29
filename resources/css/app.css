@@ -9,6 +9,18 @@
     text-decoration: underline;
 }
 
+/* Sembunyikan scrollbar bawaan browser */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
 @source '../views';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../vendor/livewire/flux-pro/stubs/**/*.blade.php';
@@ -50,6 +62,7 @@
 }
 
 @layer base {
+
     *,
     ::after,
     ::before,
