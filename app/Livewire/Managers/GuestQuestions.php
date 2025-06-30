@@ -3,27 +3,22 @@
 namespace App\Livewire\Managers;
 
 use App\Models\GuestQuestion as GuestQuestionModel;
-use Livewire\Component;
 use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
+use Livewire\Component;
 use Livewire\WithPagination;
+use Carbon\Carbon;
 
 class GuestQuestions extends Component
 {
     use WithPagination;
 
-    // Data properties
     public $search = '';
     public $readFilter = '';
+
     public $perPage = 10;
     public $orderBy = 'created_at';
     public $sort = 'desc';
 
-    // Modal & confirmation properties
-    public $showModal = false;
-    public $modalType = ''; // 'detail'
-    public $selectedQuestionId = null;
-
-    // Query string
     protected $queryString = [
         'search' => ['except' => ''],
         'readFilter' => ['except' => ''],
@@ -32,35 +27,76 @@ class GuestQuestions extends Component
         'sort' => ['except' => 'desc'],
     ];
 
-    // Listeners for LivewireAlert
     protected $listeners = [
         'markAsReadConfirmed',
         'deleteQuestionConfirmed',
     ];
 
-    /**
-     * Reset pagination when filter/search changes.
-     */
-    public function updating($propertyName)
+    public function updating($name, $value)
     {
-        if (in_array($propertyName, ['search', 'readFilter', 'perPage', 'orderBy', 'sort'])) {
+        if (in_array($name, ['search', 'readFilter', 'perPage', 'orderBy', 'sort'])) {
             $this->resetPage();
         }
     }
 
-    /**
-     * Show detail modal.
-     */
-    public function showDetail($questionId)
+
+    public function getWhatsappLink($phoneNumberRaw, $questionMessage, $questionDate)
     {
-        $this->selectedQuestionId = $questionId;
-        $this->modalType = 'detail';
-        $this->showModal = true;
+        if (!$phoneNumberRaw) {
+            return null;
+        }
+
+        $cleanPhoneNumber = preg_replace('/[^0-9]/', '', $phoneNumberRaw);
+        if (!$cleanPhoneNumber) {
+            return null;
+        }
+
+        if (substr($cleanPhoneNumber, 0, 1) === '0') {
+            $whatsappNumber = '62' . substr($cleanPhoneNumber, 1);
+        } elseif (substr($cleanPhoneNumber, 0, 2) === '62') {
+            $whatsappNumber = $cleanPhoneNumber;
+        } else {
+            $whatsappNumber = '62' . $cleanPhoneNumber;
+        }
+
+        // Format tanggal dan tambahkan bold
+        $formattedDate = Carbon::parse($questionDate)->locale('id')->isoFormat('DD MMMM YYYY');
+
+        $templateMessage = "Halo, kami dari *Pengelola Rusunawa UNJ* ingin merespons pertanyaan Anda.\n\n" .
+            "*Pertanyaan Anda pada tanggal* *{$formattedDate}*:\n\"{$questionMessage}\"\n\n" .
+            "*Jawaban kami*:\n[Silakan ketik jawaban di sini...]";
+
+        $encodedMessage = urlencode($templateMessage);
+
+        return "https://wa.me/{$whatsappNumber}?text={$encodedMessage}";
     }
 
-    /**
-     * Confirm before marking as read.
-     */
+    public function getEmailLink($email, $questionMessage, $questionDate)
+    {
+        if (!$email) {
+            return null;
+        }
+
+        // Format tanggal
+        $formattedDate = Carbon::parse($questionDate)->locale('id')->isoFormat('DD MMMM YYYY');
+
+        $subject = urlencode("Balasan Pertanyaan Anda - Tanggal {$formattedDate}");
+
+        // Buat isi email dengan bold.
+        $body = urlencode("Halo, kami dari Pengelola Rusunawa UNJ ingin merespons pertanyaan Anda.\n\n" .
+            "Pertanyaan Anda pada tanggal {$formattedDate}:\n\"{$questionMessage}\"\n\n" .
+            "Jawaban kami:\n[Silakan ketik jawaban di sini...]");
+
+        // Menggunakan asterisk * untuk bold, meskipun mungkin tidak selalu dirender bold di semua klien email.
+        $body = str_replace(urlencode("Pengelola Rusunawa UNJ"), urlencode("*Pengelola Rusunawa UNJ*"), $body);
+        $body = str_replace(urlencode("Pertanyaan Anda pada tanggal"), urlencode("*Pertanyaan Anda pada tanggal*"), $body);
+        // Tambahkan bold pada tanggal di body email
+        $body = str_replace(urlencode($formattedDate), urlencode("*{$formattedDate}*"), $body);
+        $body = str_replace(urlencode("Jawaban kami"), urlencode("*Jawaban kami*"), $body);
+
+        return "mailto:{$email}?subject={$subject}&body={$body}";
+    }
+
     public function confirmMarkAsRead($questionId)
     {
         $question = GuestQuestionModel::find($questionId);
@@ -75,9 +111,6 @@ class GuestQuestions extends Component
             ->show();
     }
 
-    /**
-     * Execute after confirmation to mark as read.
-     */
     public function markAsReadConfirmed($data)
     {
         $id = $data['id'] ?? null;
@@ -95,9 +128,6 @@ class GuestQuestions extends Component
         }
     }
 
-    /**
-     * Confirm before deleting.
-     */
     public function confirmDeleteQuestion($questionId)
     {
         $question = GuestQuestionModel::find($questionId);
@@ -112,9 +142,6 @@ class GuestQuestions extends Component
             ->show();
     }
 
-    /**
-     * Execute after confirmation to delete.
-     */
     public function deleteQuestionConfirmed($data)
     {
         $id = $data['id'] ?? null;
@@ -132,40 +159,34 @@ class GuestQuestions extends Component
         }
     }
 
-    /**
-     * Render the component.
-     */
     public function render()
     {
-        $guestQuestions = GuestQuestionModel::query()
-            ->when($this->search, function ($query) {
+        $guestQuestions = GuestQuestionModel::query();
+
+        if ($this->search) {
+            $guestQuestions->where(function ($query) {
                 $query->where('fullName', 'like', "%{$this->search}%")
-                      ->orWhere('formEmail', 'like', "%{$this->search}%")
-                      ->orWhere('message', 'like', "%{$this->search}%");
-            })
-            ->when($this->readFilter === 'read', function ($query) {
-                $query->where('is_read', true);
-            })
-            ->when($this->readFilter === 'unread', function ($query) {
-                $query->where('is_read', false);
-            })
-            ->orderBy($this->orderBy, $this->sort)
-            ->paginate($this->perPage);
+                    ->orWhere('formPhoneNumber', 'like', "%{$this->search}%")
+                    ->orWhere('formEmail', 'like', "%{$this->search}%")
+                    ->orWhere('message', 'like', "%{$this->search}%");
+            });
+            if ($this->readFilter === 'read') {
+                $guestQuestions->where('is_read', true);
+            } elseif ($this->readFilter === 'unread') {
+                $guestQuestions->where('is_read', false);
+            }
+        } else {
+            if ($this->readFilter === 'read') {
+                $guestQuestions->where('is_read', true);
+            } elseif ($this->readFilter === 'unread') {
+                $guestQuestions->where('is_read', false);
+            }
+        }
+
+        $guestQuestions->orderBy($this->orderBy, $this->sort);
+
+        $guestQuestions = $guestQuestions->paginate($this->perPage);
 
         return view('livewire.managers.contents.guest-questions.index', compact('guestQuestions'));
-    }
-
-    /**
-     * Sorting logic.
-     */
-    public function sortBy($column)
-    {
-        if ($this->orderBy === $column) {
-            $this->sort = ($this->sort === 'asc') ? 'desc' : 'asc';
-        } else {
-            $this->orderBy = $column;
-            $this->sort = 'asc';
-        }
-        $this->resetPage();
     }
 }

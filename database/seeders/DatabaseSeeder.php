@@ -34,6 +34,7 @@ class DatabaseSeeder extends Seeder
             ComplaintContentSeeder::class,
             ContactContentSeeder::class,
             FooterContentSeeder::class,
+            GuestQuestionSeeder::class,
         ]);
     }
 }
