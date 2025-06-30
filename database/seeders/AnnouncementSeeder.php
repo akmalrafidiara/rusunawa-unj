@@ -56,6 +56,48 @@ class AnnouncementSeeder extends Seeder
                 'status' => 'published',
                 'category' => 'lost_and_found', // Menambahkan kategori 'lost_and_found'
             ],
+            [
+                'title' => 'Makan Bersama di Kantin',
+                'description' => 'Kami mengundang seluruh penghuni untuk bergabung dalam acara makan bersama di kantin pada hari Jumat pukul 12:00 WIB. Ayo datang dan nikmati hidangan lezat!',
+                'image' => null,
+                'status' => 'published',
+                'category' => 'general', // Menambahkan kategori 'lost_and_found'
+            ],
+            [
+                'title' => 'Bakti Sosial: Donasi Buku',
+                'description' => 'Kami mengadakan bakti sosial dengan mengumpulkan donasi buku untuk anak-anak kurang mampu. Buku dapat diserahkan di pos keamanan mulai 1 hingga 15 Agustus.',
+                'image' => null,
+                'status' => 'published',
+                'category' => 'general', // Menambahkan kategori 'lost_and_found'
+            ],
+            [
+                'title' => 'Bakti Sosial: Donasi Buku',
+                'description' => 'Kami mengadakan bakti sosial dengan mengumpulkan donasi buku untuk anak-anak kurang mampu. Buku dapat diserahkan di pos keamanan mulai 1 hingga 15 Agustus.',
+                'image' => null,
+                'status' => 'published',
+                'category' => 'general', // Menambahkan kategori 'lost_and_found'
+            ],
+            [
+                'title' => 'Pemberitahuan: Perubahan Jam Operasional',
+                'description' => 'Mulai 1 September, jam operasional layanan pelanggan akan berubah menjadi pukul 08:00 - 16:00 WIB pada hari kerja.',
+                'image' => null,
+                'status' => 'published',
+                'category' => 'general', // Menambahkan kategori 'general'
+            ],
+            [
+                'title' => 'Pengumuman: Penutupan Sementara Layanan',
+                'description' => 'Layanan kami akan ditutup sementara pada tanggal 25 Desember untuk perayaan Natal. Kami mohon maaf atas ketidaknyamanan ini.',
+                'image' => null,
+                'status' => 'published',
+                'category' => 'general', // Menambahkan kategori 'general'
+            ],
+            [
+                'title' => 'Penting: Perubahan Alamat Kantor',
+                'description' => 'Kami telah pindah ke alamat baru. Silakan kunjungi kami di Jalan Baru No. 123, Jakarta.',
+                'image' => null,
+                'status' => 'published',
+                'category' => 'important', // Menambahkan kategori 'important'
+            ],
         ];
 
         foreach ($announcements as $announcement) {
