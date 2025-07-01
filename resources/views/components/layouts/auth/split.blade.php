@@ -1,60 +1,56 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
 
-    <head>
-        @include('partials.head')
-    </head>
+<head>
+    @include('partials.head')
+</head>
 
-    <body class="min-h-screen bg-white antialiased dark:bg-linear-to-b dark:from-neutral-950 dark:to-neutral-900">
-        <div
-            class="relative grid h-dvh flex-col items-center justify-center px-8 sm:px-0 lg:max-w-none lg:grid-cols-2 lg:px-0">
-            <div
-                class="bg-muted relative hidden h-full flex-col p-10 text-white lg:flex dark:border-e dark:border-neutral-800">
-                {{-- <div class="absolute inset-0 bg-neutral-900"></div> --}}
-
-                {{-- Edited Image Background --}}
-                <div class="absolute inset-0"
-                    style="background-image: url('https://w.wallhaven.cc/full/dp/wallhaven-dp6p3l.png');  background-size: cover; background-position: center;"
-                    aria-hidden="true">
-                </div>
-                <a href="{{ route('home') }}" class="relative z-20 flex flex-col text-lg font-medium" wire:navigate>
-                    <span class="flex h-24 w-24 items-center justify-center rounded-md">
-                        <x-default.app-logo-icon class="me-2 h-24 fill-current text-white" />
+<body class="min-h-screen bg-white antialiased dark:bg-linear-to-b dark:from-neutral-950 dark:to-neutral-900">
+    <div
+        class="relative flex flex-col min-h-screen lg:grid lg:grid-cols-2 lg:h-dvh lg:max-w-none lg:px-0 lg:items-center lg:justify-center">
+        {{-- Ini adalah div untuk SLOT (Kiri di Desktop, Bawah di Mobile) --}}
+        <div class="w-full lg:p-8 relative flex-grow bg-white dark:bg-zinc-800 -mt-8 rounded-t-3xl shadow-lg lg:mt-0 lg:rounded-none lg:shadow-none lg:h-full">
+            {{-- Logo BPU untuk Desktop Saja --}}
+            <div class="absolute top-8 left-12 z-20 hidden lg:block">
+                <a href="{{ route('home') }}" class="flex items-center font-medium" wire:navigate>
+                    <span class="flex h-25 w-25 items-center justify-center rounded-md">
+                        <x-default.app-logo-icon class="size-20 fill-current text-white" />
                     </span>
-                    <span class="text-bold text-2xl">Sistem Informasi Management</span>
-                    <span class="text-light text-sm">Rusunawa Universitas Negeri Jakarta</span>
-                    {{-- {{ config('app.name', 'Laravel') }} --}}
+                    <span class="sr-only">{{ config('app.name', 'Laravel') }}</span>
+                    {{-- Tambahkan teks "Rusunawa UNJ" di sini --}}
+                    <span class="ml-2 text-xl font-semibold text-black dark:text-white">Rusunawa UNJ</span>
                 </a>
-
-                @php
-                    [$message, $author] = str(Illuminate\Foundation\Inspiring::quotes()->random())->explode('-');
-                @endphp
-
-                <div class="relative z-20 mt-auto">
-                    <blockquote class="space-y-2">
-                        <flux:heading class="text-white" size="lg">&ldquo;{{ trim($message) }}&rdquo;
-                        </flux:heading>
-                        <footer>
-                            <flux:heading class="text-white">{{ trim($author) }}</flux:heading>
-                        </footer>
-                    </blockquote>
-                </div>
             </div>
-            <div class="w-full lg:p-8">
-                <div class="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
-                    <a href="{{ route('home') }}" class="z-20 flex flex-col items-center gap-2 font-medium lg:hidden"
-                        wire:navigate>
-                        <span class="flex h-9 w-9 items-center justify-center rounded-md">
-                            <x-default.app-logo-icon class="size-9 fill-current text-black dark:text-white" />
-                        </span>
 
-                        <span class="sr-only">{{ config('app.name', 'Laravel') }}</span>
-                    </a>
-                    {{ $slot }}
-                </div>
+            {{-- DIV SLOT UTAMA - Ubah ini untuk menengahkan konten secara vertikal dan memberi jarak --}}
+            {{-- Tambahkan 'h-full' agar flexbox mengambil tinggi penuh, dan 'items-center' untuk menengahkan --}}
+            {{-- Tambahkan 'pt-20' untuk jarak dari logo di atas, hanya di desktop (lg:pt-20) --}}
+            <div class="flex w-full flex-col justify-center space-y-6 p-8 lg:p-0c lg:h-full lg:items-center lg:pt-20 lg:pl-4">
+                {{ $slot }}
             </div>
         </div>
-        @fluxScripts
-    </body>
+
+        {{-- Ini adalah div untuk BANNER/GAMBAR (Kanan di Desktop, Atas di Mobile) --}}
+        <div
+            class="relative h-64 lg:h-full bg-muted overflow-hidden order-first lg:order-last flex-none lg:flex-col lg:p-0 lg:flex dark:border-e dark:border-neutral-800">
+            <div class="absolute inset-0"
+                style="background-image: url('{{ asset('images/banner-image-login.jpg') }}'); background-size: cover; background-position: center; background-repeat: no-repeat;"
+                aria-hidden="true">
+            </div>
+            {{-- Logo dan Tulisan "Rusunawa UNJ" untuk Mobile Saja --}}
+            <div class="absolute top-4 left-4 z-20 flex flex-col items-start lg:hidden">
+                <a href="{{ route('home') }}" class="flex items-center font-medium" wire:navigate>
+                    <span class="flex h-25 w-25 items-center justify-center rounded-md">
+                        <x-default.app-logo-icon class="size-20 fill-current text-white" />
+                    </span>
+                    <span class="sr-only">{{ config('app.name', 'Laravel') }}</span>
+                </a>
+                <span class="-mt-6 px-2 text-black text-xl font-semibold">Rusunawa UNJ</span>
+            </div>
+        </div>
+
+    </div>
+    @fluxScripts
+</body>
 
 </html>
