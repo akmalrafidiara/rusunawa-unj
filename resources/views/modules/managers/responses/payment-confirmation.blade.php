@@ -1,4 +1,4 @@
-<x-layouts.app :title="__('Konfirmasi Pembayaran')">
+<x-layouts.managers :title="__('Konfirmasi Pembayaran')">
     <div class="flex h-full w-full flex-1 flex-col gap-4 rounded-xl">
         <!-- Page Title -->
         <x-managers.ui.page-title title="Konfirmasi Pembayaran" subtitle="Kelola dan konfirmasi pembayaran terbaru" />
@@ -17,4 +17,4 @@
             </div>
         </div>
     </div>
-</x-layouts.app>
+</x-layouts.managers>

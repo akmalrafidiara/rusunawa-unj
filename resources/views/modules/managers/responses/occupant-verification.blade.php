@@ -1,4 +1,4 @@
-<x-layouts.app :title="__('Verifikasi Penghuni')">
+<x-layouts.managers :title="__('Verifikasi Penghuni')">
     <div class="flex h-full w-full flex-1 flex-col gap-4 rounded-xl">
         <!-- Page Title -->
         <x-managers.ui.page-title title="Verifikasi Penghuni" subtitle="Kelola dan verifikasi permintaan penghuni baru" />
@@ -17,4 +17,4 @@
             </div>
         </div>
     </div>
-</x-layouts.app>
+</x-layouts.managers>
