@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
 Route::middleware('guest')->group(function () {
+    // Form Login Utama (untuk Admin, Kepala Rusunawa, Staff Rusunawa)
     Volt::route('login', componentName: 'auth.login')
         ->name('login');
 });
@@ -21,5 +22,10 @@ Route::middleware('auth')->group(function () {
         ->name('password.confirm');
 });
 
-Route::post('logout', App\Livewire\Actions\Logout::class)
-    ->name('logout');
+// Post Logout, selalu kembali ke halaman login utama (manager/admin)
+Route::post('logout', function () {
+    Auth::guard('web')->logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+    return redirect()->route('login'); // Kembali ke halaman login utama
+})->name('logout');
