@@ -28,9 +28,14 @@
                         <option value="{{ $option['id'] }}">{{ $option['name'] }}</option>
                     @endforeach
                 </select>
-                {{-- Pesan error yang lebih simpel --}}
                 @error('occupantType')
-                    <div class="text-red-600 text-xs mt-1">{{ $message }}</div>
+                    <div
+                        class="absolute z-10 bg-red-600 text-white text-xs px-2 py-1 rounded shadow-lg top-full left-0 mt-1 whitespace-nowrap">
+                        {{ $message }}
+                        <div
+                            class="absolute bottom-full left-2 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-red-600">
+                        </div>
+                    </div>
                 @enderror
             </div>
         </div>
@@ -48,7 +53,13 @@
                     @endforeach
                 </select>
                 @error('pricingBasis')
-                    <div class="text-red-600 text-xs mt-1">{{ $message }}</div>
+                    <div
+                        class="absolute z-10 bg-red-600 text-white text-xs px-2 py-1 rounded shadow-lg top-full left-0 mt-1 whitespace-nowrap">
+                        {{ $message }}
+                        <div
+                            class="absolute bottom-full left-2 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-red-600">
+                        </div>
+                    </div>
                 @enderror
             </div>
         </div>
@@ -66,7 +77,13 @@
                         class="{{ $inputBaseClass }} {{ $disabledClasses }} {{ $errors->has('startDate') ? 'border-red-500' : 'border-gray-300 dark:border-gray-600' }} {{ !$startDate ? 'text-gray-400' : 'text-gray-900 dark:text-white' }}"
                         onchange="this.style.color = 'inherit';" {{ $isMonthly ? 'disabled' : '' }}>
                     @error('startDate')
-                        <div class="text-red-600 text-xs mt-1">{{ $message }}</div>
+                        <div
+                            class="absolute z-10 bg-red-600 text-white text-xs px-2 py-1 rounded shadow-lg top-full left-0 mt-1 whitespace-nowrap">
+                            {{ $message }}
+                            <div
+                                class="absolute bottom-full left-2 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-red-600">
+                            </div>
+                        </div>
                     @enderror
                 </div>
 
@@ -78,7 +95,13 @@
                         class="{{ $inputBaseClass }} {{ $disabledClasses }} {{ $errors->has('endDate') ? 'border-red-500' : 'border-gray-300 dark:border-gray-600' }} {{ !$endDate ? 'text-gray-400' : 'text-gray-900 dark:text-white' }}"
                         onchange="this.style.color = 'inherit';" {{ $isMonthly ? 'disabled' : '' }}>
                     @error('endDate')
-                        <div class="text-red-600 text-xs mt-1">{{ $message }}</div>
+                        <div
+                            class="absolute z-10 bg-red-600 text-white text-xs px-2 py-1 rounded shadow-lg top-full left-0 mt-1 whitespace-nowrap">
+                            {{ $message }}
+                            <div
+                                class="absolute bottom-full left-2 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-red-600">
+                            </div>
+                        </div>
                     @enderror
                 </div>
             </div>

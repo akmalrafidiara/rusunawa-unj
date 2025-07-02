@@ -26,4 +26,6 @@
 
 
     <livewire:frontend.tenancy.avaibilityList />
+
+    <div class="mb-20"></div>
 </x-layouts.frontend>
