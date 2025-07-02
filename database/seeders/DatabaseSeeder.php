@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             UnitTypeSeeder::class,
             UnitPriceSeeder::class,
             UnitClusterSeeder::class,
+            OccupantTypeUnitClusterSeeder::class,
             UnitSeeder::class,
             FaqSeeder::class,
             AnnouncementSeeder::class,
