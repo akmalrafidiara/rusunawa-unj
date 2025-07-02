@@ -25,7 +25,7 @@ mount(function () {
 ?>
 
 {{-- Konten HTML untuk menampilkan bagian Footer --}}
-<footer class="text-gray-800 dark:text-gray-300">
+<footer class="text-gray-800 dark:text-gray-300 mt-auto">
     {{-- Bagian atas footer --}}
     <div class="bg-gray-50 dark:bg-zinc-900 py-10 px-4 sm:px-6 lg:px-8">
         <div class="container mx-auto grid grid-cols-1 md:grid-cols-12 gap-x-16 gap-y-8">
@@ -36,7 +36,8 @@ mount(function () {
                     <img src="{{ url($footerLogoUrl) }}" alt="{{ $footerTitle }}" class="h-16 md:mx-0 mb-4 rounded-lg">
                 @else
                     {{-- Placeholder jika tidak ada logo --}}
-                    <div class="h-16 w-16 md:mx-0 mb-4 bg-gray-200 dark:bg-zinc-700 text-gray-500 dark:text-gray-400 flex items-center justify-center rounded-lg text-lg font-bold">
+                    <div
+                        class="h-16 w-16 md:mx-0 mb-4 bg-gray-200 dark:bg-zinc-700 text-gray-500 dark:text-gray-400 flex items-center justify-center rounded-lg text-lg font-bold">
                         {{-- Logo --}}
                     </div>
                 @endif
@@ -49,21 +50,15 @@ mount(function () {
                 <h4 class="text-green-700 dark:text-green-400 text-lg font-semibold mb-4">Kontak Kami</h4>
                 <ul class="space-y-3 text-gray-700 dark:text-gray-300">
                     <li class="flex items-center justify-start">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                        </svg>
+                        <flux:icon name="phone" class="w-5 h-5 mr-2 text-green-600 dark:text-green-400" />
                         <span>{{ $phoneNumber }}</span>
                     </li>
                     <li class="flex items-center justify-start">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m-1 12H4a2 2 0 01-2-2V6a2 2 0 012-2h16a2 2 0 012 2v12a2 2 0 01-2 2z" />
-                        </svg>
+                        <flux:icon name="envelope" class="w-5 h-5 mr-2 text-green-600 dark:text-green-400" />
                         <span>{{ $email }}</span>
                     </li>
                     <li class="flex items-center justify-start">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
+                        <flux:icon name="clock" class="w-5 h-5 mr-2 text-green-600 dark:text-green-400" />
                         <span>{{ $operationalHours }}</span>
                     </li>
                 </ul>
@@ -73,10 +68,26 @@ mount(function () {
             <div class="px-4 lg:px-0 md:col-span-2 text-left">
                 <h4 class="text-green-700 dark:text-green-400 text-lg font-semibold mb-4">Tautan Terkait</h4>
                 <ul class="space-y-3 text-gray-700 dark:text-gray-300">
-                    <li><a href="https://bpu.unj.ac.id" class="hover:text-green-600 dark:hover:text-green-500 transition-colors duration-200">Website BPU UNJ</a></li>
-                    <li><a href="https://unj.ac.id" class="hover:text-green-600 dark:hover:text-green-500 transition-colors duration-200">Website UNJ</a></li>
-                    <li><a href="https://sso.unj.ac.id" class="hover:text-green-600 dark:hover:text-green-500 transition-colors duration-200">SSO UNJ</a></li>
-                    <li><a href="https://siakad.unj.ac.id" class="hover:text-green-600 dark:hover:text-green-500 transition-colors duration-200">Siakad UNJ</a></li>
+                    <li>
+                        <a href="https://bpu.unj.ac.id"
+                            class="hover:text-green-600 dark:hover:text-green-500 transition-colors duration-200">Website
+                            BPU UNJ</a>
+                    </li>
+                    <li>
+                        <a href="https://unj.ac.id"
+                            class="hover:text-green-600 dark:hover:text-green-500 transition-colors duration-200">Website
+                            UNJ</a>
+                    </li>
+                    <li>
+                        <a href="https://sso.unj.ac.id"
+                            class="hover:text-green-600 dark:hover:text-green-500 transition-colors duration-200">SSO
+                            UNJ</a>
+                    </li>
+                    <li>
+                        <a href="https://siakad.unj.ac.id"
+                            class="hover:text-green-600 dark:hover:text-green-500 transition-colors duration-200">Siakad
+                            UNJ</a>
+                    </li>
                 </ul>
             </div>
 
@@ -84,10 +95,26 @@ mount(function () {
             <div class="px-4 lg:px-0 md:col-span-2 text-left">
                 <h4 class="text-green-700 dark:text-green-400 text-lg font-semibold mb-4">Tautan Cepat</h4>
                 <ul class="space-y-3 text-gray-700 dark:text-gray-300">
-                    <li><a href="#" class="hover:text-green-600 dark:hover:text-green-500 transition-colors duration-200">Login Penghuni</a></li>
-                    <li><a href="#" class="hover:text-green-600 dark:hover:text-green-500 transition-colors duration-200">Cek Pengaduan</a></li>
-                    <li><a href="/tenancy" class="hover:text-green-600 dark:hover:text-green-500 transition-colors duration-200">Sewa Kamar</a></li>
-                    <li><a href="#unit-types" class="hover:text-green-600 dark:hover:text-green-500 transition-colors duration-200">Tipe Kamar</a></li>
+                    <li>
+                        <a href="#"
+                            class="hover:text-green-600 dark:hover:text-green-500 transition-colors duration-200">Login
+                            Penghuni</a>
+                    </li>
+                    <li>
+                        <a href="#"
+                            class="hover:text-green-600 dark:hover:text-green-500 transition-colors duration-200">Cek
+                            Pengaduan</a>
+                    </li>
+                    <li>
+                        <a href="/tenancy"
+                            class="hover:text-green-600 dark:hover:text-green-500 transition-colors duration-200">Sewa
+                            Kamar</a>
+                    </li>
+                    <li>
+                        <a href="#unit-types"
+                            class="hover:text-green-600 dark:hover:text-green-500 transition-colors duration-200">Tipe
+                            Kamar</a>
+                    </li>
                 </ul>
             </div>
         </div>
