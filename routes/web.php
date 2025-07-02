@@ -23,7 +23,6 @@ Route::prefix('head-of-rusunawa')->middleware(['auth', 'verified', 'role:'.RoleU
     Volt::route('settings/profile', 'head-rusunawa.settings.profile')->name('head-of-rusunawa.settings.profile');
     Volt::route('settings/password', 'head-rusunawa.settings.password')->name('head-of-rusunawa.settings.password');
     Volt::route('settings/appearance', 'head-rusunawa.settings.appearance')->name('head-of-rusunawa.settings.appearance');
-
 });
 
 // Dashboard Staff Rusunawa

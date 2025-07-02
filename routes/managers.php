@@ -4,7 +4,7 @@ use Livewire\Volt\Volt;
 use App\Enums\RoleUser;
 
 // Managers Dashboard (untuk Admin / Kepala BPU)
-Route::prefix('managers')->middleware(['auth', 'verified', 'role:'.RoleUser::ADMIN->value.','.RoleUser::HEAD_OF_RUSUNAWA->value.','.RoleUser::STAFF_OF_RUSUNAWA->value])->group(function () {
+Route::prefix('managers')->middleware(['auth', 'verified', 'role:'.RoleUser::ADMIN->value.'|'.RoleUser::HEAD_OF_RUSUNAWA->value.'|'.RoleUser::STAFF_OF_RUSUNAWA->value])->group(function () {
     // Dashboard
     Route::view('/', 'modules.managers.overview')->name('dashboard');
 
@@ -16,7 +16,7 @@ Route::prefix('managers')->middleware(['auth', 'verified', 'role:'.RoleUser::ADM
     Volt::route('settings/appearance', 'managers.settings.appearance')->name('managers.settings.appearance');
 
     // Role: ADMIN, Kepala Rusunawa
-    Route::middleware(['role:'.RoleUser::ADMIN->value.','.RoleUser::HEAD_OF_RUSUNAWA->value])->group(function () {
+    Route::middleware(['role:'.RoleUser::ADMIN->value.'|'.RoleUser::HEAD_OF_RUSUNAWA->value])->group(function () {
          // Responses
         Route::view('occupant-verification', 'modules.managers.responses.occupant-verification')->name('occupant.verification');
         Route::view('payment-confirmation', 'modules.managers.responses.payment-confirmation')->name('payment.confirmation');
