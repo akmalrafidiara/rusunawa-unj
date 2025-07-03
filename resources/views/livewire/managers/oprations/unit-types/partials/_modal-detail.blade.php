@@ -42,6 +42,24 @@
                 @endif
             </div>
 
+            {{-- Requires Maintenance Status --}}
+            <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                    <flux:icon.wrench-screwdriver class="w-5 h-5 text-blue-500" />
+                    Informasi Pemeliharaan
+                </h4>
+                <div class="flex justify-between items-center py-2 border-b last:border-b-0">
+                    <span class="text-gray-600">Membutuhkan Pemeliharaan Rutin?</span>
+                    <span>
+                        @if ($requiresMaintenance)
+                            <x-managers.ui.badge type="success">Ya</x-managers.ui.badge>
+                        @else
+                            <x-managers.ui.badge type="danger">Tidak</x-managers.ui.badge>
+                        @endif
+                    </span>
+                </div>
+            </div>
+            
             {{-- Facilities List --}}
             <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
                 <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">

@@ -25,6 +25,7 @@ class UnitType extends Component
 
     public $facilities = []; // Pastikan ini selalu array
     public $newFacility = '';
+    public $requiresMaintenance = false;
 
     public $unitTypeData;
     public $unitPrices;
@@ -112,6 +113,7 @@ class UnitType extends Component
         $this->name = $unitType->name;
         $this->description = $unitType->description;
         $this->facilities = $unitType->facilities ?? [];
+        $this->requiresMaintenance = $unitType->requires_maintenance;
         $this->existingAttachments = $unitType->attachments()->get();
         $this->attachments = [];
         $this->attachmentsToDelete = [];
@@ -126,6 +128,7 @@ class UnitType extends Component
             'description' => 'nullable|string',
             'facilities' => 'array',
             'facilities.*' => 'string|max:255',
+            'requiresMaintenance' => 'boolean',
             'attachments.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ];
     }
@@ -145,6 +148,7 @@ class UnitType extends Component
             'name' => $this->name,
             'description' => $this->description,
             'facilities' => $this->facilities, // Laravel akan otomatis meng-encode jika di-cast di model
+            'requires_maintenance' => $this->requiresMaintenance,
         ];
 
         $unitType = UnitTypeModel::updateOrCreate(
@@ -204,6 +208,7 @@ class UnitType extends Component
         $this->name = '';
         $this->description = '';
         $this->facilities = [];
+        $this->requiresMaintenance = false;
         $this->attachments = [];
         $this->existingAttachments = [];
         $this->attachmentsToDelete = [];

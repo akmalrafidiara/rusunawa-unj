@@ -61,10 +61,20 @@ class Unit extends Model
         if ($unitClusterId) {
             $query->where('unit_cluster_id', $unitClusterId);
         }
-        
+
         return $query;
     }
-    
+
+    public function maintenanceSchedule()
+    {
+        return $this->hasOne(MaintenanceSchedule::class);
+    }
+
+    public function maintenanceRecords()
+    {
+        return $this->hasMany(MaintenanceRecord::class);
+    }
+
     protected $casts = [
         'gender_allowed' => GenderAllowed::class,
         'status' => UnitStatus::class,
