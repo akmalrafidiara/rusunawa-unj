@@ -59,6 +59,14 @@ enum GenderAllowed: string
         ], self::cases());
     }
 
+    public static function optionsWithoutGeneral(): array
+    {
+        return array_map(fn($case) => [
+            'value' => $case->value,
+            'label' => $case->label()
+        ], array_filter(self::cases(), fn($case) => $case !== self::GENERAL));
+    }
+
     public function color(): array
     {
         return match ($this) {
