@@ -12,10 +12,12 @@ class UnitType extends Model
         'name',
         'description',
         'facilities',
+        'requires_maintenance',
     ];
 
     protected $casts = [
         'facilities' => 'array',
+        'requires_maintenance' => 'boolean',
     ];
 
     public function units()
