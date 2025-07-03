@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->text('description')->nullable();
             $table->json('facilities')->nullable();
+            $table->boolean('requires_maintenance')->default(false);
             $table->timestamps();
         });
     }
