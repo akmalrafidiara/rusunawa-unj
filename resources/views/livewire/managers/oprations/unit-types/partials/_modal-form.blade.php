@@ -7,6 +7,10 @@
         <x-managers.form.label>Deskripsi Tipe</x-managers.form.label>
         <x-managers.form.textarea wire:model.live="description" rows="3" />
 
+        <x-managers.form.label>Memerlukan Pemeliharaan Rutin</x-managers.form.label>
+        <x-managers.form.checkbox wire:model.live="requiresMaintenance" label="Ya, memerlukan Pemeliharaan Rutin"
+                description="Jika diaktifkan, tipe kamar ini dapat dijadwalkan untuk pemeliharaan rutin." />
+
         <div>
             <x-managers.form.label>Fasilitas</x-managers.form.label>
             @if (!empty($facilities))
