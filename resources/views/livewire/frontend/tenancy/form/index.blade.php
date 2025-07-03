@@ -1,0 +1,74 @@
+@php
+    // Definisikan setiap langkah dalam sebuah array agar mudah dikelola
+    $steps = [
+        1 => ['title' => 'Detail Pemesanan'],
+        2 => ['title' => 'Identitas Penghuni'],
+        3 => ['title' => 'Konfirmasi Pemesanan'],
+    ];
+
+    if (!session()->has('tenancy_data')) {
+        redirect()->back();
+    }
+@endphp
+
+<div class="container mx-auto p-4 sm:p-6 mb-20">
+    <nav aria-label="breadcrumb" class="mb-4 sm:mb-6">
+        <ol class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+            <li>
+                <a href="{{ route('home') }}"
+                    class="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                    Home
+                </a>
+            </li>
+            <li class="flex items-center">
+                <flux:icon name="chevron-right" class="w-4 h-4 mx-2 text-gray-400 dark:text-gray-500" />
+                <a href="{{ $filterUrl }}"
+                    class="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                    Tenancy
+                </a>
+            </li>
+            <li class="flex items-center">
+                <flux:icon name="chevron-right" class="w-4 h-4 mx-2 text-gray-400 dark:text-gray-500" />
+
+                <a href="{{ $detailUrl }}"
+                    class="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                    {{ $unitType->name ?? 'Unit Detail' }}
+                </a>
+            </li>
+            <li class="flex items-center">
+                <flux:icon name="chevron-right" class="w-4 h-4 mx-2 text-gray-400 dark:text-gray-500" />
+                <span class="text-gray-900 dark:text-gray-100 font-medium">
+                    Form
+                </span>
+            </li>
+        </ol>
+    </nav>
+
+    <div class="container mx-auto mb-6">
+        <h1 class="text-3xl font-bold">Form Pemesanan Kamar</h1>
+        <p class="text-gray-500">Langkah {{ $currentStep ?? 1 }} dari 3 - Lengkapi
+            {{ $steps[$currentStep ?? 1]['title'] }}</p>
+    </div>
+
+    <div class="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+        {{-- Kolom Kiri: Stepper / Progress Bar --}}
+        <div class="md:col-span-1">
+            @include('livewire.frontend.tenancy.form.stepper')
+        </div>
+
+        {{-- Kolom Kanan: Konten Form Dinamis --}}
+        <div class="md:col-span-3">
+            <div class="bg-white dark:bg-zinc-800 px-6">
+                @if ($currentStep === 1)
+                    @include('livewire.frontend.tenancy.form.partials.step-1-detail')
+                @elseif ($currentStep === 2)
+                    @include('livewire.frontend.tenancy.form.partials.step-2-identity')
+                @elseif ($currentStep === 3)
+                    @include('livewire.frontend.tenancy.form.partials.step-3-confirmation')
+                @elseif ($currentStep === 4)
+                    @include('livewire.frontend.tenancy.form.partials.step-4-success    ')
+                @endif
+            </div>
+        </div>
+    </div>
+</div>
