@@ -96,13 +96,8 @@ class AvaibilityList extends Component
                 });
 
             })
-            ->withCount(['units as available_units_count' => function ($unitQuery) use ($occupantTypeId, $accessibleClusterIds) {
-                $unitQuery->where('status', 'available');
-                if ($occupantTypeId && !empty($accessibleClusterIds)) {
-                    $unitQuery->whereIn('unit_cluster_id', $accessibleClusterIds);
-                } elseif ($occupantTypeId) {
-                    $unitQuery->whereRaw('1 = 0');
-                }
+            ->withCount(['units as available_units_count' => function ($unitQuery) use ($occupantTypeId) {
+                $unitQuery->availableWithFilters(['occupantTypeId' => $occupantTypeId]);
             }])
             ->with([
                 'attachments',

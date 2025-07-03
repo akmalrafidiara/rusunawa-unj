@@ -70,6 +70,11 @@ class AvaibilityForm extends Component
     {
         $validatedData = $this->validate($this->rules());
 
+        if ($validatedData['pricingBasis'] === 'per_month') {
+            $validatedData['startDate'] = null;
+            $validatedData['endDate'] = null;
+        }
+
         $this->ed = encrypt($validatedData);
         
         if ($this->mode === 'redirect') {

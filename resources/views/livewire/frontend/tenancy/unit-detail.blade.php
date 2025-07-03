@@ -5,7 +5,7 @@ use App\Models\UnitType;
 use App\Models\OccupantType;
 
 new class extends Component {
-    public $unitType, $totalUnits, $price, $occupantType, $pricingBasis, $startDate, $endDate;
+    public $unitType, $totalUnits, $price, $occupantType, $pricingBasis, $startDate, $endDate, $totalDays, $totalPrice;
 
     public $encryptedData;
 
@@ -28,6 +28,11 @@ new class extends Component {
             ->whereHas('unitPrices', function ($query) use ($occupantTypeId, $pricingBasis) {
                 $query->where('occupant_type_id', $occupantTypeId)->where('pricing_basis', $pricingBasis);
             })
+            ->withCount([
+                'units as available_units_count' => function ($unitQuery) use ($occupantTypeId) {
+                    $unitQuery->availableWithFilters(['occupantTypeId' => $occupantTypeId]);
+                },
+            ])
             ->with([
                 'attachments',
                 'unitPrices' => function ($query) use ($occupantTypeId, $pricingBasis) {
@@ -42,12 +47,49 @@ new class extends Component {
         $this->pricingBasis = $this->unitType->unitPrices->first()->pricing_basis ?? null;
         $this->startDate = $data['startDate'] ?? null;
         $this->endDate = $data['endDate'] ?? null;
-        $this->totalUnits = $this->unitType->availableUnitsCount();
+        $this->totalUnits = $this->unitType->available_units_count;
+        $this->calculateTotalDays();
+        $this->totalPrice = $this->totalDays ? $this->price * $this->totalDays : $this->price;
+    }
+
+    public function redirectToForm()
+    {
+        session()->forget('tenancy_data');
+        session([
+            'tenancy_data' => [
+                'occupantType' => $this->occupantType->id ?? null,
+                'pricingBasis' => $this->pricingBasis ?? null,
+                'startDate' => $this->startDate ?? null,
+                'endDate' => $this->endDate ?? null,
+                'unitType' => $this->unitType->id ?? null,
+                'price' => $this->price ?? null,
+                'totalDays' => $this->totalDays ?? null,
+                'totalPrice' => $this->totalPrice ?? null,
+                'filterUrl' => route('tenancy.index', ['ed' => $this->encryptedData]),
+                'detailUrl' => route('frontend.tenancy.unit.detail', [
+                    'type' => $this->unitType->id,
+                    'ed' => $this->encryptedData,
+                ]),
+            ],
+        ]);
+
+        return redirect()->route('frontend.tenancy.form');
+    }
+
+    private function calculateTotalDays()
+    {
+        if ($this->startDate && $this->endDate) {
+            $start = \Carbon\Carbon::parse($this->startDate);
+            $end = \Carbon\Carbon::parse($this->endDate);
+            $this->totalDays = $start->diffInDays($end);
+        } else {
+            $this->totalDays = null;
+        }
     }
 };
 ?>
 
-<div class="container mx-auto p-4 sm:p-6">
+<div class="container mx-auto p-4 sm:p-6 mb-20">
     <nav aria-label="breadcrumb" class="mb-4 sm:mb-6">
         <ol class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
             <li>
@@ -58,7 +100,7 @@ new class extends Component {
             </li>
             <li class="flex items-center">
                 <flux:icon name="chevron-right" class="w-4 h-4 mx-2 text-gray-400 dark:text-gray-500" />
-                <a href="{{ route('tenancy.index') }}"
+                <a href="{{ route('tenancy.index', ['ed' => $encryptedData]) }}"
                     class="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
                     Tenancy
                 </a>
@@ -83,7 +125,7 @@ new class extends Component {
             }" class="col-span-1 lg:col-span-5 flex flex-col gap-4">
                 <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-lg shadow-md">
                     <img :src="mainImageUrl" alt="Gambar Utama {{ $unitType->name }}"
-                        class="w-full h-auto max-h-[300px] sm:max-h-[400px] object-cover rounded-lg" loading="lazy">
+                        class="w-full h-[300px] sm:max-h-[400px] object-cover rounded-lg" loading="lazy">
                 </div>
 
                 @if ($unitType->attachments->count() > 1)
@@ -178,7 +220,7 @@ new class extends Component {
             <div class="flex flex-col sm:flex-row gap-4">
                 <button
                     class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-500 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg cursor-pointer text-sm sm:text-base"
-                    onclick="alert('Fitur pemesanan akan segera tersedia!')">
+                    wire:click="redirectToForm">
                     Pesan Kamar Ini
                 </button>
 
