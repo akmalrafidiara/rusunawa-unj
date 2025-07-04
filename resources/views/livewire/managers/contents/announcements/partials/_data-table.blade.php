@@ -63,13 +63,15 @@
                 <x-managers.table.cell class="w-auto">
                     <div class="flex gap-2 justify-start">
                         {{-- Detail Button --}}
-                        <x-managers.ui.button wire:click="detail({{ $announcement->id }})" variant="info"
+                        {{-- Meneruskan slug sebagai string --}}
+                        <x-managers.ui.button wire:click="detail('{{ $announcement->slug }}')" variant="info"
                             size="sm" title="Lihat Detail Pengumuman">
                             <flux:icon.eye class="w-4" />
                         </x-managers.ui.button>
 
                         {{-- Edit Button --}}
-                        <x-managers.ui.button wire:click="edit({{ $announcement->id }})" variant="secondary"
+                        {{-- Meneruskan slug sebagai string --}}
+                        <x-managers.ui.button wire:click="edit('{{ $announcement->slug }}')" variant="secondary"
                             size="sm" title="Edit Pengumuman">
                             <flux:icon.pencil class="w-4" />
                         </x-managers.ui.button>

@@ -2,14 +2,12 @@
     {{-- Tombol Kembali --}}
     <button onclick="history.back()"
         class="inline-flex items-center text-green-600 hover:text-green-800 dark:text-white dark:hover:text-zinc-900 mb-6 font-medium">
-        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-        </svg>
+        <flux:icon name="arrow-left" class="w-4 h-4 mr-1 text-green-600 dark:text-green-400" />
         Kembali ke Halaman Sebelumnya
     </button>
 
     @if ($announcement->image)
-    <div class="w-full h-80 overflow-hidden rounded-lg mb-6">
+    <div class="overflow-hidden rounded-lg mb-6">
         <img src="{{ Storage::url($announcement->image) }}" alt="{{ $announcement->title }}" class="w-full h-full object-cover object-center">
     </div>
     @endif
@@ -58,9 +56,7 @@
                         <img src="{{ Storage::url($attachment->path) }}" alt="{{ $attachment->name }}" class="w-full h-auto object-contain max-h-96">
                     </a>
                     <div class="p-3 text-sm text-gray-700 dark:text-gray-300 font-medium break-words">
-                        <svg class="h-5 w-5 text-gray-400 dark:text-gray-500 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
+                        <flux:icon name="photo" class="h-5 w-5 text-gray-400 dark:text-gray-500 inline-block mr-1" />
                         {{ $attachment->name }}
                     </div>
                 </div>
@@ -81,23 +77,12 @@
                         {{-- Keterangan unduh dan tombol download --}}
                         <div class="flex items-center mt-2 p-2"> {{-- Tanpa bg, rounded, shadow, border --}}
                             <span class="text-sm font-medium text-gray-700 dark:text-gray-300 mr-2">Unduh:</span>
-                            {{-- Ikon File --}}
-                            @php
-                                $fileIcon = 'file';
-                                if (Str::contains($attachment->mime_type, 'pdf')) $fileIcon = 'file-pdf';
-                            @endphp
-                            <svg class="h-5 w-5 text-blue-500 dark:text-blue-400 mr-1 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                @if($fileIcon == 'file-pdf')
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                                @else
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0015.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                                @endif
-                            </svg>
+                            <flux:icon name="document" class="h-5 w-5 text-blue-500 dark:text-blue-400 mr-1 flex-shrink-0" />
                             <p class="font-medium text-sm text-gray-800 dark:text-gray-200 break-words flex-1 min-w-0 mr-3">{{ $attachment->name }}</p>
                             <a href="{{ Storage::url($attachment->path) }}" download="{{ $attachment->name }}"
                                class="text-gray-500 hover:text-green-600 dark:text-gray-400 dark:hover:text-green-500 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-zinc-700 transition duration-150 ease-in-out flex-shrink-0"
                                title="Unduh">
-                                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                <flux:icon name="arrow-down-tray" class="h-6 w-6" />
                             </a>
                         </div>
                     @else
@@ -107,26 +92,12 @@
                         </div>
                         <div class="flex items-center p-2"> {{-- Tanpa bg, rounded, shadow, border --}}
                             <span class="text-sm font-medium text-gray-700 dark:text-gray-300 mr-2">Unduh:</span>
-                            {{-- Ikon File --}}
-                            @php
-                                $fileIcon = 'file';
-                                if (Str::contains($attachment->mime_type, 'wordprocessingml') || Str::contains($attachment->mime_type, 'document')) $fileIcon = 'file-word';
-                                elseif (Str::contains($attachment->mime_type, 'spreadsheetml') || Str::contains($attachment->mime_type, 'excel')) $fileIcon = 'file-excel';
-                                elseif (Str::contains($attachment->mime_type, 'presentationml') || Str::contains($attachment->mime_type, 'powerpoint')) $fileIcon = 'file-powerpoint';
-                                elseif (Str::contains($attachment->mime_type, 'zip') || Str::contains($attachment->mime_type, 'rar')) $fileIcon = 'file-archive';
-                            @endphp
-                            <svg class="h-5 w-5 text-blue-500 dark:text-blue-400 mr-1 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                @if($fileIcon == 'file-word')
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h4l1-1v-3.25a.75.75 0 00-.75-.75h-2.5a.75.75 0 00-.75.75zM12 10.75a.75.75 0 00-.75-.75h-2.5a.75.75 0 00-.75.75V14a.75.75 0 00.75.75h2.5a.75.75 0 00.75-.75v-3.25zM15 10v4.25a.75.75 0 01-.75.75h-2.5a.75.75 0 01-.75-.75V10h4z" />
-                                @else
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0015.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                                @endif
-                            </svg>
+                            <flux:icon name="document" class="h-5 w-5 text-blue-500 dark:text-blue-400 mr-1 flex-shrink-0" />
                             <p class="font-medium text-sm text-gray-800 dark:text-gray-200 break-words flex-1 min-w-0 mr-3">{{ $attachment->name }}</p>
                             <a href="{{ Storage::url($attachment->path) }}" download="{{ $attachment->name }}"
                                class="text-gray-500 hover:text-green-600 dark:text-gray-400 dark:hover:text-green-500 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-zinc-700 transition duration-150 ease-in-out flex-shrink-0"
                                title="Unduh">
-                                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                <flux:icon name="arrow-down-tray" class="h-6 w-6" />
                             </a>
                         </div>
                     @endif

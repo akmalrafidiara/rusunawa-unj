@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('announcements', function (Blueprint $table) {
             $table->id();
             $table->string('title');
+            $table->string('slug')->unique();
             $table->text('description');
             $table->string('image')->nullable();
-            // Menambahkan kolom 'category' dengan nilai enum yang telah ditentukan
             $table->enum('category', ['important', 'appeal', 'maintenance', 'lost_and_found', 'general'])->default('general');
             $table->enum('status', ['draft', 'published', 'archived'])->default('published');
             $table->timestamps();

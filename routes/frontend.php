@@ -1,5 +1,4 @@
 <?php 
-use App\Livewire\Frontend\Announcement\ShowAnnouncement;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -16,6 +15,6 @@ Route::redirect('complaint', 'complaint/track-complaint');
     Volt::route('complaint/complaint-history', 'frontend.complaint.complaint-history')->name('complaint.complaint-history');
 
 Route::view('announcement', 'modules.frontend.announcement.index')->name('announcement.index');
-Route::get('announcement/{announcement}', ShowAnnouncement::class)->name('announcement.show');
+Route::view('announcement/{slug}', 'modules.frontend.announcement.announcement-detail')->name('announcement.show');
 
 Route::view('rules', 'modules.frontend.rules.index')->name('rules.index');

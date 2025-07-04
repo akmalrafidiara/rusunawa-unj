@@ -9,15 +9,21 @@ use Livewire\Component;
 class ShowAnnouncement extends Component
 {
     public AnnouncementModel $announcement;
-
     public $relatedAnnouncements;
+    public $slug;
 
-    public function mount(AnnouncementModel $announcement)
+    public function mount($slug) 
     {
-        $this->announcement = $announcement;
+        $this->slug = $slug;
+
+        // Temukan pengumuman berdasarkan slug
+        $this->announcement = AnnouncementModel::where('slug', $this->slug)
+                                ->where('status', AnnouncementStatus::Published->value)
+                                ->firstOrFail();
+
         $this->relatedAnnouncements = AnnouncementModel::query()
             ->where('status', AnnouncementStatus::Published->value)
-            ->where('id', '!=', $announcement->id)
+            ->where('id', '!=', $this->announcement->id)
             ->latest()
             ->limit(6)
             ->get();
@@ -25,6 +31,6 @@ class ShowAnnouncement extends Component
 
     public function render()
     {
-        return view('livewire.frontend.announcement.announcement-detail.index')->layout('components.layouts.frontend');
+        return view('livewire.frontend.announcement.announcement-detail.index');
     }
 }
