@@ -7,6 +7,7 @@ use App\Models\User;
 use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Illuminate\Support\Facades\Auth; // Import Auth facade
 
 class Users extends Component
 {
@@ -44,7 +45,20 @@ class Users extends Component
      */
     public function mount()
     {
-        $this->roleOptions = RoleUser::options();
+        // Get all role options
+        $allRoleOptions = RoleUser::options();
+
+        // If the authenticated user is 'head_of_rusunawa', filter out the 'admin' role
+        if (Auth::user()->hasRole(RoleUser::HEAD_OF_RUSUNAWA->value)) {
+            $this->roleOptions = array_filter($allRoleOptions, function ($option) {
+                return $option['value'] !== RoleUser::ADMIN->value;
+            });
+            // Re-index the array if needed
+            $this->roleOptions = array_values($this->roleOptions);
+        } else {
+            // For other roles (e.g., admin), show all options
+            $this->roleOptions = $allRoleOptions;
+        }
     }
 
     /**
@@ -56,8 +70,14 @@ class Users extends Component
     {
         $users = User::query()
             ->when($this->search, fn($q) => $q->where('name', 'like', "%{$this->search}%"))
-            ->when($this->roleFilter, fn($q) => $q->whereHas('roles', fn($r) => $r->where('name', $this->roleFilter)))
-            ->orderBy($this->orderBy, $this->sort)
+            ->when($this->roleFilter, fn($q) => $q->whereHas('roles', fn($r) => $r->where('name', $this->roleFilter)));
+
+        // If the authenticated user is 'head_of_rusunawa', hide users with 'admin' role
+        if (Auth::user()->hasRole(RoleUser::HEAD_OF_RUSUNAWA->value)) {
+            $users->whereDoesntHave('roles', fn($r) => $r->where('name', RoleUser::ADMIN->value));
+        }
+
+        $users = $users->orderBy($this->orderBy, $this->sort)
             ->paginate($this->perPage);
 
         // Use map to efficiently add wa_link to each user
@@ -107,13 +127,21 @@ class Users extends Component
      */
     public function rules()
     {
-        return [
+        // Get the rules as they are
+        $rules = [
             'name' => 'required',
             'email' => "required|email|unique:users,email,{$this->userIdBeingEdited}",
             'password' => $this->userIdBeingEdited ? 'nullable|min:6' : 'required|min:6',
             'phone' => 'nullable|string|max:15',
             'role' => 'required|exists:roles,name',
         ];
+
+        // Add a custom rule to prevent 'head_of_rusunawa' from assigning 'admin' role
+        if (Auth::user()->hasRole(RoleUser::HEAD_OF_RUSUNAWA->value)) {
+            $rules['role'] .= '|not_in:' . RoleUser::ADMIN->value;
+        }
+
+        return $rules;
     }
 
     /**
@@ -189,6 +217,17 @@ class Users extends Component
     {
         $id = $data['id'];
         $user = User::find($id);
+
+        // Prevent 'head_of_rusunawa' from deleting 'admin' users
+        if (Auth::user()->hasRole(RoleUser::HEAD_OF_RUSUNAWA->value) && $user->hasRole(RoleUser::ADMIN->value)) {
+            LivewireAlert::error()
+                ->title('Akses Ditolak!')
+                ->text('Anda tidak memiliki izin untuk menghapus pengguna dengan peran Admin.')
+                ->toast()
+                ->position('top-end')
+                ->show();
+            return;
+        }
 
         if ($user) {
             $user->delete();
