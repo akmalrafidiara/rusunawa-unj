@@ -48,6 +48,11 @@ class Contact extends Component
         $this->email = optional(Content::where('content_key', 'contact_email')->first())->content_value ?? '';
     }
 
+    public function render()
+    {
+        return view('livewire.managers.contents.contacts.index');
+    }
+
     public function save()
     {
         try {
@@ -88,10 +93,5 @@ class Contact extends Component
             ->toast()
             ->position('top-end')
             ->show();
-    }
-
-    public function render()
-    {
-        return view('livewire.managers.contents.contacts.index');
     }
 }
