@@ -179,7 +179,7 @@ $adminSidebarMenu = [
                 'icon' => 'document-text',
                 'label' => __('Tata Tertib'),
                 'route' => route('regulations'),
-                'current' => request()->routeIs('requlations'),
+                'current' => request()->routeIs('regulations'),
                 'badge' => null,
             ],
             [
