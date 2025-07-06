@@ -1,10 +1,6 @@
 {{-- Modal Form Gallery --}}
 <x-managers.ui.modal title="Form Galeri" :show="$showModal" class="max-w-md">
     <form wire:submit.prevent="save" class="space-y-4">
-        <!-- Caption -->
-        <x-managers.form.label>Caption</x-managers.form.label>
-        <x-managers.form.input wire:model.live="caption" placeholder="Masukkan caption gambar..." />
-
         <!-- Upload Gambar -->
         <x-managers.form.label>Gambar</x-managers.form.label>
         @if ($image)
@@ -34,6 +30,14 @@
             <x-managers.form.small>Max 2MB. JPG, PNG, GIF</x-managers.form.small>
         @enderror
 
+        <!-- Caption -->
+        <x-managers.form.label>Deskripsi Gambar <span class="text-red-500">*</span></x-managers.form.label>
+        <x-managers.form.input 
+            wire:model.live="caption" 
+            placeholder="Masukkan deskripsi gambar..." 
+            :error="$errors->first('caption')"
+        />
+        
         <!-- Tombol Aksi -->
         <div class="flex justify-end gap-2 mt-10">
             <x-managers.ui.button type="button" variant="secondary"
