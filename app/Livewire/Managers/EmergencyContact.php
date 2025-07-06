@@ -49,6 +49,28 @@ class EmergencyContact extends Component
         'sort' => ['except' => 'desc'],
     ];
 
+    protected $messages = [
+        'name.required' => 'Nama kontak darurat harus diisi.',
+        'role.required' => 'Peran kontak darurat harus dipilih.',
+        'phone.required' => 'Nomor telepon kontak darurat harus diisi.',
+        'address.max' => 'Alamat tidak boleh lebih dari 500 karakter.',
+    ];
+
+    /**
+     * Rules for validation.
+     *
+     * @return array
+     */
+    public function rules()
+    {
+        return [
+            'name' => 'required|string|max:255',
+            'role' => ['required', Rule::in(EmergencyContactRole::values())],
+            'phone' => 'required|string|max:20',
+            'address' => 'nullable|string|max:500',
+        ];
+    }
+
     /**
      * Initialize the component.
      */
@@ -124,21 +146,6 @@ class EmergencyContact extends Component
         // Filling detail
         $this->createdAt = $contact->created_at;
         $this->updatedAt = $contact->updated_at;
-    }
-
-    /**
-     * Rules for validation.
-     *
-     * @return array
-     */
-    public function rules()
-    {
-        return [
-            'name' => 'required|string|max:255',
-            'role' => ['required', Rule::in(EmergencyContactRole::values())],
-            'phone' => 'required|string|max:20', // Sesuaikan aturan validasi telepon
-            'address' => 'nullable|string|max:500',
-        ];
     }
 
     /**

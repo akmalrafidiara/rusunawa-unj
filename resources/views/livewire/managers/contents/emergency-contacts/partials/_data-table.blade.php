@@ -20,12 +20,12 @@
 
                 {{-- Telepon --}}
                 <x-managers.table.cell>
-                    <span class="text-sm text-gray-700">{{ $contact->phone }}</span>
+                    <span class="text-sm text-gray-700 dark:text-gray-200">{{ $contact->phone }}</span>
                 </x-managers.table.cell>
 
                 {{-- Alamat --}}
                 <x-managers.table.cell>
-                    <span class="text-sm text-gray-700" style="word-break: break-word;">
+                    <span class="text-sm text-gray-700 dark:text-gray-200" style="word-break: break-word;">
                         {{ \Illuminate\Support\Str::limit($contact->address, 70, '...') }}
                     </span>
                 </x-managers.table.cell>
