@@ -30,7 +30,7 @@
                 <x-managers.ui.dropdown-picker wire:model.live="statusFilter" :options="$statusOptions" label="Semua Status"
                     wire:key="dropdown-status" />
 
-                {{-- Filter Kategori (Tambahkan bagian ini) --}}
+                {{-- Filter Kategori --}}
                 <x-managers.ui.dropdown-picker wire:model.live="categoryFilter" :options="$categoryOptions" label="Semua Kategori"
                     wire:key="dropdown-category" />
             </div>
