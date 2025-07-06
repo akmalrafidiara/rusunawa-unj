@@ -29,7 +29,7 @@
                         @endphp
                         @if ($whatsappLink)
                             <a href="{{ $whatsappLink }}" target="_blank" rel="noopener noreferrer"
-                                class="flex items-center text-sm text-gray-700 hover:text-green-600 transition duration-150 ease-in-out">
+                                class="flex items-center text-sm text-gray-700 dark:text-gray-200 hover:text-green-600 transition duration-150 ease-in-out">
                                 <flux:icon.phone class="w-5 h-5 mr-1 text-green-500" />
                                 {{ $question->formPhoneNumber ?? '-' }}
                             </a>
@@ -45,17 +45,17 @@
                         @endphp
                         @if ($emailLink)
                             <a href="{{ $emailLink }}"
-                                class="flex items-center text-sm text-gray-700 hover:text-blue-600 transition duration-150 ease-in-out">
+                                class="flex items-center text-sm text-gray-700 dark:text-gray-200 hover:text-blue-600 transition duration-150 ease-in-out">
                                 <flux:icon.envelope class="w-5 h-5 mr-1 text-blue-500" />
                                 {{ $question->formEmail ?? '-' }}
                             </a>
                         @else
-                            <span class="text-sm text-gray-700">{{ $question->formEmail ?? '-' }}</span>
+                            <span class="text-sm text-gray-700 dark:text-gray-200">{{ $question->formEmail ?? '-' }}</span>
                         @endif
                     </x-managers.table.cell>
 
                     <x-managers.table.cell class="w-3/5">
-                        <span class="text-sm text-gray-700" style="word-break: break-word;">
+                        <span class="text-sm text-gray-700 dark:text-gray-200" style="word-break: break-word;">
                             {{ $question->message }}
                         </span>
                     </x-managers.table.cell>
