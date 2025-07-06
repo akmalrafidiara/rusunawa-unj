@@ -3,9 +3,11 @@
     <x-managers.ui.card class="p-4 h-full flex flex-col">
         <div class="flex justify-between items-center mb-4">
             <h4 class="text-lg font-bold text-gray-800 dark:text-white">Daftar Kamar AC</h4>
-            <x-managers.ui.button wire:click="createSchedule" variant="primary" size="sm">
-                Buat Jadwal AC Baru
-            </x-managers.ui.button>
+            @if (!$is_admin_user) {{-- Conditionally hide "Buat Jadwal AC Baru" button for admin --}}
+                <x-managers.ui.button wire:click="createSchedule" variant="primary" size="sm">
+                    Buat Jadwal AC Baru
+                </x-managers.ui.button>
+            @endif
         </div>
         <div class="flex flex-col gap-3 overflow-y-auto pr-2" style="max-height: 70vh;">
             @forelse ($schedules as $schedule)
@@ -36,6 +38,6 @@
                 <p class="text-center text-gray-500 dark:text-gray-400">Tidak ada jadwal pemeliharaan AC ditemukan.</p>
             @endforelse
         </div>
-        {{ $schedules->links() }}
+        <x-managers.ui.pagination :paginator="$schedules" class="mt-2" />
     </x-managers.ui.card>
 </div>

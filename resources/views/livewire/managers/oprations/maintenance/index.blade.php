@@ -13,6 +13,7 @@
     </div>
 
     {{-- Modals --}}
-    @include('livewire.managers.oprations.maintenance.partials._modal-form')
+    @include('livewire.managers.oprations.maintenance.partials._modal-form-schedule')
+    @include('livewire.managers.oprations.maintenance.partials._modal-form-record')
     @include('livewire.managers.oprations.maintenance.partials._modal-detail')
 </div>
