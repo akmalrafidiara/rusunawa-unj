@@ -1,5 +1,5 @@
 <x-managers.ui.card class="p-0">
-    <x-managers.table.table :headers="['Prioritas', 'Judul Regulasi', 'Isi Regulasi', 'Aksi']">
+    <x-managers.table.table :headers="['Prioritas', 'Judul', 'Isi Pasal', 'Aksi']">
         <x-managers.table.body>
             @forelse ($regulations as $regulation) 
             <x-managers.table.row wire:key="{{ $regulation->id }}">
