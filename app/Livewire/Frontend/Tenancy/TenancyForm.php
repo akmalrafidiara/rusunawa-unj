@@ -31,9 +31,6 @@ class TenancyForm extends Component
     public
         $totalUnits = 0;
 
-    #[Rule('required', message: 'Silakan pilih unit kamar terlebih dahulu.')]
-    public $unitId;
-
     public
         $genderSelected = GenderAllowed::MALE->value,
         $unitClusterSelectedId;
@@ -42,9 +39,20 @@ class TenancyForm extends Component
         $genderAllowedOptions,
         $unitClusterOptions,
         $unitOptions;
+ 
+    // STEP 1 
+    #[Rule('required', message: 'Silakan pilih unit kamar terlebih dahulu.')]
+    public $unitId;
+
+    // STEP 2
+    
 
     public function mount()
     {
+        if (!session()->has('tenancy_data')) {
+            return redirect()->route('home');
+        }
+
         $tenancyData = session('tenancy_data', []);
 
         $this->occupantType = isset($tenancyData['occupantType']) ? OccupantType::find($tenancyData['occupantType']) : null;
