@@ -8,13 +8,12 @@ use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 
 class Location extends Component
 {
-    public $mainLocationTitle;    // Judul Lokasi Kami
-    public $subLocationTitle;     // Subjudul Lokasi Kami
-    public $locationAddress;      // Alamat
-    public $locationEmbedLink;    // Link Embed Lokasi
-
-    public $newNearbyLocation = ''; // Input untuk menambahkan lokasi terdekat baru
-    public $nearbyLocations = [];   // Array untuk menyimpan daftar lokasi terdekat
+    public $mainLocationTitle;
+    public $subLocationTitle;     
+    public $locationAddress;      
+    public $locationEmbedLink;    
+    public $newNearbyLocation = ''; 
+    public $nearbyLocations = [];  
 
     protected $rules = [
         'mainLocationTitle' => 'required|string|max:255',
@@ -64,8 +63,11 @@ class Location extends Component
 
         $nearbyLocationsContent = optional(Content::where('content_key', 'location_nearby_locations')->first())->content_value;
         $this->nearbyLocations = is_array($nearbyLocationsContent) ? $nearbyLocationsContent : [];
+    }
 
-        // HAPUS PENGURUTAN: sort($this->nearbyLocations);
+    public function render()
+    {
+        return view('livewire.managers.contents.locations.index');
     }
 
     public function addNearbyLocation()
@@ -78,7 +80,6 @@ class Location extends Component
         if (!empty($this->newNearbyLocation) && !in_array($normalizedNewLocation, $normalizedExistingLocations)) {
             $this->nearbyLocations[] = trim($this->newNearbyLocation);
             $this->newNearbyLocation = '';
-            // HAPUS PENGURUTAN: sort($this->nearbyLocations);
 
             LivewireAlert::title('Lokasi terdekat berhasil ditambahkan!')
                 ->success()
@@ -99,8 +100,7 @@ class Location extends Component
     {
         if (isset($this->nearbyLocations[$index])) {
             unset($this->nearbyLocations[$index]);
-            $this->nearbyLocations = array_values($this->nearbyLocations); // Re-index array setelah penghapusan
-            // HAPUS PENGURUTAN: sort($this->nearbyLocations);
+            $this->nearbyLocations = array_values($this->nearbyLocations);
 
             LivewireAlert::title('Lokasi terdekat berhasil dihapus!')
                 ->info()
@@ -144,10 +144,5 @@ class Location extends Component
             ->toast()
             ->position('top-end')
             ->show();
-    }
-
-    public function render()
-    {
-        return view('livewire.managers.contents.locations.index');
     }
 }

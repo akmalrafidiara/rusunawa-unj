@@ -26,27 +26,27 @@ class Announcement extends Component
         $title,
         $description,
         $status,
-        $category, // Tambahkan properti category
+        $category,
         $createdAt,
         $updatedAt;
 
     // Single image upload property for 'image' column
-    public $image; // Ini akan menampung 1 file gambar yang diunggah
-    public $existingImage; // Untuk menampilkan path gambar yang sudah ada
+    public $image;
+    public $existingImage;
 
     // File upload properties for attachments (morphMany)
-    public $attachments = []; // Ini akan menampung array file (gambar atau non-gambar)
-    public $existingAttachments = []; // Untuk menampilkan file lampiran yang sudah ada
-    public $attachmentsToDelete = []; // Untuk melacak lampiran yang akan dihapus
+    public $attachments = [];
+    public $existingAttachments = [];
+    public $attachmentsToDelete = [];
 
     // Options properties
     public $statusOptions;
-    public $categoryOptions; // Tambahkan properti categoryOptions
+    public $categoryOptions;
 
     // Filter properties
     public $search = '';
     public $statusFilter = '';
-    public $categoryFilter = ''; // Tambahkan properti categoryFilter
+    public $categoryFilter = '';
 
     // Pagination and sorting properties
     public $perPage = 10;
@@ -62,10 +62,53 @@ class Announcement extends Component
     protected $queryString = [
         'search' => ['except' => ''],
         'statusFilter' => ['except' => ''],
-        'categoryFilter' => ['except' => ''], // Tambahkan categoryFilter ke query string
+        'categoryFilter' => ['except' => ''],
         'perPage' => ['except' => 10],
         'orderBy' => ['except' => 'created_at'],
         'sort' => ['except' => 'desc'],
+    ];
+
+    // listener untuk event dari Trix editor
+    protected $listeners = ['contentChanged' => 'updateDescription'];
+
+    /**
+     * Rules for validation.
+     *
+     * @return array
+     */
+    public function rules()
+    {
+        return [
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'status' => ['required', Rule::in(AnnouncementStatus::values())],
+            'category' => ['required', Rule::in(AnnouncementCategory::values())],
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'attachments.*' => 'nullable|file|max:5120',
+        ];
+    }
+
+    // PESAN VALIDASI DALAM BAHASA INDONESIA
+    protected $messages = [
+        'title.required' => 'Judul pengumuman wajib diisi.',
+        'title.string' => 'Judul pengumuman harus berupa teks.',
+        'title.max' => 'Judul pengumuman tidak boleh lebih dari :max karakter.',
+
+        'description.string' => 'Deskripsi pengumuman harus berupa teks.',
+
+        'status.required' => 'Status pengumuman wajib dipilih.',
+        'status.in' => 'Status pengumuman tidak valid.',
+
+        'category.required' => 'Kategori pengumuman wajib dipilih.',
+        'category.in' => 'Kategori pengumuman tidak valid.',
+
+        'image.required' => 'Gambar Banner pengumuman wajib diunggah.',
+        'image.image' => 'File harus berupa gambar.',
+        'image.mimes' => 'Format gambar yang diizinkan adalah JPEG, PNG, JPG, GIF, atau WEBP.',
+        'image.max' => 'Ukuran gambar tidak boleh lebih dari 2MB.',
+
+        'attachments.*.file' => 'File harus berupa dokumen.',
+        'attachments.*.max' => 'Ukuran file tidak boleh lebih dari 5MB.',
     ];
 
     /**
@@ -74,15 +117,7 @@ class Announcement extends Component
     public function mount()
     {
         $this->statusOptions = AnnouncementStatus::options();
-        $this->categoryOptions = AnnouncementCategory::options(); // Muat opsi kategori
-    }
-
-    // Tambahkan listener untuk event dari Trix editor
-    protected $listeners = ['contentChanged' => 'updateDescription'];
-
-    public function updateDescription($content)
-    {
-        $this->description = $content;
+        $this->categoryOptions = AnnouncementCategory::options();
     }
 
     /**
@@ -95,9 +130,9 @@ class Announcement extends Component
         $announcements = AnnouncementModel::query()
             ->when($this->search, fn($q) => $q->where('title', 'like', "%{$this->search}%"))
             ->when($this->statusFilter, fn($q) => $q->where("status", $this->statusFilter))
-            ->when($this->categoryFilter, fn($q) => $q->where("category", $this->categoryFilter)) // Tambahkan filter kategori
+            ->when($this->categoryFilter, fn($q) => $q->where("category", $this->categoryFilter))
             ->orderBy($this->orderBy, $this->sort)
-            ->paginate($this->perPage); // Menggunakan $this->perPage
+            ->paginate($this->perPage);
 
         return view('livewire.managers.contents.announcements.index', compact('announcements'));
     }
@@ -124,8 +159,12 @@ class Announcement extends Component
         $this->modalType = 'form';
         $this->showModal = true;
 
-        // Penting: Emit event setelah data dimuat untuk menginisialisasi Trix
         $this->dispatch('trix-load-content', $this->description);
+    }
+
+    public function updateDescription($content)
+    {
+        $this->description = $content;
     }
 
     /**
@@ -152,39 +191,22 @@ class Announcement extends Component
         $this->title = $announcement->title;
         $this->description = $announcement->description;
         $this->status = $announcement->status->value;
-        $this->category = $announcement->category->value; // Isi category
+        $this->category = $announcement->category->value;
 
         // Filling single image data
-        $this->existingImage = $announcement->image; // Assuming 'image' column stores the path
+        $this->existingImage = $announcement->image; 
 
         // Filling attachments data
         $this->existingAttachments = $announcement->attachments()->get();
 
         // Reset image/file arrays
-        $this->image = null; // Pastikan ini di-reset
-        $this->attachments = []; // Pastikan ini di-reset
+        $this->image = null;
+        $this->attachments = [];
         $this->attachmentsToDelete = [];
 
         // Filling detail
         $this->createdAt = $announcement->created_at;
         $this->updatedAt = $announcement->updated_at;
-    }
-
-    /**
-     * Rules for validation.
-     *
-     * @return array
-     */
-    public function rules()
-    {
-        return [
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'status' => ['required', Rule::in(AnnouncementStatus::values())],
-            'category' => ['required', Rule::in(AnnouncementCategory::values())], // Tambahkan validasi category
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048', // Hanya 1 gambar, format gambar
-            'attachments.*' => 'nullable|file|max:5120', // Bisa lebih dari satu, bisa gambar atau file lain
-        ];
     }
 
     /**
@@ -222,6 +244,63 @@ class Announcement extends Component
     }
 
     /**
+     * Handles deleting attachments marked for removal.
+     * @param AnnouncementModel $announcement
+     */
+    private function handleAttachmentDeletions(AnnouncementModel $announcement)
+    {
+        if (!empty($this->attachmentsToDelete)) {
+            $attachments = Attachment::whereIn('id', $this->attachmentsToDelete)->get();
+            foreach ($attachments as $attachment) {
+                Storage::disk('public')->delete($attachment->path);
+                $attachment->delete();
+            }
+        }
+    }
+
+    /**
+     * Handles newly uploaded attachments.
+     * @param AnnouncementModel $announcement
+     */
+    private function handleAttachmentUploads(AnnouncementModel $announcement)
+    {
+        if (!empty($this->attachments)) {
+            foreach ($this->attachments as $file) {
+                // Tentukan folder penyimpanan berdasarkan tipe file
+                $path = '';
+                if (str_starts_with($file->getMimeType(), 'image/')) {
+                    $path = $file->store('attachments/images', 'public'); // Simpan gambar di folder images
+                } else {
+                    $path = $file->store('attachments/files', 'public'); // Simpan file lain di folder files
+                }
+
+                $announcement->attachments()->create([
+                    'name' => $file->getClientOriginalName(),
+                    'file_name' => basename($path),
+                    'mime_type' => $file->getMimeType(),
+                    'path' => $path,
+                ]);
+            }
+        }
+    }
+
+    /**
+     * Remove an attachment from the attachments array for deletion.
+     *
+     * @param int $attachmentId
+     */
+    public function queueAttachmentForDeletion($attachmentId)
+    {
+        if (!in_array($attachmentId, $this->attachmentsToDelete)) {
+            $this->attachmentsToDelete[] = $attachmentId;
+        }
+
+        $this->existingAttachments = collect($this->existingAttachments)->reject(function ($attachment) use ($attachmentId) {
+            return $attachment['id'] == $attachmentId;
+        })->values();
+    }
+
+    /**
      * Save the announcement data.
      * This method is called when the form is submitted.
      */
@@ -246,10 +325,8 @@ class Announcement extends Component
             }
             $data['image'] = $this->image->store('images/announcements', 'public');
         } elseif ($this->announcementIdBeingEdited && $this->existingImage && !$this->image) {
-            // Pertahankan gambar yang sudah ada jika tidak diganti dan ini adalah operasi update
             $data['image'] = $this->existingImage;
         } else {
-            // Jika membuat dan tidak ada gambar, atau memperbarui dan gambar dihapus
             $data['image'] = null;
         }
 
@@ -266,10 +343,10 @@ class Announcement extends Component
 
         // Flash message
         LivewireAlert::title($this->announcementIdBeingEdited ? 'Data berhasil diperbarui.' : 'Pengumuman berhasil ditambahkan.')
-        ->success()
-        ->toast()
-        ->position('top-end')
-        ->show();
+            ->success()
+            ->toast()
+            ->position('top-end')
+            ->show();
 
         // Reset form and close modal
         $this->resetForm();
@@ -283,7 +360,7 @@ class Announcement extends Component
      */
     public function confirmDelete($data)
     {
-        LivewireAlert::title('Hapus pengumuman "'. $data['title'] . '"?')
+        LivewireAlert::title('Hapus pengumuman "' . $data['title'] . '"?')
             ->text('Apakah Anda yakin ingin menghapus pengumuman ini?')
             ->question()
             ->withCancelButton('Batalkan')
@@ -414,7 +491,7 @@ class Announcement extends Component
         $this->title = '';
         $this->description = '';
         $this->status = '';
-        $this->category = ''; // Reset category
+        $this->category = '';
         $this->image = null;
         $this->existingImage = null;
         $this->attachments = [];
@@ -425,64 +502,6 @@ class Announcement extends Component
         $this->resetErrorBag();
         $this->resetValidation();
 
-        // Emit event untuk mereset Trix editor di sisi client
         $this->dispatch('trix-reset');
-    }
-
-    /**
-     * Handles deleting attachments marked for removal.
-     * @param AnnouncementModel $announcement
-     */
-    private function handleAttachmentDeletions(AnnouncementModel $announcement)
-    {
-        if (!empty($this->attachmentsToDelete)) {
-            $attachments = Attachment::whereIn('id', $this->attachmentsToDelete)->get();
-            foreach ($attachments as $attachment) {
-                Storage::disk('public')->delete($attachment->path);
-                $attachment->delete();
-            }
-        }
-    }
-
-    /**
-     * Handles newly uploaded attachments.
-     * @param AnnouncementModel $announcement
-     */
-    private function handleAttachmentUploads(AnnouncementModel $announcement)
-    {
-        if (!empty($this->attachments)) {
-            foreach ($this->attachments as $file) {
-                // Tentukan folder penyimpanan berdasarkan tipe file
-                $path = '';
-                if (str_starts_with($file->getMimeType(), 'image/')) {
-                    $path = $file->store('attachments/images', 'public'); // Simpan gambar di folder images
-                } else {
-                    $path = $file->store('attachments/files', 'public'); // Simpan file lain di folder files
-                }
-
-                $announcement->attachments()->create([
-                    'name' => $file->getClientOriginalName(),
-                    'file_name' => basename($path),
-                    'mime_type' => $file->getMimeType(),
-                    'path' => $path,
-                ]);
-            }
-        }
-    }
-
-    /**
-     * Remove an attachment from the attachments array for deletion.
-     *
-     * @param int $attachmentId
-     */
-    public function queueAttachmentForDeletion($attachmentId)
-    {
-        if (!in_array($attachmentId, $this->attachmentsToDelete)) {
-            $this->attachmentsToDelete[] = $attachmentId;
-        }
-
-        $this->existingAttachments = collect($this->existingAttachments)->reject(function ($attachment) use ($attachmentId) {
-            return $attachment['id'] == $attachmentId;
-        })->values();
     }
 }

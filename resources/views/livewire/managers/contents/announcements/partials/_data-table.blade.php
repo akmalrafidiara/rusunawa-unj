@@ -3,13 +3,13 @@
         <x-managers.table.body>
             @forelse ($announcements as $announcement)
             <x-managers.table.row wire:key="{{ $announcement->id }}">
-                {{-- Judul (diperbesar jadi w-1/4 atau 25%) --}}
-                <x-managers.table.cell class="w-1/4"> {{-- Ubah width agar ada ruang untuk kategori --}}
+                {{-- Judul --}}
+                <x-managers.table.cell class="w-1/4">
                     <span class="font-bold" style="word-break: break-word;">{{ $announcement->title }}</span>
                 </x-managers.table.cell>
 
-                {{-- Kategori (ukuran baru) --}}
-                <x-managers.table.cell class="w-1/12"> {{-- Sesuaikan lebar kolom --}}
+                {{-- Kategori --}}
+                <x-managers.table.cell class="w-1/12">
                     @php
                     $categoryEnum = \App\Enums\AnnouncementCategory::tryFrom($announcement->category->value);
                     @endphp
@@ -18,7 +18,7 @@
                     </x-managers.ui.badge>
                 </x-managers.table.cell>
 
-                {{-- Status (sedikit mengecil jadi w-1/12 atau ~8.33%) --}}
+                {{-- Status --}}
                 <x-managers.table.cell class="w-1/12">
                     @php
                     $statusEnum = \App\Enums\AnnouncementStatus::tryFrom($announcement->status->value);
@@ -28,15 +28,15 @@
                     </x-managers.ui.badge>
                 </x-managers.table.cell>
 
-                {{-- Tanggal Dibuat (sedikit mengecil jadi w-1/6 atau ~16.67%) --}}
+                {{-- Tanggal Dibuat --}}
                 <x-managers.table.cell class="w-1/6">
-                    <span class="text-sm text-gray-700">
+                    <span class="text-sm text-gray-700 dark:text-gray-200">
                         {{ $announcement->created_at->format('d M Y, H:i') }}
                     </span>
                 </x-managers.table.cell>
 
-                {{-- Deskripsi (sedikit mengecil jadi w-1/4 atau ~25%, disesuaikan setelah penambahan kategori) --}}
-                <x-managers.table.cell class="w-1/4"> {{-- Ubah width agar ada ruang untuk kategori --}}
+                {{-- Deskripsi --}}
+                <x-managers.table.cell class="w-1/4">
                     <div class="trix-content" style="word-break: break-word;">
                         @php
                         $description = $announcement->description;
@@ -59,18 +59,16 @@
                     </div>
                 </x-managers.table.cell>
 
-                {{-- Aksi (tetap w-auto) --}}
+                {{-- Aksi --}}
                 <x-managers.table.cell class="w-auto">
                     <div class="flex gap-2 justify-start">
                         {{-- Detail Button --}}
-                        {{-- Meneruskan slug sebagai string --}}
                         <x-managers.ui.button wire:click="detail('{{ $announcement->slug }}')" variant="info"
                             size="sm" title="Lihat Detail Pengumuman">
                             <flux:icon.eye class="w-4" />
                         </x-managers.ui.button>
 
                         {{-- Edit Button --}}
-                        {{-- Meneruskan slug sebagai string --}}
                         <x-managers.ui.button wire:click="edit('{{ $announcement->slug }}')" variant="secondary"
                             size="sm" title="Edit Pengumuman">
                             <flux:icon.pencil class="w-4" />

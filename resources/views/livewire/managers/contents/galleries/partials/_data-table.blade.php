@@ -1,6 +1,6 @@
 <x-managers.ui.card class="p-0">
     {{-- Perbarui header tabel --}}
-    <x-managers.table.table :headers="['Prioritas', 'Gambar', 'Caption', 'Aksi']">
+    <x-managers.table.table :headers="['Prioritas', 'Gambar', 'Deskripsi Gambar', 'Aksi']">
         <x-managers.table.body>
             @forelse ($galleries as $gallery)
             <x-managers.table.row wire:key="{{ $gallery->id }}">
@@ -35,7 +35,7 @@
                     <img src="{{ asset('storage/' . $gallery->image) }}" alt="{{ $gallery->caption }}"
                         class="w-20 h-20 object-cover rounded">
                     @else
-                    <span class="text-gray-500">Tidak ada gambar</span>
+                    <span class="text-gray-500 dark:text-gray-200">Tidak ada gambar</span>
                     @endif
                 </x-managers.table.cell>
 

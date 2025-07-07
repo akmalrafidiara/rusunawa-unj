@@ -27,9 +27,35 @@ class Galleries extends Component
 
     protected $queryString = [
         'search' => ['except' => ''],
-        'orderBy' => ['except' => 'priority'], // Ubah default 'created_at' ke 'priority'
+        'orderBy' => ['except' => 'priority'],
         'sort' => ['except' => 'asc'],
     ];
+
+    public function rules()
+    {
+        return [
+            'caption' => 'required|string|max:255',
+            'image' => $this->galleryIdBeingEdited && $this->image === $this->temporaryImage
+                ? 'nullable'
+                : 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ];
+    }
+
+    // PESAN VALIDASI DALAM BAHASA INDONESIA
+    protected $messages = [
+        'caption.required' => 'Kolom Deskripsi Gambar wajib diisi.',
+        'caption.string' => 'Deskripsi Gambar harus berupa teks.',
+        'caption.max' => 'Deskripsi Gambar tidak boleh lebih dari :max karakter.',
+    ];
+
+    public function mount()
+    {
+        $this->image = '';
+        $this->temporaryImage = '';
+        $this->caption = '';
+        $this->galleryIdBeingEdited = null;
+        $this->maxPriority = GalleryModel::max('priority') ?? 0;
+    }
 
     public function render()
     {
@@ -56,18 +82,8 @@ class Galleries extends Component
         $this->galleryIdBeingEdited = $gallery->id;
         $this->caption = $gallery->caption;
         $this->image = $gallery->image;
-        $this->temporaryImage = $gallery->image; // Ini akan menyimpan nama file lama
+        $this->temporaryImage = $gallery->image;
         $this->showModal = true;
-    }
-
-    public function rules()
-    {
-        return [
-            'caption' => 'required|string|max:255',
-            'image' => $this->galleryIdBeingEdited && $this->image === $this->temporaryImage
-                ? 'nullable'
-                : 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ];
     }
 
     public function validateUploadedFile()
@@ -92,31 +108,25 @@ class Galleries extends Component
         ];
 
         // Logic untuk menghandle gambar
-        // Jika ada gambar baru diupload ATAU gambar lama dihapus (dikosongkan)
-        if ($this->image instanceof TemporaryUploadedFile) { // Jika ada file baru diupload
-            // Hapus gambar lama jika ada saat mode edit
+        if ($this->image instanceof TemporaryUploadedFile) {
             if ($this->galleryIdBeingEdited && $this->temporaryImage) {
                 Storage::disk('public')->delete($this->temporaryImage);
             }
             $data['image'] = $this->image->store('galleries', 'public');
         } elseif ($this->galleryIdBeingEdited && empty($this->image) && $this->temporaryImage) {
-            // Jika dalam mode edit, image dikosongkan (dihapus), dan sebelumnya ada gambar
             Storage::disk('public')->delete($this->temporaryImage);
-            $data['image'] = null; // Set image di DB menjadi null
+            $data['image'] = null;
         } elseif ($this->galleryIdBeingEdited && !empty($this->temporaryImage) && $this->image === $this->temporaryImage) {
-             // Jika dalam mode edit, tidak ada perubahan pada gambar
              $data['image'] = $this->temporaryImage;
         } else {
-            $data['image'] = null; // Jika ini mode create dan tidak ada gambar diupload, atau edit dan gambar kosong
+            $data['image'] = null;
         }
 
         // --- Logika Priority Ditambahkan di Sini ---
         if (!$this->galleryIdBeingEdited) {
             $maxPriority = GalleryModel::max('priority');
-            // Jika tidak ada galeri, prioritas dimulai dari 1. Jika ada, prioritas maksimum + 1.
             $data['priority'] = ($maxPriority !== null) ? $maxPriority + 1 : 1;
         }
-        // --- Akhir Logika Priority ---
 
         GalleryModel::updateOrCreate(
             ['id' => $this->galleryIdBeingEdited],
@@ -152,9 +162,8 @@ class Galleries extends Component
             if ($gallery->image) {
                 Storage::disk('public')->delete($gallery->image);
             }
-            // --- Logika Priority Saat Menghapus ---
             GalleryModel::where('priority', '>', $gallery->priority)->decrement('priority');
-            // --- Akhir Logika Priority ---
+
             $gallery->delete();
 
             LivewireAlert::title('Berhasil Dihapus')
@@ -166,7 +175,7 @@ class Galleries extends Component
         }
     }
 
-    // --- Metode Prioritas (moveUp, moveDown) Ditambahkan ---
+    //  Prioritas (moveUp, moveDown)
     public function moveUp(GalleryModel $gallery)
     {
         $previousGallery = GalleryModel::where('priority', '<', $gallery->priority)
@@ -196,7 +205,6 @@ class Galleries extends Component
             LivewireAlert::success('Prioritas berhasil diubah.')->toast()->position('top-end');
         }
     }
-    // --- Akhir Metode Prioritas ---
 
     public function resetForm()
     {

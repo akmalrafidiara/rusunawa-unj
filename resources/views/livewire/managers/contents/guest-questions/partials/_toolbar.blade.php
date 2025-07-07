@@ -7,8 +7,7 @@
         {{-- Dropdown for Filters and Sorting --}}
         <x-managers.ui.dropdown class="flex flex-col gap-2">
             <x-slot name="trigger">
-                <flux:icon.adjustments-horizontal
-                    class="w-5 h-5 text-gray-600 hover:text-gray-800 transition duration-150 ease-in-out" />
+                <flux:icon.adjustments-horizontal/>
             </x-slot>
             @php
                 // Options for filtering by read status
@@ -31,14 +30,14 @@
 
             {{-- Read Status Filter --}}
             <x-managers.form.small>Status Baca</x-managers.form.small>
-            <div class="flex gap-2 p-2 rounded-md bg-white">
+            <div class="flex gap-2 p-2 rounded-md">
                 <x-managers.ui.dropdown-picker wire:model.live="readFilter" :options="$readFilterOptions"
                     label="Semua Status" wire:key="dropdown-read-filter" disabled/>
             </div>
 
             {{-- Sort Filter --}}
             <x-managers.form.small>Urutkan</x-managers.form.small>
-            <div class="flex gap-2 p-2 rounded-md bg-white">
+            <div class="flex gap-2 p-2 rounded-md">
                 <x-managers.ui.dropdown-picker wire:model.live="orderBy" :options="$orderByOptions"
                     label="Urutkan Berdasarkan" wire:key="dropdown-order-by" disabled />
 

@@ -69,6 +69,11 @@ class About extends Component
         $this->dayaTariks = is_array($dayaTariksContent) ? $dayaTariksContent : [];
     }
 
+    public function render()
+    {
+        return view('livewire.managers.contents.abouts.index');
+    }
+
     public function addDayaTarik() // Mengubah nama metode dari addFacility menjadi addDayaTarik
     {
         $this->validateOnly('newDayaTarik');
@@ -182,10 +187,5 @@ class About extends Component
             ->toast()
             ->position('top-end')
             ->show();
-    }
-
-    public function render()
-    {
-        return view('livewire.managers.contents.abouts.index');
     }
 }

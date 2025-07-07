@@ -1,11 +1,12 @@
 <x-managers.ui.modal title="Form FAQ" :show="$showModal" class="max-w-3xl">
     <form wire:submit.prevent="save" class="space-y-4">
-        <x-managers.form.label>Pertanyaan</x-managers.form.label>
-        <x-managers.form.input wire:model.live="question" placeholder="Masukkan pertanyaan..." />
-        @error('question') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+        <x-managers.form.label>Pertanyaan <span class="text-red-500">*</span></x-managers.form.label>
+        <x-managers.form.input 
+            wire:model.live="question" 
+            placeholder="Masukkan pertanyaan..." 
+            :error="$errors->first('question')" />
 
-        <x-managers.form.label class="mt-4">Jawaban</x-managers.form.label>
-        {{-- Ganti textarea dengan input Trix --}}
+        <x-managers.form.label class="mt-4">Jawaban <span class="text-red-500">*</span></x-managers.form.label>
         <div wire:ignore>
             <input id="answer-trix-editor" type="hidden" name="content" value="{{ $answer }}">
             <trix-editor input="answer-trix-editor" class="trix-content"></trix-editor>

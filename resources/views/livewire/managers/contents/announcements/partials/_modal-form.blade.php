@@ -1,14 +1,14 @@
 {{-- Modal Create/Edit --}}
 <x-managers.ui.modal title="Form Pengumuman" :show="$showModal && $modalType === 'form'" class="max-w-3xl">
     <form wire:submit.prevent="save" class="space-y-4">
-        <x-managers.form.label for="title">Judul Pengumuman</x-managers.form.label>
-        <x-managers.form.input wire:model.live="title" placeholder="Masukkan judul pengumuman" id="title" />
-        @error('title')
-        <span class="text-red-500 text-sm">{{ $message }}</span>
-        @enderror
+        <x-managers.form.label for="title">Judul Pengumuman <span class="text-red-500">*</span></x-managers.form.label>
+        <x-managers.form.input wire:model.live="title" 
+            placeholder="Masukkan judul pengumuman" 
+            id="title" 
+            :error="$errors->first('title')"
+        />
 
         <x-managers.form.label for="description">Isi Pengumuman</x-managers.form.label>
-        {{-- Ganti textarea dengan input Trix --}}
         <div wire:ignore>
             <input id="description-trix-editor" type="hidden" name="content" value="{{ $description }}">
             <trix-editor input="description-trix-editor" class="trix-content"></trix-editor>
@@ -17,21 +17,25 @@
         <span class="text-red-500 text-sm">{{ $message }}</span>
         @enderror
 
-        {{-- Input Kategori Pengumuman (Tambahkan bagian ini) --}}
-        <x-managers.form.label for="category">Kategori Pengumuman</x-managers.form.label>
-        <x-managers.form.select wire:model.live="category" :options="$categoryOptions" label="Pilih Kategori" id="category" />
-        @error('category')
-        <span class="text-red-500 text-sm">{{ $message }}</span>
-        @enderror
+        {{-- Input Kategori Pengumuman --}}
+        <x-managers.form.label for="category">Kategori Pengumuman <span class="text-red-500">*</span></x-managers.form.label>
+        <x-managers.form.select wire:model.live="category" 
+            :options="$categoryOptions" 
+            label="Pilih Kategori" 
+            id="category"
+            :error="$errors->first('category')" 
+        />
 
-        <x-managers.form.label for="status">Status Pengumuman</x-managers.form.label>
-        <x-managers.form.select wire:model.live="status" :options="$statusOptions" label="Pilih Status" id="status" />
-        @error('status')
-        <span class="text-red-500 text-sm">{{ $message }}</span>
-        @enderror
+        <x-managers.form.label for="status">Status Pengumuman <span class="text-red-500">*</span></x-managers.form.label>
+        <x-managers.form.select wire:model.live="status" 
+            :options="$statusOptions" 
+            label="Pilih Status" 
+            id="status" 
+            :error="$errors->first('status')"
+        />
 
-        {{-- Single Image for 'image' column --}}
-        <x-managers.form.label>Gambar Banner</x-managers.form.label>
+        {{-- Gambar banner pengumuman --}}
+        <x-managers.form.label>Gambar Banner <span class="text-red-500">*</span></x-managers.form.label>
         @if ($existingImage && !$image)
         <div class="relative w-full h-56 mb-2">
             <img src="{{ asset('storage/' . $existingImage) }}" alt="Gambar Utama"
@@ -52,7 +56,7 @@
         </div>
         @endif
 
-        {{-- Filepond for single image --}}
+        {{-- Filepond --}}
         <div wire:key="filepond-image-wrapper">
             <x-filepond::upload
             wire:model.live="image"
@@ -68,7 +72,7 @@
         <x-managers.form.small>Max 2MB. Tipe: JPG, PNG, GIF, WEBP. Hanya satu gambar.</x-managers.form.small>
         @enderror
 
-        {{-- Attachments for 'attachments' morphMany --}}
+        {{-- Lampiran (bisa lebih dari 1) --}}
         <x-managers.form.label>Lampiran (Gambar atau File Pendukung)</x-managers.form.label>
 
         {{-- Existing Attachments while Editing --}}

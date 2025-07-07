@@ -3,8 +3,8 @@
         <!-- Page Title -->
         <x-managers.ui.page-title title="Layanan Pengaduan"
             subtitle="Kelola data referensi Layanan Pengaduan untuk digunakan sebagai sarana informasi" />
-    </div>
-
-    {{-- Dynamic Content - Layanan Pengduan --}}
+        
+        {{-- Dynamic Content - Layanan Pengaduan --}}
         <livewire:managers.complaintpagecontent />
+    </div>
 </x-layouts.managers>

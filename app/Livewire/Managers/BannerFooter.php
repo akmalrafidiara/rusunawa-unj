@@ -110,6 +110,11 @@ class BannerFooter extends Component
         $this->footerText = optional(Content::where('content_key', 'footer_text')->first())->content_value ?? '';
     }
 
+    public function render()
+    {
+        return view('livewire.managers.contents.banner-footer.index');
+    }
+
     public function addDayaTarik()
     {
         $this->validate([
@@ -281,10 +286,5 @@ class BannerFooter extends Component
             ->toast()
             ->position('top-end')
             ->show();
-    }
-
-    public function render()
-    {
-        return view('livewire.managers.contents.banner-footer.index');
     }
 }

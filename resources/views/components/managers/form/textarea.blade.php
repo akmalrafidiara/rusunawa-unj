@@ -1,4 +1,4 @@
-@props(['rows' => 3])
+@props(['rows' => 3, 'placeholder' => ''])
 
 @php
     // Ambil nama field dari wire:model
@@ -12,7 +12,7 @@
 @endphp
 
 <div class="w-full">
-    <textarea wire:model="{{ $wireModel }}" rows="{{ $rows }}"
+    <textarea wire:model="{{ $wireModel }}" rows="{{ $rows }}" placeholder="{{ $placeholder }}"
         class="w-full min-h-30 {{ $error ? 'border-red-500' : 'border-gray-500' }} bg-transparent dark:text-white rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200">{{ $value }}</textarea>
 
     @if ($error)

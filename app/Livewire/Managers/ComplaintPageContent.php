@@ -33,7 +33,7 @@ class ComplaintPageContent extends Component
 
     // PESAN VALIDASI DALAM BAHASA INDONESIA
     protected $messages = [
-        'complaintTitle.required' => 'Kolom Judul Pengaduan wajib diisi.',
+        'complaintTitle.required' => 'Kolom Judul Layanan Pengaduan wajib diisi.',
         'complaintTitle.string' => 'Judul Pengaduan harus berupa teks.',
         'complaintTitle.max' => 'Judul Pengaduan tidak boleh lebih dari :max karakter.',
 
@@ -66,6 +66,11 @@ class ComplaintPageContent extends Component
 
         $advantagesContent = optional(Content::where('content_key', 'complaint_service_advantages')->first())->content_value;
         $this->advantages = is_array($advantagesContent) ? $advantagesContent : [];
+    }
+
+    public function render()
+    {
+        return view('livewire.managers.contents.complaint-page-content.index'); 
     }
 
     public function addAdvantage()
@@ -169,10 +174,5 @@ class ComplaintPageContent extends Component
             ->toast()
             ->position('top-end')
             ->show();
-    }
-
-    public function render()
-    {
-        return view('livewire.managers.contents.complaint-page-content.index'); 
     }
 }

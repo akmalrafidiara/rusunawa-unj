@@ -35,9 +35,34 @@ class Regulation extends Component
     // Tambahkan listener untuk event dari Trix editor
     protected $listeners = ['contentChanged' => 'updateContent'];
 
-    public function updateContent($content)
+    public function rules()
     {
-        $this->content = $content;
+        return [
+            'title' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('regulations')->ignore($this->regulationIdBeingEdited),
+            ],
+            'content' => 'required|string',
+        ];
+    }
+
+    protected $messages = [
+        'title.required' => 'Kolom judul Tata Tertib wajib diisi.',
+        'title.string' => 'Judul harus berupa teks.',
+        'title.max' => 'Judul tidak boleh lebih dari :max karakter.',
+        'title.unique' => 'Judul ini sudah ada dalam daftar regulasi.',
+        'content.required' => 'Kolom isi pasal wajib diisi.',
+        'content.string' => 'Isi pasal harus berupa teks.',
+    ];
+
+    public function mount()
+    {
+        $this->title = '';
+        $this->content = '';
+        $this->regulationIdBeingEdited = null;
+        $this->maxPriority = RegulationModel::max('priority') ?? 0;
     }
 
     public function render()
@@ -45,10 +70,8 @@ class Regulation extends Component
         $regulations = RegulationModel::query()
             ->when($this->search, fn($q) => $q->where('title', 'like', "%{$this->search}%"))
             ->when($this->contentFilter, fn($q) => $q->where('content', 'like', "%{$this->contentFilter}%"))
-            ->orderBy($this->orderBy, $this->sort) // Order berdasarkan priority
+            ->orderBy($this->orderBy, $this->sort)
             ->paginate(10);
-
-        // Ambil prioritas maksimum, jika tidak ada, default ke 0
         $this->maxPriority = RegulationModel::max('priority') ?? 0;
 
         return view('livewire.managers.contents.regulation.index', compact('regulations'));
@@ -68,21 +91,12 @@ class Regulation extends Component
         $this->content = $regulation->content;
         $this->showModal = true;
 
-        // Penting: Emit event setelah data dimuat untuk menginisialisasi Trix
         $this->dispatch('trix-load-content', $this->content);
     }
 
-    public function rules()
+    public function updateContent($content)
     {
-        return [
-            'title' => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('regulations')->ignore($this->regulationIdBeingEdited),
-            ],
-            'content' => 'required|string',
-        ];
+        $this->content = $content;
     }
 
     public function save()
@@ -94,10 +108,9 @@ class Regulation extends Component
             'content' => $this->content,
         ];
 
-        // Logika prioritas kembali di sini
+        // Logika prioritas
         if (!$this->regulationIdBeingEdited) {
             $maxPriority = RegulationModel::max('priority');
-            // Jika tidak ada regulasi, prioritas dimulai dari 1. Jika ada, prioritas maksimum + 1.
             $data['priority'] = ($maxPriority !== null) ? $maxPriority + 1 : 1;
         }
 
@@ -132,7 +145,6 @@ class Regulation extends Component
         $id = $data['id'];
         $regulation = RegulationModel::find($id);
         if ($regulation) {
-            // Dekremen prioritas hanya untuk regulasi yang prioritasnya lebih besar dari regulasi yang dihapus
             RegulationModel::where('priority', '>', $regulation->priority)->decrement('priority');
             $regulation->delete();
 
@@ -145,10 +157,9 @@ class Regulation extends Component
         }
     }
 
-    // Metode moveUp dan moveDown kembali diaktifkan
+    // Metode moveUp dan moveDown
     public function moveUp(RegulationModel $regulation)
     {
-        // Temukan regulasi sebelumnya dengan prioritas lebih kecil dari regulasi saat ini
         $previousRegulation = RegulationModel::where('priority', '<', $regulation->priority)
                                         ->orderBy('priority', 'desc')
                                         ->first();
@@ -164,7 +175,6 @@ class Regulation extends Component
 
     public function moveDown(RegulationModel $regulation)
     {
-        // Temukan regulasi berikutnya dengan prioritas lebih besar dari regulasi saat ini
         $nextRegulation = RegulationModel::where('priority', '>', $regulation->priority)
                                     ->orderBy('priority', 'asc')
                                     ->first();
@@ -181,7 +191,6 @@ class Regulation extends Component
     public function resetForm()
     {
         $this->reset(['title', 'content', 'regulationIdBeingEdited']);
-        // Emit event untuk mereset Trix editor di sisi client
         $this->dispatch('trix-reset');
     }
 }
