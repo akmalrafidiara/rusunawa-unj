@@ -3,8 +3,9 @@
 use Livewire\Volt\Component;
 use Livewire\Attributes\Layout;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Title;
 
-new #[Layout('components.layouts.frontend')] class extends Component
+new #[Layout('components.layouts.frontend'), Title('Rusunawa UNJ | Pengaduan Berjalan')] class extends Component
 {
     public function with(): array
     {

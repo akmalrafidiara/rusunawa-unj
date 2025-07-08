@@ -2,8 +2,9 @@
 
 use Livewire\Volt\Component;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 
-new #[Layout('components.layouts.frontend')] class extends Component {
+new #[Layout('components.layouts.frontend'), Title('Rusunawa UNJ | Lacak Pengaduan')] class extends Component {
     //
 }; ?>
 

@@ -1,4 +1,4 @@
-<x-layouts.frontend>
+<x-layouts.frontend :title="__('Rusunawa UNJ')">
     {{-- Banner Section --}}
     <section id="banner" class="relative h-[400px] sm:h-[400px] md:h-[650px] lg:h-[700px] mb-10 sm:mb-20">
         <div class="w-full h-full">

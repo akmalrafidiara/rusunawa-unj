@@ -1,4 +1,5 @@
-<x-layouts.frontend>
+<x-layouts.frontend :title="__('Rusunawa UNJ | Tata Tertib')">
+    {{-- Banner Section --}}
     <div class="relative w-full h-40 bg-cover bg-center mb-10 lg:mb-15"
         style="background-image: url('{{ asset('images/banner-image-rules.jpg') }}');">
         {{-- Gradient Overlay --}}

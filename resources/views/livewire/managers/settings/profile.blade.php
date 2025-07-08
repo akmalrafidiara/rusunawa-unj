@@ -6,8 +6,9 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
 use Livewire\Volt\Component;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 
-new #[Layout('components.layouts.managers')] class extends Component {
+new #[Layout('components.layouts.managers'), Title('Dashboard | Pengaturan Akun - Profil')] class extends Component {
     public string $name = '';
     public string $email = '';
 

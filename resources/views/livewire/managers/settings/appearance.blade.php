@@ -2,8 +2,9 @@
 
 use Livewire\Volt\Component;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 
-new #[Layout('components.layouts.managers')] class extends Component {
+new #[Layout('components.layouts.managers'), Title('Dashboard | Pengaturan Akun - Mode Tampilan')] class extends Component {
     //
 }; ?>
 

@@ -6,8 +6,9 @@ use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
 use Livewire\Volt\Component;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 
-new #[Layout('components.layouts.managers')] class extends Component {
+new #[Layout('components.layouts.managers'), Title('Dashboard | Pengaturan Akun - Kata Sandi')] class extends Component {
     public string $current_password = '';
     public string $password = '';
     public string $password_confirmation = '';
