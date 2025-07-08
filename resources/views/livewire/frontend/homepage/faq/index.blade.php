@@ -43,11 +43,8 @@ $toggleFaq = function ($faqId) {
                     {{-- Menggunakan grid untuk memisahkan pertanyaan dan ikon --}}
                     <div class="grid grid-cols-[1fr_auto] items-center gap-4">
                         <span class="pr-4">{{ $faq->question }}</span>
-                        <svg class="w-6 h-6 transform transition-transform duration-300
-                            {{ $openFaqId === $faq->id ? 'rotate-180 text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-zinc-400' }}"
-                            fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                        </svg>
+                        <flux:icon name="chevron-down" class="w-6 h-6 transform transition-transform duration-300
+                            {{ $openFaqId === $faq->id ? 'rotate-180 text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-zinc-400' }}" />
                     </div>
                 </button>
                 @if ($openFaqId === $faq->id)

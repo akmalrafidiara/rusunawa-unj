@@ -29,14 +29,11 @@ mount(function () {
     </p>
 
     {{-- Detail Kontak dengan Ikon --}}
-    <ul class="space-y-4 text-gray-700 dark:text-zinc-100"> {{-- Tambahkan dark:text-zinc-100 di sini --}}
+    <ul class="space-y-4 text-gray-700 dark:text-zinc-100">
         @if ($phoneNumber)
             <li class="flex items-center">
                 {{-- Icon telepon --}}
-                <div class="p-2 rounded-full mr-3 flex-shrink-0
-                            bg-white shadow-md             {{-- Light mode defaults --}}
-                            dark:bg-zinc-900 dark:shadow-none {{-- Dark mode overrides, shadow removed --}}
-                ">
+                <div class="p-2 rounded-full mr-3 flex-shrink-0 bg-white shadow-md dark:bg-zinc-900 dark:shadow-none">
                     <flux:icon name="phone" class="w-6 h-6 text-green-600 dark:text-green-400" />
                 </div>
                 <span class="text-base md:text-lg">{{ $phoneNumber }}</span>
@@ -45,13 +42,8 @@ mount(function () {
         @if ($email)
             <li class="flex items-center">
                 {{-- Icon email --}}
-                <div class="p-2 rounded-full mr-3 flex-shrink-0
-                            bg-white shadow-md             {{-- Light mode defaults --}}
-                            dark:bg-zinc-900 dark:shadow-none {{-- Dark mode overrides, shadow removed --}}
-                ">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m-1 12H4a2 2 0 01-2-2V6a2 2 0 012-2h16a2 2 0 012 2v12a2 2 0 01-2 2z" />
-                    </svg>
+                <div class="p-2 rounded-full mr-3 flex-shrink-0 bg-white shadow-md dark:bg-zinc-900 dark:shadow-none">
+                    <flux:icon name="envelope" class="w-6 h-6 text-green-600 dark:text-green-400" />
                 </div>
                 <span class="text-base md:text-lg">{{ $email }}</span>
             </li>
@@ -59,10 +51,7 @@ mount(function () {
         @if ($address)
             <li class="flex items-center">
                 {{-- Icon alamat --}}
-                <div class="p-2 rounded-full mr-3 flex-shrink-0
-                            bg-white shadow-md             {{-- Light mode defaults --}}
-                            dark:bg-zinc-900 dark:shadow-none {{-- Dark mode overrides, shadow removed --}}
-                ">
+                <div class="p-2 rounded-full mr-3 flex-shrink-0 bg-white shadow-md dark:bg-zinc-900 dark:shadow-none">
                     <flux:icon name="map-pin" class="w-6 h-6 text-green-600 dark:text-green-400" />
                 </div>
                 <span class="text-base md:text-lg">{{ $address }}</span>

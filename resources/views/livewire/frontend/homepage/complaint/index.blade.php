@@ -75,9 +75,7 @@ mount(function () {
                     @foreach ($advantages as $advantage)
                         <div class="flex items-center text-sm transform transition-transform duration-200 hover:scale-105">
                             <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center mr-3 {{ $advantage['color'] }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-white">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                                </svg>
+                                <flux:icon name="check" class="w-5 h-5 text-white" />
                             </div>
                             <div class="flex-grow bg-white dark:bg-zinc-900 p-3 rounded-2xl shadow-md border border-gray-100 dark:border-zinc-900">
                                 <p class="text-gray-800 dark:text-zinc-100 font-semibold text-m leading-snug text-justify">

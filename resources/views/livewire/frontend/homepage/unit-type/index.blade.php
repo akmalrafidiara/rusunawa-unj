@@ -10,9 +10,7 @@
                                 text-green-600 hover:text-green-800 dark:text-green-500 dark:hover:text-green-400
         ">
             Sewa Sekarang
-            <svg class="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-            </svg>
+            <flux:icon name="arrow-right" class="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform duration-200" />
         </a>
     </div>
 

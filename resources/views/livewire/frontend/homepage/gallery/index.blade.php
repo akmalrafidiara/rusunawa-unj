@@ -226,9 +226,7 @@ $scrollGallery = function ($directionOrIndex) {
                        bg-white shadow-md hover:bg-gray-100
                        dark:bg-zinc-900 dark:shadow-none dark:hover:bg-zinc-700
                 ">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 text-green-700 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                </svg>
+                <flux:icon name="chevron-left" class="h-5 w-5 sm:h-6 sm:w-6 text-green-700 dark:text-green-400" />
             </button>
         </div>
         <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:pr-4">
@@ -237,9 +235,7 @@ $scrollGallery = function ($directionOrIndex) {
                        bg-white shadow-md hover:bg-gray-100
                        dark:bg-zinc-900 dark:shadow-none dark:hover:bg-zinc-700
                 ">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 text-green-700 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
+                <flux:icon name="chevron-right" class="h-5 w-5 sm:h-6 sm:w-6 text-green-700 dark:text-green-400" />
             </button>
         </div>
         @endif

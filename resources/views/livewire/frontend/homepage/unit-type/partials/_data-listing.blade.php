@@ -73,11 +73,8 @@ mount(function () {
                 <div class="flex items-center text-sm mb-4
                              text-gray-600 dark:text-zinc-300
                 ">
-                    <svg class="w-4 h-4 mr-1
-                                 text-gray-500 dark:text-zinc-400
-                    " fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m0 0l-7 7m7-7v10a1 1 0 01-1 1h-3m-6 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
+                    <flux:icon name="home-modern" class="w-4 h-4 mr-1 text-gray-500 dark:text-zinc-400" />
+                    <flux:icon name="check-circle" class="w-4 h-4 mr-1 text-gray-500 dark:text-zinc-400" />
                     <span>
                         <span class="font-bold text-green-600 dark:text-green-400">{{ $unitType['available_rooms_count'] }}</span> kamar tersedia dari total
                         <span class="font-bold text-green-600 dark:text-green-400">{{ $unitType['total_rooms_count'] }}</span> kamar
@@ -92,11 +89,6 @@ mount(function () {
                            dark:bg-green-500 dark:hover:bg-green-600 dark:text-white dark:shadow-none
                 ">
                     Lihat Detail Kamar
-                    <svg class="w-4 h-4 ml-2
-                                 text-white dark:text-white {{-- Ikon dalam tombol selalu putih --}}
-                    " fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
                 </button>
             </div>
         </div>

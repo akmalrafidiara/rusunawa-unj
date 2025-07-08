@@ -125,17 +125,10 @@ mount(function () {
                     @foreach ($dayaTariks as $dayaTarik)
                         <div class="flex items-center text-sm transform transition-transform duration-200 hover:scale-105">
                             <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center mr-3 {{ $dayaTarik['color'] }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-white">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                                </svg>
+                                <flux:icon name="check" class="w-5 h-5 text-white" />
                             </div>
-                            <div class="flex-grow p-3 rounded-2xl
-                                        bg-white shadow-md border border-gray-100
-                                        dark:bg-zinc-900 dark:shadow-none dark:border-zinc-700
-                            ">
-                                <p class="font-semibold text-m leading-snug
-                                          text-gray-800 dark:text-zinc-100
-                                ">
+                            <div class="flex-grow p-3 rounded-2xl bg-white shadow-md border border-gray-100 dark:bg-zinc-900 dark:shadow-none dark:border-zinc-700">
+                                <p class="font-semibold text-m leading-snug text-gray-800 dark:text-zinc-100">
                                     {{ $dayaTarik['text'] }}
                                 </p>
                             </div>
@@ -148,9 +141,7 @@ mount(function () {
             <div class="sm:pl-4">
                 <a href="#contact"
                    class="inline-flex items-center justify-center font-semibold py-3 px-8 rounded-full transition duration-300 ease-in-out transform hover:scale-105
-                          bg-green-600 hover:bg-green-700 text-white shadow-lg
-                          dark:bg-green-500 dark:hover:bg-green-600 dark:text-white dark:shadow-none
-                ">
+                          bg-green-600 hover:bg-green-700 text-white shadow-lg dark:bg-green-500 dark:hover:bg-green-600 dark:text-white dark:shadow-none">
                     Hubungi Kami
                 </a>
             </div>
