@@ -1,3 +1,11 @@
+<?php
+
+use App\Models\Content;
+
+$LogoTitle = optional(Content::where('content_key', 'logo_title')->first())->content_value ?? '';
+
+?>
+
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
 
@@ -14,11 +22,10 @@
             <div class="absolute top-8 left-12 z-20 hidden lg:block">
                 <a href="{{ route('home') }}" class="flex items-center font-medium" wire:navigate>
                     <span class="flex h-25 w-25 items-center justify-center rounded-md">
-                        <x-default.app-logo-icon class="size-20 fill-current text-white" />
+                        <x-default.app-logo-icon/>
                     </span>
                     <span class="sr-only">{{ config('app.name', 'Laravel') }}</span>
-                    {{-- Tambahkan teks "Rusunawa UNJ" di sini --}}
-                    <span class="ml-2 text-xl font-semibold text-black dark:text-white">Rusunawa UNJ</span>
+                    <span class="ml-2 text-xl font-semibold text-black dark:text-white">{{$LogoTitle}}</span>
                 </a>
             </div>
 
@@ -45,7 +52,7 @@
                     </span>
                     <span class="sr-only">{{ config('app.name', 'Laravel') }}</span>
                 </a>
-                <span class="-mt-6 px-2 text-black text-xl font-semibold">Rusunawa UNJ</span>
+                <span class="-mt-6 px-2 text-black text-xl font-semibold">{{$LogoTitle}}</span>
             </div>
         </div>
 

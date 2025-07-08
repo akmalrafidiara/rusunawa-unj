@@ -8,11 +8,17 @@ use Livewire\WithFileUploads;
 use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
+use Livewire\Livewire;
 
 class BannerFooter extends Component
 {
     use WithFileUploads;
 
+    // Assets Logo
+    public $logoImage;
+    public $existingLogoImageUrl;
+    public $logoTitle;
+    
     // Banner Properties
     public $bannerTitle;
     public $bannerText;
@@ -77,6 +83,14 @@ class BannerFooter extends Component
         'footerText.required' => 'Kolom Teks Footer wajib diisi.',
         'footerText.string' => 'Teks Footer harus berupa teks.',
         'footerText.max' => 'Teks Footer tidak boleh lebih dari :max karakter.',
+
+        'logoImage.required' => 'Logo wajib diunggah.',
+        'logoImage.image' => 'File logo harus berupa gambar.',
+        'logoImage.max' => 'Ukuran logo tidak boleh lebih dari 2MB.',
+        'logoImage.mimes' => 'Format logo yang diizinkan adalah JPG, JPEG, atau PNG.',
+        'logoTitle.required' => 'Kolom Judul Logo wajib diisi.',
+        'logoTitle.string' => 'Judul Logo harus berupa teks.',
+        'logoTitle.max' => 'Judul Logo tidak boleh lebih dari :max karakter.',
     ];
 
 
@@ -104,6 +118,8 @@ class BannerFooter extends Component
             return !empty($item['value']) || !empty($item['label']);
         })->toArray();
 
+        $this->existingLogoImageUrl = optional(Content::where('content_key', 'logo_image_url')->first())->content_value ?? '';
+        $this->logoTitle = optional(Content::where('content_key', 'logo_title')->first())->content_value ?? '';
         $this->existingBannerImageUrl = optional(Content::where('content_key', 'banner_image_url')->first())->content_value ?? '';
         $this->existingFooterLogoUrl = optional(Content::where('content_key', 'footer_logo_url')->first())->content_value ?? '';
         $this->footerTitle = optional(Content::where('content_key', 'footer_title')->first())->content_value ?? '';
@@ -163,6 +179,56 @@ class BannerFooter extends Component
         LivewireAlert::title('Daya tarik berhasil dihapus dari daftar!')
             ->info()
             ->text('Jangan lupa klik tombol "Update" untuk menyimpan perubahan ke database.')
+            ->toast()
+            ->position('top-end')
+            ->show();
+    }
+
+    public function saveLogo()
+    {
+        // Aturan validasi khusus untuk Logo
+        $logoRules = [
+            'logoTitle' => 'required|string|max:255',
+        ];
+
+        // Tambahkan aturan validasi untuk logoImage jika diperlukan
+        if (!$this->logoImage && empty($this->existingLogoImageUrl)) {
+            $logoRules['logoImage'] = 'required|image|max:2048|mimes:jpg,jpeg,png';
+        } else {
+            $logoRules['logoImage'] = 'nullable|image|max:2048|mimes:jpg,jpeg,png';
+        }
+
+        try {
+            $this->validate($logoRules); // Hanya validasi properti logo
+        } catch (ValidationException $e) {
+            LivewireAlert::error()
+            ->title('Mohon lengkapi semua data yang wajib diisi pada bagian Logo!')
+            ->text('Harap periksa kembali kolom yang bertanda merah.')
+            ->toast()
+            ->position('top-end')
+            ->show();
+            throw $e;
+        }
+
+        if ($this->logoImage) {
+            $imagePath = $this->logoImage->store('uploads/logo', 'public');
+            $imageUrl = Storage::url($imagePath);
+
+            Content::updateOrCreate(
+            ['content_key' => 'logo_image_url'],
+            ['content_value' => $imageUrl, 'content_type' => 'image_url']
+            );
+            $this->existingLogoImageUrl = $imageUrl;
+            $this->logoImage = null;
+        }
+
+        Content::updateOrCreate(
+            ['content_key' => 'logo_title'],
+            ['content_value' => $this->logoTitle, 'content_type' => 'text']
+        );
+
+        LivewireAlert::title('Konten Logo berhasil diperbarui!')
+            ->success()
             ->toast()
             ->position('top-end')
             ->show();

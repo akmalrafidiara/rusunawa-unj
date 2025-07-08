@@ -1,4 +1,9 @@
-@php
+<?php
+
+use App\Models\Content;
+
+$LogoTitle = optional(Content::where('content_key', 'logo_title')->first())->content_value ?? '';
+
 $navMenu = [
 'home' => [
     'label' => 'Beranda',
@@ -26,14 +31,16 @@ $navMenu = [
     'active' => request()->routeIs('rules.index'),
 ],
 ];
-@endphp
+?>
 
 <div x-data="{ open: false }" class="bg-white dark:bg-zinc-800 shadow-md">
     <div class="container mx-auto flex items-center justify-between py-4 px-6">
         {{-- Logo --}}
         <a href="/" class="flex items-center space-x-2">
-            <img src="{{ asset('images/bpu-unj-logo.png') }}" alt="Rusunawa UNJ" class="h-8">
-            <span class="font-bold text-lg text-gray-800 dark:text-white hidden md:inline">Rusunawa UNJ</span>
+            <span class="flex h-8">
+                <x-default.app-logo-icon/>
+            </span>
+            <span class="font-bold text-lg text-gray-800 dark:text-white hidden md:inline">{{$LogoTitle}}</span>
         </a>
 
         {{-- Desktop Navigation and User Menu --}}
