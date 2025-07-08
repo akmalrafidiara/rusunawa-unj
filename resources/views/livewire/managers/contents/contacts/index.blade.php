@@ -71,6 +71,18 @@
                 </div>
             </div>
 
+            <div class="mb-3">
+                <x-managers.form.label for="mapAddressInput">Link Maps Alamat <span class='text-red-500'>*</span></x-managers.form.label>
+                <x-managers.form.input
+                    id="mapAddressInput"
+                    type="text"
+                    wire:model="map_address"
+                    placeholder="https://maps.google.com/?q=Jl.+Pemuda+No.+10,+Rawamangun,+Jakarta+Timur,+Dki+Jakarta+13220"
+                    :error="$errors->first('map_address')"
+                    class="placeholder-gray-400"
+                />
+            </div>
+
             {{-- Tombol Update --}}
             <div class="flex justify-end">
                 <x-managers.ui.button variant="primary" type="submit">

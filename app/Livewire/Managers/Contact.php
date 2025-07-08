@@ -13,12 +13,14 @@ class Contact extends Component
     public $operationalHours;
     public $address;
     public $email;
+    public $map_address;
 
     protected $rules = [
         'phoneNumber' => 'required|numeric|max_digits:20',
         'operationalHours' => 'required|string|max:100',
         'address' => 'required|string|max:200',
         'email' => 'required|email|max:255',
+        'map_address' => 'required|string|max:255',
     ];
 
     // PESAN VALIDASI DALAM BAHASA INDONESIA
@@ -38,6 +40,10 @@ class Contact extends Component
         'email.required' => 'Kolom Email wajib diisi.',
         'email.email' => 'Format Email tidak valid. Harap masukkan alamat email yang benar.',
         'email.max' => 'Email tidak boleh lebih dari :max karakter.',
+
+        'map_address.required' => 'Kolom Alamat Peta wajib diisi.',
+        'map_address.string' => 'Alamat Peta harus berupa teks.',
+        'map_address.max' => 'Alamat Peta tidak boleh lebih dari :max karakter.',
     ];
 
     public function mount()
@@ -46,6 +52,7 @@ class Contact extends Component
         $this->operationalHours = optional(Content::where('content_key', 'contact_operational_hours')->first())->content_value ?? '';
         $this->address = optional(Content::where('content_key', 'contact_address')->first())->content_value ?? '';
         $this->email = optional(Content::where('content_key', 'contact_email')->first())->content_value ?? '';
+        $this->map_address = optional(Content::where('content_key', 'contact_map_address')->first())->content_value ?? '';
     }
 
     public function render()
@@ -86,6 +93,11 @@ class Contact extends Component
         Content::updateOrCreate(
             ['content_key' => 'contact_email'],
             ['content_value' => $this->email, 'content_type' => 'email']
+        );
+
+        Content::updateOrCreate(
+            ['content_key' => 'contact_map_address'],
+            ['content_value' => $this->map_address, 'content_type' => 'text']
         );
 
         LivewireAlert::title('Konten Kontak berhasil diperbarui!')

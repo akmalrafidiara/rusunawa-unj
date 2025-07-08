@@ -33,5 +33,10 @@ class ContactContentSeeder extends Seeder
             ['content_key' => 'contact_operational_hours'],
             ['content_value' => 'Senin - Jumat, 08:00 - 16:00', 'content_type' => 'text']
         );
+
+        Content::updateOrCreate(
+            ['content_key' => 'contact_map_address'],
+            ['content_value' => 'https://maps.app.goo.gl/bFRobYRCj8yBsqqU7', 'content_type' => 'text']
+        );
     }
 }

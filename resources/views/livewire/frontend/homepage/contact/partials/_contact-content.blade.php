@@ -7,6 +7,7 @@ state([
     'phoneNumber' => '',
     'email' => '',
     'address' => '',
+    'map_address' => '',
 ]);
 
 mount(function () {
@@ -14,6 +15,7 @@ mount(function () {
     $this->phoneNumber = optional(Content::where('content_key', 'contact_phone_number')->first())->content_value ?? 'Data belum tersedia';
     $this->email = optional(Content::where('content_key', 'contact_email')->first())->content_value ?? 'Data belum tersedia';
     $this->address = optional(Content::where('content_key', 'contact_address')->first())->content_value ?? 'Data belum tersedia';
+    $this->map_address = optional(Content::where('content_key', 'contact_map_address')->first())->content_value ?? 'Data belum tersedia';
 });
 
 ?>
@@ -36,7 +38,7 @@ mount(function () {
                 <div class="p-2 rounded-full mr-3 flex-shrink-0 bg-white shadow-md dark:bg-zinc-900 dark:shadow-none">
                     <flux:icon name="phone" class="w-6 h-6 text-green-600 dark:text-green-400" />
                 </div>
-                <span class="text-base md:text-lg">{{ $phoneNumber }}</span>
+                <a href="https://wa.me/{{ preg_replace('/^0/', '62', preg_replace('/[^0-9]/', '', $phoneNumber)) }}" onclick="window.open(this.href); return false;" class="text-base md:text-lg hover:text-green-600 dark:hover:text-green-500 transition-colors duration-200">{{ $phoneNumber }}</a>
             </li>
         @endif
         @if ($email)
@@ -45,7 +47,7 @@ mount(function () {
                 <div class="p-2 rounded-full mr-3 flex-shrink-0 bg-white shadow-md dark:bg-zinc-900 dark:shadow-none">
                     <flux:icon name="envelope" class="w-6 h-6 text-green-600 dark:text-green-400" />
                 </div>
-                <span class="text-base md:text-lg">{{ $email }}</span>
+                <a href="mailto:{{ $email }}" onclick="window.open(this.href); return false;" class="text-base md:text-lg hover:text-green-600 dark:hover:text-green-500 transition-colors duration-200">{{ $email }}</a>
             </li>
         @endif
         @if ($address)
@@ -54,7 +56,7 @@ mount(function () {
                 <div class="p-2 rounded-full mr-3 flex-shrink-0 bg-white shadow-md dark:bg-zinc-900 dark:shadow-none">
                     <flux:icon name="map-pin" class="w-6 h-6 text-green-600 dark:text-green-400" />
                 </div>
-                <span class="text-base md:text-lg">{{ $address }}</span>
+                <a href="{{ $map_address }}" onclick="window.open(this.href); return false;" class="text-base md:text-lg hover:text-green-600 dark:hover:text-green-500 transition-colors duration-200">{{ $address }}</a>
             </li>
         @endif
     </ul>
