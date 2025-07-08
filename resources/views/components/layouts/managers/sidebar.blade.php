@@ -80,21 +80,25 @@ $adminSidebarMenu = [
                 'label' => __('Manajemen Unit'),
                 'items' => [
                     [
+                        'icon' => 'building-office',
                         'label' => __('Unit'),
                         'route' => route('units'),
                         'current' => request()->routeIs('units'),
                     ],
                     [
+                        'icon' => 'tag',
                         'label' => __('Tipe Unit'),
                         'route' => route('unit.types'),
                         'current' => request()->routeIs('unit.types'),
                     ],
                     [
+                        'icon' => 'squares-2x2',
                         'label' => __('Cluster Unit'),
                         'route' => route('unit.clusters'),
                         'current' => request()->routeIs('unit.clusters'),
                     ],
                     [
+                        'icon' => 'user-group',
                         'label' => __('Tipe Penghuni'),
                         'route' => route('occupant.types'),
                         'current' => request()->routeIs('occupant.types'),
@@ -125,36 +129,43 @@ $adminSidebarMenu = [
                 'label' => __('Beranda'),
                 'items' => [
                     [
+                        'icon' => 'window',
                         'label' => __('Banner & Footer'),
                         'route' => route('page-contents.banner-footer'),
                         'current' => request()->routeIs('page-contents.banner-footer'),
                     ],
                     [
+                        'icon' => 'building-office-2',
                         'label' => __('Tentang Rusunawa'),
                         'route' => route('page-contents.abouts'),
                         'current' => request()->routeIs('page-contents.abouts'),
                     ],
                     [
+                        'icon' => 'map-pin',
                         'label' => __('Lokasi Rusunawa'),
                         'route' => route('page-contents.locations'),
                         'current' => request()->routeIs('page-contents.locations'),
                     ],
                     [
+                        'icon' => 'photo',
                         'label' => __('Galeri'),
                         'route' => route('page-contents.galleries'),
                         'current' => request()->routeIs('page-contents.galleries'),
                     ],
                     [
+                        'icon' => 'chat-bubble-left',
                         'label' => __('Layanan Pengaduan'),
                         'route' => route('page-contents.complaint-content'),
                         'current' => request()->routeIs('page-contents.complaint-content'),
                     ],
                     [
+                        'icon' => 'question-mark-circle',
                         'label' => __('FAQ'),
                         'route' => route('page-contents.faq'),
                         'current' => request()->routeIs('page-contents.faq'),
                     ],
                     [
+                        'icon' => 'phone-arrow-up-right',
                         'label' => __('Kontak Kami'),
                         'route' => route('page-contents.contacts'),
                         'current' => request()->routeIs('page-contents.contacts'),
@@ -208,10 +219,20 @@ $adminSidebarMenu = [
             <flux:navlist.group :heading="__($menu['group'])" class="grid">
                 @foreach ($menu['items'] as $item)
                     @if (isset($item['expandable']) && $item['expandable'])
-                        <flux:navlist.group :heading="$item['label']" expandable :expanded="false">
+                        {{-- Determine if the expandable group should be expanded --}}
+                        @php
+                            $isExpanded = false;
+                            foreach ($item['items'] as $subItem) {
+                                if ($subItem['current']) {
+                                    $isExpanded = true;
+                                    break;
+                                }
+                            }
+                        @endphp
+                        <flux:navlist.group :heading="$item['label']" expandable :expanded="$isExpanded" :icon="isset($item['icon']) ? $item['icon'] : null">
                             @foreach ($item['items'] as $subItem)
                                 <flux:navlist.item :href="$subItem['route']" :current="$subItem['current']"
-                                    wire:navigate.hover>
+                                    wire:navigate.hover :icon="isset($subItem['icon']) ? $subItem['icon'] : null">
                                     {{ $subItem['label'] }}
                                 </flux:navlist.item>
                             @endforeach

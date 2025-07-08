@@ -51,27 +51,27 @@ mount(function () {
             <div class="relative w-[600px] h-[500px] mx-auto">
                 {{-- Top-Left Kotak --}}
                 <div class="absolute top-0 left-0 w-[280px] h-[280px] rounded-2xl overflow-hidden
-                            shadow-xl transform rotate-3 z-10 border-2 border-teal-500
+                            shadow-xl transform rotate-[-4] z-10 border-2 border-teal-500
                             dark:shadow-none dark:border-zinc-700"
-                    style="background-image: url('{{ $aboutImageUrl ?: asset('images/placeholder.png') }}'); background-size: 200% auto; background-position: top 10% left 15%;">
+                    style="background-image: url('{{ $aboutImageUrl ?: asset('images/placeholder.png') }}'); background-size: 253.5% auto; background-position: top 8.5% left 8.75%;">
                 </div>
                 {{-- Top-Right Kotak --}}
                 <div class="absolute top-10 right-0 w-[350px] h-[180px] rounded-2xl overflow-hidden
-                            shadow-lg transform -rotate-2 z-20 border-2 border-teal-500
+                            shadow-lg transform -rotate-3 z-20 border-2 border-teal-500
                             dark:shadow-none dark:border-zinc-700"
-                    style="background-image: url('{{ $aboutImageUrl ?: asset('images/placeholder.png') }}'); background-size: 200% auto; background-position: top 0% right 0%;">
+                    style="background-image: url('{{ $aboutImageUrl ?: asset('images/placeholder.png') }}'); background-size: 230% auto; background-position: top 22% right 30%;">
                 </div>
                 {{-- Bottom-Left Kotak --}}
                 <div class="absolute bottom-0 left-10 w-[300px] h-[220px] rounded-2xl overflow-hidden
-                            shadow-lg transform rotate-1 z-0 border-2 border-teal-500
+                            shadow-lg transform rotate-[-8] z-0 border-2 border-teal-500
                             dark:shadow-none dark:border-zinc-700"
-                    style="background-image: url('{{ $aboutImageUrl ?: asset('images/placeholder.png') }}'); background-size: 250% auto; background-position: bottom 30% left 20%;">
+                    style="background-image: url('{{ $aboutImageUrl ?: asset('images/placeholder.png') }}'); background-size: 250% auto; background-position: bottom 5% left 20%;">
                 </div>
                 {{-- Bottom-Right Kotak --}}
                 <div class="absolute bottom-5 right-10 w-[320px] h-[320px] rounded-2xl overflow-hidden
-                            shadow-lg transform -rotate-5 z-10 border-2 border-teal-500
+                            shadow-lg transform -rotate-2 z-4 border-2 border-teal-500
                             dark:shadow-none dark:border-zinc-700"
-                    style="background-image: url('{{ $aboutImageUrl ?: asset('images/placeholder.png') }}'); background-size: 180% auto; background-position: bottom 20% right 30%;">
+                    style="background-image: url('{{ $aboutImageUrl ?: asset('images/placeholder.png') }}'); background-size: 240% auto; background-position: bottom 15% right 35%;">
                 </div>
             </div>
         </div>
@@ -82,35 +82,37 @@ mount(function () {
             <h3 class="text-3xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-6 leading-tight text-left sm:pl-4">
                 {{ $aboutTitle }}
             </h3>
-
-            {{-- Bagian Gambar Mobile --}}
-            @if ($aboutImageUrl)
-                <div class="lg:hidden relative mt-8 mb-8 mx-auto" style="width: 100%; max-width: 380px;">
-                    <div class="relative w-full h-[320px] mx-auto">
-                        <div class="absolute top-0 left-0 w-[160px] h-[160px] rounded-2xl overflow-hidden
-                                    shadow-xl transform rotate-3 z-10 border-2 border-teal-500 {{-- Light mode defaults --}}
-                                    dark:shadow-none dark:border-zinc-700 {{-- Dark mode overrides --}}"
-                            style="background-image: url('{{ $aboutImageUrl ?: asset('images/placeholder.png') }}'); background-size: 200% auto; background-position: top 10% left 15%;">
-                        </div>
-                        <div class="absolute top-8 right-0 w-[200px] h-[100px] rounded-2xl overflow-hidden
-                                    shadow-lg transform -rotate-2 z-20 border-2 border-teal-500 {{-- Light mode defaults --}}
-                                    dark:shadow-none dark:border-zinc-700 {{-- Dark mode overrides --}}"
-                            style="background-image: url('{{ $aboutImageUrl ?: asset('images/placeholder.png') }}'); background-size: 200% auto; background-position: top 0% right 0%;">
-                        </div>
-                        <div class="absolute bottom-0 left-8 w-[180px] h-[120px] rounded-2xl overflow-hidden
-                                    shadow-lg transform rotate-1 z-0 border-2 border-teal-500 {{-- Light mode defaults --}}
-                                    dark:shadow-none dark:border-zinc-700 {{-- Dark mode overrides --}}"
-                            style="background-image: url('{{ $aboutImageUrl ?: asset('images/placeholder.png') }}'); background-size: 250% auto; background-position: bottom 30% left 20%;">
-                        </div>
-                        <div class="absolute bottom-4 right-8 w-[190px] h-[190px] rounded-2xl overflow-hidden
-                                    shadow-lg transform -rotate-5 z-10 border-2 border-teal-500 {{-- Light mode defaults --}}
-                                    dark:shadow-none dark:border-zinc-700 {{-- Dark mode overrides --}}"
-                            style="background-image: url('{{ $aboutImageUrl ?: asset('images/placeholder.png') }}'); background-size: 180% auto; background-position: bottom 20% right 30%;">
-                        </div>
+    
+            {{-- Menampilkan Gambar-gambar Mode Mobile --}}
+            <div class="block lg:hidden relative mb-8">
+                <div class="relative w-[350px] h-[300px] mx-auto">
+                    {{-- Top-Left Kotak (Mobile) --}}
+                    <div class="absolute top-0 left-0 w-[180px] h-[180px] rounded-2xl overflow-hidden
+                            shadow-xl transform rotate-[-4] z-10 border-2 border-teal-500
+                            dark:shadow-none dark:border-zinc-700"
+                        style="background-image: url('{{ $aboutImageUrl ?: asset('images/placeholder.png') }}'); background-size: 253.5% auto; background-position: top 12.5% left 11.25%;">
+                    </div>
+                    {{-- Top-Right Kotak (Mobile) --}}
+                    <div class="absolute top-5 right-0 w-[200px] h-[120px] rounded-2xl overflow-hidden
+                            shadow-lg transform -rotate-3 z-20 border-2 border-teal-500
+                            dark:shadow-none dark:border-zinc-700"
+                        style="background-image: url('{{ $aboutImageUrl ?: asset('images/placeholder.png') }}'); background-size: 230% auto; background-position: top 21% right 30%;">
+                    </div>
+                    {{-- Bottom-Left Kotak (Mobile) --}}
+                    <div class="absolute bottom-0 left-5 w-[200px] h-[150px] rounded-2xl overflow-hidden
+                            shadow-lg transform rotate-[-8] z-0 border-2 border-teal-500
+                            dark:shadow-none dark:border-zinc-700"
+                        style="background-image: url('{{ $aboutImageUrl ?: asset('images/placeholder.png') }}'); background-size: 225% auto; background-position: bottom 5% left 20%;">
+                    </div>
+                    {{-- Bottom-Right Kotak (Mobile) --}}
+                    <div class="absolute bottom-5 right-5 w-[180px] h-[180px] rounded-2xl overflow-hidden
+                            shadow-lg transform -rotate-[-15] z-4 border-2 border-teal-500
+                            dark:shadow-none dark:border-zinc-700"
+                        style="background-image: url('{{ $aboutImageUrl ?: asset('images/placeholder.png') }}'); background-size: 240% auto; background-position: bottom 20% right 30%;">
                     </div>
                 </div>
-            @endif
-
+            </div>
+            
             {{-- Deskripsi Tentang Kami --}}
 
             <p class="text-base md:text-xl leading-relaxed mb-8 text-left sm:pl-4

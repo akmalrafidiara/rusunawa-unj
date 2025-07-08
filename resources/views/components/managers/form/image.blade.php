@@ -9,7 +9,7 @@
 ])
 
 <div class="mb-4">
-    <div class="flex items-center space-x-2 border border-gray-300 rounded-md p-1">
+    <div class="flex items-center space-x-2 border rounded-md p-1 @error($model) border-red-500 @else border-gray-500 @enderror">
         <input
             type="file"
             wire:model.live="{{ $model }}" {{-- Menggunakan .live untuk pembaruan real-time --}}

@@ -51,15 +51,15 @@ mount(function () {
                 <ul class="space-y-3 text-gray-700 dark:text-gray-300">
                     <li class="flex items-center justify-start">
                         <flux:icon name="phone" class="w-5 h-5 mr-2 text-green-600 dark:text-green-400" />
-                        <span>{{ $phoneNumber }}</span>
+                        <a href="https://wa.me/{{ preg_replace('/^0/', '62', preg_replace('/[^0-9]/', '', $phoneNumber)) }}" onclick="window.open(this.href); return false;" class="hover:text-green-600 dark:hover:text-green-500 transition-colors duration-200">{{ $phoneNumber }}</a>
                     </li>
                     <li class="flex items-center justify-start">
                         <flux:icon name="envelope" class="w-5 h-5 mr-2 text-green-600 dark:text-green-400" />
-                        <span>{{ $email }}</span>
+                        <a href="mailto:{{ $email }}" onclick="window.open(this.href); return false;" class="hover:text-green-600 dark:hover:text-green-500 transition-colors duration-200">{{ $email }}</a>
                     </li>
                     <li class="flex items-center justify-start">
                         <flux:icon name="clock" class="w-5 h-5 mr-2 text-green-600 dark:text-green-400" />
-                        <span>{{ $operationalHours }}</span>
+                        <span class="hover:text-green-600 dark:hover:text-green-500 transition-colors duration-200">{{ $operationalHours }}</span>
                     </li>
                 </ul>
             </div>
@@ -69,22 +69,22 @@ mount(function () {
                 <h4 class="text-green-700 dark:text-green-400 text-lg font-semibold mb-4">Tautan Terkait</h4>
                 <ul class="space-y-3 text-gray-700 dark:text-gray-300">
                     <li>
-                        <a href="https://bpu.unj.ac.id"
+                        <a href="https://bpu.unj.ac.id" onclick="window.open(this.href); return false;"
                             class="hover:text-green-600 dark:hover:text-green-500 transition-colors duration-200">Website
                             BPU UNJ</a>
                     </li>
                     <li>
-                        <a href="https://unj.ac.id"
+                        <a href="https://unj.ac.id" onclick="window.open(this.href); return false;"
                             class="hover:text-green-600 dark:hover:text-green-500 transition-colors duration-200">Website
                             UNJ</a>
                     </li>
                     <li>
-                        <a href="https://sso.unj.ac.id"
+                        <a href="https://sso.unj.ac.id" onclick="window.open(this.href); return false;"
                             class="hover:text-green-600 dark:hover:text-green-500 transition-colors duration-200">SSO
                             UNJ</a>
                     </li>
                     <li>
-                        <a href="https://siakad.unj.ac.id"
+                        <a href="https://siakad.unj.ac.id" onclick="window.open(this.href); return false;"
                             class="hover:text-green-600 dark:hover:text-green-500 transition-colors duration-200">Siakad
                             UNJ</a>
                     </li>
@@ -101,7 +101,7 @@ mount(function () {
                             Penghuni</a>
                     </li>
                     <li>
-                        <a href="#"
+                        <a href="/complaint/track-complaint"
                             class="hover:text-green-600 dark:hover:text-green-500 transition-colors duration-200">Cek
                             Pengaduan</a>
                     </li>
@@ -111,7 +111,7 @@ mount(function () {
                             Kamar</a>
                     </li>
                     <li>
-                        <a href="#unit-types"
+                        <a href="/#unit-types"
                             class="hover:text-green-600 dark:hover:text-green-500 transition-colors duration-200">Tipe
                             Kamar</a>
                     </li>
