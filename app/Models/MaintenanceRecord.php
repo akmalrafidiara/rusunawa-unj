@@ -24,7 +24,7 @@ class MaintenanceRecord extends Model
 
     protected $casts = [
         'scheduled_date' => 'date',
-        'completion_date' => 'datetime',
+        'completion_date' => 'date',
         'type' => MaintenanceRecordType::class,
         'status' => MaintenanceRecordStatus::class,
         'is_late' => 'boolean',

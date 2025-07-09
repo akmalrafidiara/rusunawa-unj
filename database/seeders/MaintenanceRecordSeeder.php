@@ -35,11 +35,11 @@ class MaintenanceRecordSeeder extends Seeder
 
         // === Contoh Rekaman Rutin ===
         // Ambil beberapa jadwal rutin yang sudah ada untuk unit yang membutuhkan pemeliharaan
-        $schedules = MaintenanceSchedule::whereIn('unit_id', $units->pluck('id'))->take(2)->get();
+        $schedules = MaintenanceSchedule::whereIn('unit_id', $units->pluck('id'))->take(5)->get();
         foreach ($schedules as $schedule) {
             $completionDate = Carbon::parse($schedule->next_due_date)->subDays(rand(0, 5)); // Selesai beberapa hari sebelum/tepat waktu
-            $isLate = $completionDate->greaterThan(Carbon::parse($schedule->next_due_date)->startOfDay());
-            $isEarly = $completionDate->lt(Carbon::parse($schedule->next_due_date)->startOfDay());
+            $isLate = $completionDate->greaterThan(Carbon::parse($schedule->next_due_date));
+            $isEarly = $completionDate->lt(Carbon::parse($schedule->next_due_date));
 
             $recordStatus = MaintenanceRecordStatus::COMPLETED_ON_TIME;
             if ($isEarly) {
@@ -71,28 +71,6 @@ class MaintenanceRecordSeeder extends Seeder
             $schedule->save();
 
             $this->command->info("Rekaman rutin dibuat untuk Unit: Kamar {$record->unit->room_number} (Jadwal {$schedule->id})");
-        }
-
-        // === Contoh Rekaman Mendesak (Urgent) ===
-        for ($i = 0; $i < 3; $i++) {
-            $unit = $units->random(); // Ambil unit yang membutuhkan pemeliharaan secara acak
-            $scheduledDate = Carbon::now()->subDays(rand(1, 30));
-            $completionDate = $scheduledDate->addHours(rand(1, 24));
-
-            $record = MaintenanceRecord::create([
-                'unit_id' => $unit->id,
-                'maintenance_schedule_id' => null, // Tidak terkait jadwal rutin
-                'type' => MaintenanceRecordType::URGENT,
-                'scheduled_date' => $scheduledDate, // Tanggal permintaan
-                'completion_date' => $completionDate, // Tanggal selesai aktual
-                'status' => MaintenanceRecordStatus::URGENT, // Status selalu URGENT
-                'notes' => 'Perbaikan AC mendesak karena ' . ['bocor', 'tidak dingin', 'mati total'][array_rand(['bocor', 'tidak dingin', 'mati total'])],
-                'is_late' => false, // Urgent tidak punya konsep terlambat dari jadwal rutin
-            ]);
-
-            $this->addDummyAttachment($record, 'urgent_issue_' . ($i+1) . '.jpg', 'image/jpeg');
-
-            $this->command->info("Rekaman mendesak dibuat untuk Unit: Kamar {$record->unit->room_number}");
         }
     }
 

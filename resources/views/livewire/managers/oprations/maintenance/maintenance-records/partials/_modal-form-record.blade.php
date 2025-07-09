@@ -1,7 +1,6 @@
-{{-- Modal untuk Rekaman Pemeliharaan (Create/Edit) --}}
+{{-- Isi dari _modal-form-record.blade.php --}}
 <x-managers.ui.modal title="{{ $modalType === 'create_record' ? 'Catat Pemeliharaan' : 'Edit Rekaman Pemeliharaan' }}" :show="$showRecordModal" class="max-w-md">
     <form wire:submit.prevent="saveRecord" class="space-y-4">
-        {{-- Unit (Kamar): Read-only --}}
         <x-managers.form.label for="recordUnitId_display">Unit (Kamar)</x-managers.form.label>
         @php
             $selectedUnitLabel = collect($allAcUnitOptions)->firstWhere('value', $recordUnitId)['label'] ?? 'N/A';
@@ -9,12 +8,10 @@
         <x-managers.form.input type="text" value="{{ $selectedUnitLabel }}" id="recordUnitId_display" disabled="true" />
         <input type="hidden" wire:model="recordUnitId">
 
-        {{-- Tipe Pemeliharaan: Read-only --}}
         <x-managers.form.label for="recordType_display">Tipe Pemeliharaan</x-managers.form.label>
         <x-managers.form.input value="{{ \App\Enums\MaintenanceRecordType::from($recordType)->label() }}" type="text" id="recordType_display" disabled="true" />
         <input type="hidden" wire:model="recordType">
 
-        {{-- Jadwal Rutin Terkait: Read-only --}}
         @if ($recordType === \App\Enums\MaintenanceRecordType::ROUTINE->value)
             <x-managers.form.label for="recordMaintenanceScheduleId_display">Jadwal Rutin Terkait</x-managers.form.label>
             @php
@@ -24,7 +21,6 @@
             <input type="hidden" wire:model="recordMaintenanceScheduleId">
         @endif
 
-        {{-- Tanggal Terjadwal: DIHILANGKAN dari form pengaduan darurat dan rutin --}}
         <input type="hidden" wire:model="recordScheduledDate">
 
         <x-managers.form.label for="recordCompletionDate">Tanggal Penyelesaian Dilakukan <span class="text-red-500">*</span></x-managers.form.label>
@@ -32,10 +28,9 @@
 
         <x-managers.form.label for="recordNotes">Catatan Pemeliharaan</x-managers.form.label>
         <x-managers.form.textarea wire:model.live="recordNotes" placeholder="Detail pekerjaan pemeliharaan" rows="3" id="recordNotes" />
-        {{-- Attachments for 'recordAttachments' (new uploads) --}}
+        
         <x-managers.form.label>Lampiran (Foto/Dokumen)</x-managers.form.label>
 
-        {{-- New FilePond Uploader --}}
         <div wire:key="filepond-record-attachments-wrapper">
             <x-filepond::upload wire:model.live="recordAttachments" multiple max-file-size="2MB" />
         </div>
@@ -47,7 +42,6 @@
             @enderror
         </div>
 
-        {{-- Existing Attachments while Editing (adapted from Announcement) --}}
         @if ($existingRecordAttachments && count($existingRecordAttachments) > 0)
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 border border-gray-300 rounded p-2 mt-4">
             <x-managers.form.small class="col-span-full">Lampiran Saat Ini</x-managers.form.small>

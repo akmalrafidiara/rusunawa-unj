@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('unit_id')->constrained('units')->onDelete('cascade');
             $table->integer('frequency_months');
             $table->date('next_due_date');
-            $table->timestamp('last_completed_at')->nullable()->default(null);
+            $table->date('last_completed_at')->nullable()->default(null);
             $table->enum('status', ['scheduled', 'upcoming', 'overdue', 'postponed'])->default('scheduled');
             $table->text('notes')->nullable();
             $table->timestamps();

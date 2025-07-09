@@ -1,5 +1,4 @@
-{{-- Section: Riwayat Maintenance (History of Records for selected Unit/Schedule) --}}
-@if ($currentScheduleId && $selectedSchedule)
+{{-- Isi dari _record-history-content.blade.php --}}
 <x-managers.ui.card class="p-4">
     <h4 class="text-lg font-bold text-gray-800 dark:text-white mb-4">Riwayat Maintenance</h4>
     <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">Riwayat pemeliharaan rutin dan darurat untuk kamar ini.</p>
@@ -41,16 +40,15 @@
             </div>
             @endif
             <div class="flex justify-end gap-2 mt-4">
-                {{-- HANYA BISA LIHAT DETAIL --}}
                 <x-managers.ui.button wire:click="detailRecord({{ $record->id }})" variant="info" size="sm" title="Lihat Detail">
                     <flux:icon.eye class="w-4" />
                 </x-managers.ui.button>
-                @if (!$is_admin_user) {{-- Hide Edit Record button for admin --}}
+                @if (!$is_admin_user)
                 <x-managers.ui.button wire:click="editRecord({{ $record->id }})" variant="secondary" size="sm" title="Edit">
                     <flux:icon.pencil class="w-4" />
                 </x-managers.ui.button>
                 @endif
-                @if (!$is_admin_user) {{-- Hide Delete Record button for admin --}}
+                @if (!$is_admin_user)
                 <x-managers.ui.button wire:click="confirmDeleteRecord({{ $record->id }})" variant="danger" size="sm" title="Hapus">
                     <flux:icon.trash class="w-4" />
                 </x-managers.ui.button>
@@ -62,9 +60,7 @@
         @endforelse
     </div>
 
-    {{-- Add pagination here for relatedRecords --}}
     @if ($relatedRecordsPaginator->hasPages())
-        <x-managers.ui.pagination :paginator="$relatedRecordsPaginator" class="mt-4" />
+    <x-managers.ui.pagination :paginator="$relatedRecordsPaginator" class="mt-4" />
     @endif
 </x-managers.ui.card>
-@endif

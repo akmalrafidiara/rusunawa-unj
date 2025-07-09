@@ -21,7 +21,7 @@ class MaintenanceSchedule extends Model
 
     protected $casts = [
         'next_due_date' => 'date',
-        'last_completed_at' => 'datetime',
+        'last_completed_at' => 'date',
         'status' => MaintenanceScheduleStatus::class,
     ];
 

@@ -32,7 +32,7 @@ class MaintenanceScheduleSeeder extends Seeder
             }
 
             $frequency = 3; // Setiap 3 bulan sekali
-            $nextDueDate = Carbon::now()->addMonths($frequency)->startOfDay();
+            $nextDueDate = Carbon::now()->addMonths($frequency);
 
             MaintenanceSchedule::create([
                 'unit_id' => $unit->id,
@@ -55,7 +55,7 @@ class MaintenanceScheduleSeeder extends Seeder
             MaintenanceSchedule::create([
                 'unit_id' => $unitForOverdue->id,
                 'frequency_months' => 6,
-                'next_due_date' => Carbon::now()->subDays(15)->startOfDay(), // 15 hari yang lalu
+                'next_due_date' => Carbon::now()->subDays(15), // 15 hari yang lalu
                 'last_completed_at' => null, // Awalnya NULL, akan terisi saat ada rekaman selesai
                 'status' => MaintenanceScheduleStatus::OVERDUE, // Status menjadi OVERDUE karena next_due_date di masa lalu
                 'notes' => 'Jadwal rutin AC yang sudah terlambat untuk Kamar ' . $unitForOverdue->room_number,
