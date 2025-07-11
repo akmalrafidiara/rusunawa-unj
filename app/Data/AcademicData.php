@@ -1,0 +1,105 @@
+<?php
+
+namespace App\Data;
+
+class AcademicData
+{
+    public static function getFacultiesAndPrograms(): array
+    {
+        return [
+            'Fakultas Ilmu Pendidikan' => [
+                'S1-Manajemen Pendidikan',
+                'S1-Pendidikan Guru PAUD',
+                'S1-Pendidikan Guru Sekolah Dasar',
+                'S1-Pendidikan Khusus',
+                'S1-Pendidikan Masyarakat',
+                'S1-Bimbingan & Konseling',
+                'S1-Teknologi Pendidikan',
+                'S1-Perpustakaan dan Sains Informasi',
+            ],
+            'Fakultas Bahasa dan Seni' => [
+                'S1-Pendidikan Bahasa Arab',
+                'S1-Pendidikan Bahasa Indonesia',
+                'S1-Pendidikan Bahasa Inggris',
+                'S1-Pendidikan Bahasa Jepang',
+                'S1-Pendidikan Bahasa Jerman',
+                'S1-Pendidikan Bahasa Mandarin',
+                'S1-Pendidikan Bahasa Prancis',
+                'S1-Pendidikan Musik',
+                'S1-Pendidikan Seni Rupa',
+                'S1-Pendidikan Tari',
+                'S1-Sastra Indonesia',
+                'S1-Sastra Inggris',
+            ],
+            'Fakultas Matematika dan Ilmu Pengetahuan Alam' => [
+                'S1-Pendidikan Matematika',
+                'S1-Pendidikan Fisika',
+                'S1-Pendidikan Kimia',
+                'S1-Pendidikan Biologi',
+                'S1-Matematika',
+                'S1-Fisika',
+                'S1-Kimia',
+                'S1-Biologi',
+                'S1-Ilmu Komputer',
+                'S1-Statistika',
+            ],
+            'Fakultas Ilmu Sosial dan Hukum' => [
+                'S1-Pendidikan Geografi',
+                'S1-Pendidikan Sejarah',
+                'S1-Geografi',
+                'D4-Hubungan Masyarakat dan Komunikasi Digital',
+                'S1-Ilmu Komunikasi',
+                'S1-Pendidikan Agama Islam',
+                'S1-Pendidikan Ilmu Pengetahuan Sosial',
+                'S1-Pendidikan Pancasila & Kewarganegaraan',
+                'S1-Pendidikan Sosiologi',
+                'S1-Sosiologi',
+                'D4-Usaha Perjalanan Wisata',
+                'S1-Ilmu Hukum',
+            ],
+            'Fakultas Teknik' => [
+                'S1-Pendidikan Vokasional Konstruksi Bangunan',
+                'S1-Pendidikan Vokasional Teknik Elektro',
+                'S1-Pendidikan Vokasional Teknik Elektronika',
+                'S1-Pendidikan Vokasional Teknik Mesin',
+                'S1-Teknik Mesin',
+                'S1-Sistem dan Teknologi Informasi',
+                'S1-Pendidikan Informatika',
+                'S1-Rekayasa Keselamatan Kebakaran',
+                'S1-Pendidikan Vokasional Seni Kuliner',
+                'S1-Pendidikan Vokasional Desain Fashion',
+                'S1-Pendidikan Vokasional Tata Rias',
+                'S1-Pendidikan Vokasional Kesejahteraan Keluarga',
+                'D4-Teknologi Rekayasa Otomasi',
+                'D4-Teknologi Rekayasa Manufaktur',
+                'D4-Teknologi Rekayasa Konstruksi Bangunan Gedung',
+                'D4-Manajemen Pelabuhan dan Logistik Maritim',
+                'D4-Seni Kuliner dan Pengolahan Jasa Makanan',
+                'D4-Desain Mode',
+                'D4-Kosmetik dan Perawatan Kecantikan',
+            ],
+            'Fakultas Ilmu Keolahragaan dan Kesehatan' => [
+                'S1-Ilmu Keolahragaaan',
+                'S1-Pendidikan Jasmani',
+                'S1-Pendidikan Kepelatihan Olahraga',
+                'S1-Olahraga Rekreasi',
+                'S1-Kepelatihan Kecabangan Olahraga',
+            ],
+            'Fakultas Ekonomi dan Bisnis' => [
+                'S1-Akuntansi',
+                'S1-Manajemen',
+                'S1-Bisnis Digital',
+                'S1-Pendidikan Administrasi Perkantoran',
+                'S1-Pendidikan Akuntansi',
+                'S1-Pendidikan Bisnis',
+                'S1-Pendidikan Ekonomi',
+                'D4-Administrasi Perkantoran Digital',
+                'D4-Akuntansi Sektor Publik',
+                'D4-Pemasaran Digital',
+            ],
+            'Fakultas Psikologi' => [
+                'S1-Psikologi',
+            ],
+        ];
+    }
+}
