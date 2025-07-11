@@ -15,19 +15,20 @@
                 Ubah
             </button>
         </div>
-        <div class="flex items-center gap-6 mb-6 bg-gray-50 rounded-lg shadow-md overflow-clip">
+        <div
+            class="flex flex-col sm:flex-row items-center gap-2 sm:gap-6 mb-6 bg-gray-50 rounded-lg shadow-md overflow-clip">
             <img src="{{ $unitType->attachments->first() ? Storage::url($unitType->attachments->first()->path) : asset('images/placeholder.png') }}"
-                alt="{{ $unitType->name }}" class="w-38 h-32 object-cover">
-            <div>
-                <h3 class="text-2xl font-bold">{{ $unitType->name }}</h3>
-                <p class="text-lg font-medium">Rp{{ number_format($totalPrice, 0, ',', '.') }} <span
-                        class="text-sm font-semibold text-gray-500">/
+                alt="{{ $unitType->name }}" class="w-full sm:w-38 h-32 object-cover">
+            <div class="p-4 sm:p-0">
+                <h3 class="text-xl sm:text-2xl font-bold text-center sm:text-left">{{ $unitType->name }}</h3>
+                <p class="text-base sm:text-lg font-medium text-center sm:text-left">
+                    Rp{{ number_format($totalPrice, 0, ',', '.') }} <span class="text-sm font-semibold text-gray-500">/
                         {{ $pricingBasis->value === 'per_month' ? $pricingBasis->label() : $totalDays . ' Hari' }}</span>
                 </p>
             </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-4 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div>
                 <h4 class="text-sm font-bold text-gray-500">Jenis Penghuni</h4>
                 <p>{{ $occupantType->name }}</p>
@@ -61,7 +62,7 @@
             </button>
         </div>
 
-        <div class="grid grid-cols-2 gap-4 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div class="col-span-2">
                 <h4 class="text-sm font-bold text-gray-500">Nama Penghuni</h4>
                 <p>{{ $fullName }}</p>
@@ -101,7 +102,7 @@
                     Data Akademik
                 </h4>
             </div>
-            <div class="grid grid-cols-2 gap-4 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <div>
                     <h4 class="text-sm font-bold text-gray-500">NIM/NRM</h4>
                     <p>{{ $studentId ?? 'Tidak diisi' }}</p>

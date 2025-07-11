@@ -1,4 +1,4 @@
-<div class="flex flex-col items-center justify-center text-center">
+<div class="flex flex-col items-center justify-center text-center py-20 md:py-0">
     {{-- Gambar Amplop --}}
     <img src="{{ asset('images/form-success.png') }}" alt="Pemesanan Berhasil" class="w-48 h-auto mb-8">
 
@@ -22,7 +22,7 @@
         </a>
         <a href="{{ route('home') }}" wire:navigate
             class="bg-emerald-600 text-white font-semibold px-6 py-2 rounded-lg hover:bg-emerald-700 transition-colors">
-            Dashboard
+            Lihat Dashboard
         </a>
     </div>
 </div>

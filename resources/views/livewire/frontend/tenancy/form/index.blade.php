@@ -55,15 +55,15 @@
         @endif
     </div>
 
-    <div class="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+    <div class="container mx-auto flex flex-col-reverse md:flex-row gap-8">
         {{-- Kolom Kiri: Stepper / Progress Bar --}}
-        <div class="md:col-span-1">
+        <div class="md:w-1/4">
             @include('livewire.frontend.tenancy.form.stepper')
         </div>
 
         {{-- Kolom Kanan: Konten Form Dinamis --}}
-        <div class="md:col-span-3">
-            <div class="bg-white dark:bg-zinc-800 px-6">
+        <div class="md:w-3/4">
+            <div class="bg-white dark:bg-zinc-800 px-0 md:px-6">
                 @if ($currentStep === 1)
                     @include('livewire.frontend.tenancy.form.partials.step-1-detail')
                 @elseif ($currentStep === 2)
