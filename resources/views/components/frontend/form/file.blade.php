@@ -73,12 +73,9 @@
                 x-on:dragleave.prevent="isDragging = false"
                 x-on:drop.prevent="isDragging = false; if ($event.dataTransfer.files.length > 0) { @this.upload('{{ $name }}', $event.dataTransfer.files[0]) }"
                 class="relative flex w-full cursor-pointer justify-center rounded-md border-2 border-dashed px-6 py-10 transition-colors duration-200
-                          @error($name)
-border-red-500
-@else
-border-gray-300 dark:border-gray-600
-@enderror"
-                :class="{ 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20': isDragging }">
+                {{ $errors->has($name) ? 'border-red-500' : 'border-gray-300 dark:border-gray-600' }}
+                :class="{ 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
+                : isDragging }">
 
                 <input id="{{ $name }}" name="{{ $name }}" type="file" class="sr-only"
                     wire:model="{{ $name }}">

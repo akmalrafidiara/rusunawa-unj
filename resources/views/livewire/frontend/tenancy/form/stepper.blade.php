@@ -11,11 +11,11 @@
                 <div
                     class="flex items-center justify-center w-8 h-8 rounded-full border-2
                         {{-- Logika untuk mengganti warna berdasarkan status langkah --}}
-                        @if ($currentStep > $stepNumber) bg-gradient-to-tl from-emerald-800 to-emerald-400 border-none text-white
-                        @elseif ($currentStep == $stepNumber)
-                            bg-white dark:bg-zinc-900 border-emerald-600 text-emerald-600
-                        @else
-                            bg-white dark:bg-zinc-900 border-gray-300 dark:border-gray-600 text-gray-400 @endif
+                        {{ $currentStep > $stepNumber
+                            ? 'bg-gradient-to-tl from-emerald-800 to-emerald-400 border-none text-white'
+                            : ($currentStep == $stepNumber
+                                ? 'bg-white dark:bg-zinc-900 border-emerald-600 text-emerald-600'
+                                : 'bg-white dark:bg-zinc-900 border-gray-300 dark:border-gray-600 text-gray-400') }}
                     ">
                     {{-- Tampilkan ikon centang jika langkah sudah selesai --}}
                     @if ($currentStep > $stepNumber)

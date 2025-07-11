@@ -18,7 +18,8 @@
         @endif
         <input id="{{ $name }}" type="{{ $type }}" wire:model.live="{{ $name }}"
             placeholder="{{ $placeholder }}"
-            class="{{ $inputBaseClass }} {{ $whatsapp ? 'pl-12' : '' }} @error($name) border-red-500 @else border-gray-300 dark:border-gray-600 @enderror">
+            class="{{ $inputBaseClass }} {{ $whatsapp ? 'pl-12' : '' }} 
+            {{ $errors->has($name) ? 'border-red-500' : 'border-gray-300 dark:border-gray-600' }}">
     </div>
     @error($name)
         <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
