@@ -1,9 +1,10 @@
 @php
     // Definisikan setiap langkah dalam sebuah array agar mudah dikelola
     $steps = [
-        1 => ['title' => 'Detail Pemesanan'],
-        2 => ['title' => 'Identitas Penghuni'],
-        3 => ['title' => 'Konfirmasi Pemesanan'],
+        1 => ['title' => 'Detail Pemesanan', 'message' => 'Lengkapi detail pemesanan Anda'],
+        2 => ['title' => 'Identitas Penghuni', 'message' => 'Isi data diri penghuni dengan lengkap'],
+        3 => ['title' => 'Konfirmasi Pemesanan', 'message' => 'Periksa kembali detail pemesanan Anda'],
+        4 => ['title' => 'Pemesanan Berhasil', 'message' => 'Formulir pemesanan berhasil dikirim'],
     ];
 
     if (!session()->has('tenancy_data')) {
@@ -46,8 +47,12 @@
 
     <div class="container mx-auto mb-6">
         <h1 class="text-3xl font-bold">Form Pemesanan Kamar</h1>
-        <p class="text-gray-500">Langkah {{ $currentStep ?? 1 }} dari 3 - Lengkapi
-            {{ $steps[$currentStep ?? 1]['title'] }}</p>
+        @if ($currentStep !== 4)
+            <p class="text-gray-500">Langkah {{ $currentStep ?? 1 }} dari 3 -
+                {{ $steps[$currentStep ?? 1]['message'] }}</p>
+        @else
+            <p class="text-gray-500">Pengisian form selesai</p>
+        @endif
     </div>
 
     <div class="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">

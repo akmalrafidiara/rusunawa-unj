@@ -5,7 +5,7 @@
 
 <div>
     <div class="flex items-center gap-6 mb-6 bg-gray-50 rounded-lg shadow-md overflow-clip">
-        <img src="{{ Storage::url($unitType->attachments->first()->path) ?? asset('images/placeholder.png') }}"
+        <img src="{{ $unitType->attachments->first() ? Storage::url($unitType->attachments->first()->path) : asset('images/placeholder.png') }}"
             alt="{{ $unitType->name }}" class="w-38 h-32 object-cover">
         <div>
             <h3 class="text-2xl font-bold">{{ $unitType->name }}</h3>

@@ -1,6 +1,9 @@
 <div class="space-y-2 bg-gray-50 dark:bg-zinc-900 p-6 rounded-lg shadow-md">
     {{-- Judul Stepper --}}
     @foreach ($steps as $stepNumber => $stepData)
+        @if ($stepNumber > 3)
+            @break
+        @endif
         <div class="flex items-start">
             {{-- Lingkaran dan Garis --}}
             <div class="flex flex-col items-center mr-4">
@@ -23,10 +26,10 @@
                 </div>
 
                 {{-- Garis vertikal, jangan tampilkan di langkah terakhir --}}
-                @if (!$loop->last)
+                @if ($stepNumber < 3)
                     <div
                         class="w-0.5 h-8 mt-2 rounded-full 
-                        {{ $currentStep >= $stepNumber ? 'bg-emerald-600' : 'bg-gray-300 dark:bg-gray-600' }}">
+                                {{ $currentStep > $stepNumber ? 'bg-emerald-600' : 'bg-gray-300 dark:bg-gray-600' }}">
                     </div>
                 @endif
             </div>
