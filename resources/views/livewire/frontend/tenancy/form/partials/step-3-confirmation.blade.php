@@ -112,11 +112,11 @@
                 </div>
                 <div>
                     <h4 class="text-sm font-bold text-gray-500">Fakultas</h4>
-                    <p>{{ $facultyId ?? 'Tidak diisi' }}</p>
+                    <p>{{ $faculty ?? 'Tidak diisi' }}</p>
                 </div>
                 <div>
                     <h4 class="text-sm font-bold text-gray-500">Program Studi</h4>
-                    <p>{{ $studyProgramId ?? 'Tidak diisi' }}</p>
+                    <p>{{ $studyProgram ?? 'Tidak diisi' }}</p>
                 </div>
             </div>
         </div>

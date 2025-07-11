@@ -63,8 +63,8 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <x-frontend.form.input name="studentId" label="NIM/NRM" type="number"
                         placeholder="Contoh: 13xxxxxxxx" />
-                    <x-frontend.form.select name="facultyId" label="Fakultas" :options="$facultyOptions" />
-                    <x-frontend.form.select name="studyProgramId" label="Program Studi" :options="$studyProgramOptions"
+                    <x-frontend.form.select name="faculty" label="Fakultas" :options="$facultyOptions" />
+                    <x-frontend.form.select name="studyProgram" label="Program Studi" :options="$studyProgramOptions"
                         :disabled="empty($studyProgramOptions)" />
                     <x-frontend.form.select name="classYear" label="Angkatan" :options="$classYearOptions" />
                 </div>

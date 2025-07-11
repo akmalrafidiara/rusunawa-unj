@@ -71,12 +71,11 @@ class TenancyForm extends Component
         $identityCardFile,
         $communityCardFile;
     // Properti untuk verifikasi mahasiswa
-    public
-        bool $isStudent = false;
+    public bool $isStudent = false;
     public
         $studentId,
-        $facultyId,
-        $studyProgramId,
+        $faculty,
+        $studyProgram,
         $classYear;
 
     // STEP 3
@@ -88,8 +87,10 @@ class TenancyForm extends Component
             return redirect()->route('home');
         }
 
+        // Load tenancy data from session
         $tenancyData = session('tenancy_data', []);
 
+        // Initialize properties with tenancy data
         $this->occupantType = isset($tenancyData['occupantType']) ? OccupantType::find($tenancyData['occupantType']) : null;
         $this->pricingBasis = $tenancyData['pricingBasis'] ?? null;
         $this->startDate = $tenancyData['startDate'] ?? null;
@@ -102,16 +103,19 @@ class TenancyForm extends Component
         $this->filterUrl = $tenancyData['filterUrl'] ?? null;
         $this->detailUrl = $tenancyData['detailUrl'] ?? null;
 
+        // Step 1 Options
         $this->genderAllowedOptions = GenderAllowed::optionsWithoutGeneral();
         $this->unitClusterOptions = $this->occupantType?->accessibleClusters()->get() ?? collect();
 
         $this->unitClusterSelectedId = $this->unitClusterOptions->first()?->id ?? null;
         $this->findUnits();
 
-        $this->regulations = Regulation::orderBy('priority')->get();
-
+        // Step 2 Options
         $this->facultyOptions = array_keys(AcademicData::getFacultiesAndPrograms());
         $this->classYearOptions = range(date('Y'), date('Y') - 7);
+
+        // Load regulations
+        $this->regulations = Regulation::orderBy('priority')->get();
     }
 
     public function updated($propertyName)
@@ -124,7 +128,7 @@ class TenancyForm extends Component
             $this->validateOnly($propertyName);
         }
 
-        if (in_array($propertyName, ['studentId', 'facultyId', 'studyProgramId', 'classYear'])) {
+        if (in_array($propertyName, ['studentId', 'faculty', 'studyProgram', 'classYear'])) {
             $this->validateOnly($propertyName);
         }
 
@@ -161,23 +165,23 @@ class TenancyForm extends Component
     protected function rules()
     {
         return [
-            // Aturan untuk Langkah 1
+            // Rules step 1
             'unitId'           => 'required',
 
-            // Aturan untuk Langkah 2
+            // Rules step 2
             'fullName'         => 'required|string|max:255',
             'email'            => 'required|email|max:255',
             'whatsappNumber'   => 'required|string|max:15',
             'identityCardFile' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
             'communityCardFile'=> 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
 
-            // Aturan kondisional untuk data mahasiswa
+            // Conditional Rules for Students
             'studentId'        => 'required_if:isStudent,true',
-            'facultyId'        => 'required_if:isStudent,true',
-            'studyProgramId'   => 'required_if:isStudent,true',
+            'faculty'        => 'required_if:isStudent,true',
+            'studyProgram'   => 'required_if:isStudent,true',
             'classYear'        => 'required_if:isStudent,true',
 
-            // Aturan untuk Langkah 3
+            // Rules step 3
             'agreeToRegulations' => 'accepted',
         ];
     }
@@ -195,8 +199,8 @@ class TenancyForm extends Component
             'communityCardFile.mimes'   => 'Format file harus .jpg, .jpeg, .png, atau .pdf.',
             'communityCardFile.max'     => 'Ukuran file maksimal 2MB.',
             'studentId.required_if'     => 'ID mahasiswa wajib diisi jika Anda adalah mahasiswa.',
-            'facultyId.required_if'     => 'Fakultas wajib dipilih.',
-            'studyProgramId.required_if'=> 'Program studi wajib dipilih.',
+            'faculty.required_if'     => 'Fakultas wajib dipilih.',
+            'studyProgram.required_if'=> 'Program studi wajib dipilih.',
             'classYear.required_if'     => 'Tahun angkatan wajib dipilih.',
             'agreeToRegulations.accepted' => 'Anda harus menyetujui tata tertib untuk melanjutkan.',
         ];
@@ -221,7 +225,7 @@ class TenancyForm extends Component
         ];
 
         if ($this->isStudent) {
-            $fieldsToValidate = array_merge($fieldsToValidate, ['studentId', 'facultyId', 'studyProgramId', 'classYear']);
+            $fieldsToValidate = array_merge($fieldsToValidate, ['studentId', 'faculty', 'studyProgram', 'classYear']);
         }
 
         if (!empty($this->whatsappNumber)) {
@@ -242,14 +246,11 @@ class TenancyForm extends Component
         // Validasi bahwa checkbox persetujuan harus dicentang
         $this->validateOnly(field: 'agreeToRegulations');
 
-        // --- PROSES PENYIMPANAN DATA KE DATABASE DI SINI ---
-        //
-        // 1. Simpan data penyewa ke tabel `users` atau `tenants`.
-        // 2. Simpan detail sewa ke tabel `tenancies` atau `bookings`.
-        // 3. Upload file identitas ke storage.
-        // 4. Buat invoice/tagihan.
-        //
-        // --- Akhir dari proses penyimpanan ---
+        // Simpan data ke table Occupants -> membutuhkan data contract
+
+        // Simpan data ke table Contracts -> membutuhkan data Unit dan Occupant sebagai pic yang sudah diisi sebelumnya
+
+        // Membuat login dengan kode kontrak
 
 
         // Lanjutkan ke langkah terakhir (halaman sukses)
@@ -275,14 +276,14 @@ class TenancyForm extends Component
             $this->studentForm = true;
         }
     }
-    
-    public function updatedFacultyId($facultyName)
+
+    public function updatedFaculty($facultyName)
     {
         if (!empty($facultyName)) {
             $this->studyProgramOptions = AcademicData::getFacultiesAndPrograms()[$facultyName] ?? [];
         } else {
             $this->studyProgramOptions = [];
         }
-        $this->reset('studyProgramId');
+        $this->reset('studyProgram');
     }
 }
