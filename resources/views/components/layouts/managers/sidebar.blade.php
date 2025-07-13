@@ -229,7 +229,8 @@ $adminSidebarMenu = [
                                 }
                             }
                         @endphp
-                        <flux:navlist.group :heading="$item['label']" expandable :expanded="$isExpanded" :icon="isset($item['icon']) ? $item['icon'] : null">
+                        <flux:navlist.group :heading="$item['label']" expandable :expanded="$isExpanded"
+                            :icon="isset($item['icon']) ? $item['icon'] : null">
                             @foreach ($item['items'] as $subItem)
                                 <flux:navlist.item :href="$subItem['route']" :current="$subItem['current']"
                                     wire:navigate.hover :icon="isset($subItem['icon']) ? $subItem['icon'] : null">
@@ -273,6 +274,14 @@ $adminSidebarMenu = [
                         </div>
                     </div>
                 </div>
+            </flux:menu.radio.group>
+
+            <flux:menu.separator />
+
+            <flux:menu.radio.group>
+                <flux:menu.item :href="route('home')" icon="home" wire:navigate.hover>
+                    {{ __('Home') }}
+                </flux:menu.item>
             </flux:menu.radio.group>
 
             <flux:menu.separator />
