@@ -75,6 +75,11 @@ class Unit extends Model
         return $this->hasMany(MaintenanceRecord::class);
     }
 
+    public function contracts()
+    {
+        return $this->hasMany(Contract::class);
+    }
+
     protected $casts = [
         'gender_allowed' => GenderAllowed::class,
         'status' => UnitStatus::class,
