@@ -7,7 +7,8 @@ Route::prefix('occupant')->group(function () {
     Route::prefix('auth')->group(function () {
         Route::view('/', 'modules.occupants.auth.index')->name('occupant.auth');
 
-        Route::get('/{data}', [AuthenticatedOccupantSessionController::class, '__invoke'])->name('occupant.auth.url');
+        Route::get('/{data}', [AuthenticatedOccupantSessionController::class, 'authUrl'])->name('occupant.auth.url');
+        Route::post('/logout', [AuthenticatedOccupantSessionController::class, 'logout'])->name('occupant.auth.logout');
     });
 
 

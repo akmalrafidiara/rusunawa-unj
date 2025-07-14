@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthenticatedOccupantSessionController extends Controller
 {
-    public function __invoke(Request $request, $data)
+    public function authUrl(Request $request, $data)
     {
         $contract = Contract::findOrFail(decrypt($data));
 
@@ -22,5 +22,16 @@ class AuthenticatedOccupantSessionController extends Controller
         session()->forget('url.intended');
 
         return redirect()->route('occupant.dashboard');
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::guard('occupant')->logout();
+
+        $request->session()->invalidate();
+
+        $request->session()->regenerateToken();
+
+        return redirect()->route('home');
     }
 }

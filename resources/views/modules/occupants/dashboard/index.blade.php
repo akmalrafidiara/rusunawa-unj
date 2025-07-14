@@ -23,8 +23,15 @@
 
             <!-- User Session Info -->
             <div class="mb-4 text-sm text-gray-600">
-                <p>Contract ID: {{ session('occupant_contract_id') }}</p>
-                <p>Occupant ID: {{ session('logged_in_occupant_id') }}</p>
+                <p>Occupant Name: {{ Auth::guard('occupant')->user()->full_name }}</p>
+                <form method="POST" action="{{ route('occupant.auth.logout') }}">
+                    @csrf
+
+                    <button type="submit"
+                        style="background-color: #dc3545; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer;">
+                        Logout
+                    </button>
+                </form>
             </div>
 
             <!-- Info Cards -->
