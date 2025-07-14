@@ -118,7 +118,7 @@
         <div x-show="showPreview" x-transition.opacity class="fixed inset-0 bg-black/75"></div>
 
         <div x-show="showPreview" x-transition class="relative w-full max-w-3xl rounded-lg">
-            <img :src="previewUrl" alt="Image Preview" class="w-full h-auto rounded-lg shadow-xl">
+            <img :src="previewUrl" alt="Image Preview" class="w-full max-h-96 object-contain rounded-lg">
             <button x-on:click="showPreview = false"
                 class="absolute -top-2 -right-2 h-8 w-8 rounded-full bg-white text-gray-600 hover:bg-gray-200 flex items-center justify-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
