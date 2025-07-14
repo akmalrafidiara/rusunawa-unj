@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class Invoice extends Model
 {
@@ -59,5 +60,15 @@ class Invoice extends Model
     public function payments()
     {
         return $this->hasMany(Payment::class);
+    }
+
+    public function generatePdf()
+    {
+        $pdf = Pdf::loadView('exports.invoice', [
+            'invoice' => $this,
+            'contract' => $this->contract,
+        ]);
+        
+        return $pdf->output();
     }
 }

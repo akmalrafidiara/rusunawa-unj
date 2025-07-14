@@ -3,7 +3,8 @@
 namespace App\Livewire\Frontend\Tenancy;
 
 use App\Enums\GenderAllowed;
-use App\Mail\WelcomeOccupant;
+use App\Enums\OccupantStatus;
+use App\Mail\WelcomeOccupantMail;
 use App\Models\Contract;
 use App\Models\Invoice;
 use App\Models\Occupant;
@@ -276,14 +277,14 @@ class TenancyForm extends Component
                     'full_name'            => $this->fullName,
                     'whatsapp_number'      => $this->whatsappNumber,
                     'agree_to_regulations' => $this->agreeToRegulations,
-                    'status'               => $this->occupantType->requires_verification ? 'pending_verification' : 'active',
+                    'status'               => $this->occupantType->requires_verification ? OccupantStatus::PENDING_VERIFICATION : OccupantStatus::ACTIVE,
                     'is_student'           => $this->isStudent,
                     'student_id'           => $this->isStudent ? $this->studentId : null,
                     'faculty'              => $this->isStudent ? $this->faculty : null,
                     'study_program'        => $this->isStudent ? $this->studyProgram : null,
                     'class_year'           => $this->isStudent ? $this->classYear : null,
                     
-                    'identity_card_file'   => $identityPath,
+                    'identity_card_file'   => $identityPath,    
                     'community_card_file'  => $communityPath,
                 ]           // Data untuk di-create atau di-update
             );
@@ -307,16 +308,19 @@ class TenancyForm extends Component
             // Attach the occupant to the contract
             $contract->occupants()->attach($occupant->id, ['is_pic' => true]);
 
-            // Handle Invoice creation
-            Invoice::create([
-                'invoice_number' => Invoice::generateInvoiceNumber(),
-                'contract_id' => $contract->id,
-                'description' => 'Pembayaran sewa pertama untuk unit ' . $this->unit->room_number,
-                'amount' => $this->totalPrice,
-                'due_date' => Carbon::now()->addDays(1),
-                'status' => 'unpaid',
-            ]);
-
+            $invoice = null;
+            if ($occupant->status === OccupantStatus::ACTIVE) {
+                // Handle Invoice creation
+                $invoice = Invoice::create([
+                    'invoice_number' => Invoice::generateInvoiceNumber(),
+                    'contract_id' => $contract->id,
+                    'description' => 'Pembayaran sewa pertama untuk unit ' . $this->unit->room_number,
+                    'amount' => $this->totalPrice,
+                    'due_date' => Carbon::now()->addDays(1),
+                    'status' => 'unpaid',
+                ]);
+            }
+            
             // Update unit status to NOT_AVAILABLE
             $this->unit->status = UnitStatus::NOT_AVAILABLE;
             $this->unit->save();
@@ -329,7 +333,7 @@ class TenancyForm extends Component
             );
 
             // Send welcome email to the occupant
-            Mail::to($this->email)->send(new WelcomeOccupant($contract, $this->authUrl));
+            Mail::to($this->email)->send(new WelcomeOccupantMail($contract, $this->authUrl, $invoice));
             
             // Commit the transaction
             DB::commit();

@@ -63,6 +63,20 @@
                                     berhasil kami konfirmasi. Kami senang sekali Anda akan bergabung dengan kami!
                                 </p>
 
+                                @if ($invoice)
+                                    <h2 style="color: #059669;">Langkah Selanjutnya: Pembayaran</h2>
+                                    <p>Pemesanan Anda telah kami konfirmasi. Silakan lakukan pembayaran sesuai dengan
+                                        **invoice yang terlampir** pada email ini.</p>
+                                    <p>Anda juga dapat melihat detail tagihan dan melakukan pembayaran melalui dashboard
+                                        Anda.</p>
+                                @else
+                                    <h2 style="color: #059669;">Langkah Selanjutnya: Verifikasi Data</h2>
+                                    <p>Saat ini, tim kami sedang melakukan verifikasi terhadap data Anda. Proses ini
+                                        biasanya memakan waktu maksimal 1x24 jam.</p>
+                                    <p>Anda akan menerima email selanjutnya yang berisi instruksi pembayaran setelah
+                                        data Anda berhasil kami verifikasi.</p>
+                                @endif
+
                                 <h2
                                     style="font-size: 20px; color: #059669; border-top: 1px solid #eeeeee; padding-top: 25px; margin-top: 25px; font-weight: 600;">
                                     Akses Cepat ke Portal Anda</h2>

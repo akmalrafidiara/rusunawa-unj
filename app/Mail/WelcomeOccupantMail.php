@@ -3,31 +3,32 @@
 namespace App\Mail;
 
 use App\Models\Contract;
+use App\Models\Invoice;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\URL;
+use Illuminate\Mail\Mailables\Attachment;
 
-class WelcomeOccupant extends Mailable
+class WelcomeOccupantMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     public Contract $contract;
     public string $url;
+    public ?Invoice $invoice;
 
     /**
      * Create a new message instance.
      *
      * @param Contract $contract
      */
-    public function __construct(Contract $contract, string $url)
+    public function __construct(Contract $contract, string $url, ?Invoice $invoice = null)
     {
         $this->contract = $contract;
-
         $this->url = $url;
+        $this->invoice = $invoice;
     }
 
     /**
@@ -57,6 +58,13 @@ class WelcomeOccupant extends Mailable
      */
     public function attachments(): array
     {
+        if ($this->invoice) {
+            return [
+                Attachment::fromData(fn () => $this->invoice->generatePdf(), 'Invoice-' . $this->invoice->invoice_number . '.pdf')
+                    ->withMime('application/pdf'),
+            ];
+        }
+        
         return [];
     }
 }
