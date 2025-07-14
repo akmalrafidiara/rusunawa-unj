@@ -3,14 +3,27 @@
 namespace App\Livewire\Frontend\Tenancy;
 
 use App\Enums\GenderAllowed;
+use App\Mail\WelcomeOccupant;
+use App\Models\Contract;
+use App\Models\Invoice;
+use App\Models\Occupant;
 use App\Models\UnitCluster;
 use App\Models\OccupantType;
 use App\Models\Regulation;
 use App\Models\UnitType;
 use App\Models\Unit;
+use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use App\Data\AcademicData;
+use App\Enums\UnitStatus;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
+use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 
 class TenancyForm extends Component
 {
@@ -80,6 +93,9 @@ class TenancyForm extends Component
 
     // STEP 3
     public bool $agreeToRegulations = false;
+
+    // STEP 4
+    public $authUrl;
 
     public function mount()
     {
@@ -171,7 +187,7 @@ class TenancyForm extends Component
             // Rules step 2
             'fullName'         => 'required|string|max:255',
             'email'            => 'required|email|max:255',
-            'whatsappNumber'   => 'required|string|max:15',
+            'whatsappNumber'   => 'required|string|min:5|max:15',
             'identityCardFile' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
             'communityCardFile'=> 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
 
@@ -243,18 +259,101 @@ class TenancyForm extends Component
 
     public function thirdStepSubmit()
     {
-        // Validasi bahwa checkbox persetujuan harus dicentang
+        // Validate the agreeToRegulations field
         $this->validateOnly(field: 'agreeToRegulations');
 
-        // Simpan data ke table Occupants -> membutuhkan data contract
+        DB::beginTransaction();
+        
+        try {
+            // Handle Occupant creation or update
 
-        // Simpan data ke table Contracts -> membutuhkan data Unit dan Occupant sebagai pic yang sudah diisi sebelumnya
+            $identityPath = $this->identityCardFile->store('occupant', 'public');
+            $communityPath = $this->communityCardFile ? $this->communityCardFile->store('occupant', 'public') : null;
 
-        // Membuat login dengan kode kontrak
+            $occupant = Occupant::updateOrCreate(
+                ['email' => $this->email], // Kunci untuk mencari
+                [
+                    'full_name'            => $this->fullName,
+                    'whatsapp_number'      => $this->whatsappNumber,
+                    'agree_to_regulations' => $this->agreeToRegulations,
+                    'status'               => $this->occupantType->requires_verification ? 'pending_verification' : 'active',
+                    'is_student'           => $this->isStudent,
+                    'student_id'           => $this->isStudent ? $this->studentId : null,
+                    'faculty'              => $this->isStudent ? $this->faculty : null,
+                    'study_program'        => $this->isStudent ? $this->studyProgram : null,
+                    'class_year'           => $this->isStudent ? $this->classYear : null,
+                    
+                    'identity_card_file'   => $identityPath,
+                    'community_card_file'  => $communityPath,
+                ]           // Data untuk di-create atau di-update
+            );
 
+            // Handle Contract creation
+            $contract = Contract::create([
+                'contract_code' => Contract::generateContractCode(
+                    $this->unitCluster,
+                    $this->occupantType,
+                    $this->pricingBasis->value
+                ),
+                'unit_id' => $this->unit->id,
+                'occupant_type_id' => $this->occupantType->id,
+                'start_date' => $this->startDate,
+                'end_date' => $this->endDate,
+                'pricing_basis' => $this->pricingBasis->value,
+                'total_price' => $this->totalPrice,
+                'status' => 'pending_payment',
+            ]);
 
-        // Lanjutkan ke langkah terakhir (halaman sukses)
-        $this->currentStep = 4;
+            // Attach the occupant to the contract
+            $contract->occupants()->attach($occupant->id, ['is_pic' => true]);
+
+            // Handle Invoice creation
+            Invoice::create([
+                'invoice_number' => Invoice::generateInvoiceNumber(),
+                'contract_id' => $contract->id,
+                'description' => 'Pembayaran sewa pertama untuk unit ' . $this->unit->room_number,
+                'amount' => $this->totalPrice,
+                'due_date' => Carbon::now()->addDays(1),
+                'status' => 'unpaid',
+            ]);
+
+            // Update unit status to NOT_AVAILABLE
+            $this->unit->status = UnitStatus::NOT_AVAILABLE;
+            $this->unit->save();
+
+            // Create a signed URL for occupant login
+            $this->authUrl = URL::temporarySignedRoute(
+                'occupant.auth.url',   
+                now()->addHours(value: 1),
+                ['data' => encrypt($contract->id)]
+            );
+
+            // Send welcome email to the occupant
+            Mail::to($this->email)->send(new WelcomeOccupant($contract, $this->authUrl));
+            
+            // Commit the transaction
+            DB::commit();
+
+            // Clear session data
+            session()->forget('tenancy_data');
+            $this->currentStep = 4;
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            // Hapus file yang sudah ter-upload jika terjadi error
+            if (isset($identityPath) && Storage::disk('public')->exists($identityPath)) {
+                Storage::disk('public')->delete($identityPath);
+            }
+            if (isset($communityPath) && Storage::disk('public')->exists($communityPath)) {
+                Storage::disk('public')->delete($communityPath);
+            }
+
+            dd('Gagal membuat pesanan: ' . $e->getMessage());
+
+            // Tampilkan notifikasi error kepada pengguna
+            Log::error('Gagal membuat pesanan: ' . $e->getMessage());
+            LivewireAlert::title('Terjadi Kesalahan')->error();
+        }
     }
 
     public function previousStep()
