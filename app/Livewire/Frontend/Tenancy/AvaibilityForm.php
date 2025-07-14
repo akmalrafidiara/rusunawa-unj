@@ -44,6 +44,7 @@ class AvaibilityForm extends Component
         $this->pricingBasis = $data['pricingBasis'] ?? null;
         $this->startDate = $data['startDate'] ?? null;
         $this->endDate = $data['endDate'] ?? null;
+        $this->totalDays = $data['totalDays'] ?? null;
 
         $this->pricingBasisOptions = PricingBasis::options();
 
@@ -56,8 +57,11 @@ class AvaibilityForm extends Component
     }
 
     public function updated($propertyName)
-    {
-        if (in_array($propertyName, ['startDate', 'endDate'])) {
+    {   
+        if (in_array($propertyName, ['startDate', 'endDate', 'pricingBasis'])) {
+            if ($this->pricingBasis === 'per_month' && $this->startDate !== null) {
+                $this->endDate = \Carbon\Carbon::parse($this->startDate)->addMonth()->format('Y-m-d');
+            }
             $this->calculateTotalDays();
         }
 
@@ -69,11 +73,6 @@ class AvaibilityForm extends Component
     public function checkAvailability()
     {
         $validatedData = $this->validate($this->rules());
-
-        if ($validatedData['pricingBasis'] === 'per_month') {
-            $validatedData['startDate'] = null;
-            $validatedData['endDate'] = null;
-        }
 
         $this->ed = encrypt($validatedData);
         
@@ -89,14 +88,10 @@ class AvaibilityForm extends Component
         $rules = [
             'occupantType' => ['required', 'exists:occupant_types,id'],
             'pricingBasis' => ['required', Rule::in(array_column(PricingBasis::options(), 'value'))],
-            'startDate' => ['nullable', 'date'],
-            'endDate' => ['nullable', 'date', 'after_or_equal:startDate'],
+            'startDate' => ['required', 'date'],
+            'endDate' => ['required', 'date', 'after_or_equal:startDate'],
+            'totalDays' => ['required', 'integer', 'min:1'],
         ];
-
-        if ($this->pricingBasis !== 'per_month') {
-            $rules['startDate'] = ['required', 'date'];
-            $rules['endDate'] = ['required', 'date', 'after_or_equal:startDate'];
-        }
         return $rules;
     }
 

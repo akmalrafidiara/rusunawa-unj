@@ -18,12 +18,12 @@
 
         {{-- Dropdown Tipe Penghuni --}}
         <div class="w-full lg:col-span-3">
-            <label for="jenis-penghuni" class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Pilih Tipe
-                Penghuni</label>
+            <label for="jenis-penghuni" class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Kamu tipe
+                yang mana?</label>
             <div class="relative">
                 <select id="jenis-penghuni" wire:model.live="occupantType"
                     class="{{ $inputBaseClass }} {{ $errors->has('occupantType') ? 'border-red-500' : 'border-gray-300 dark:border-gray-600' }}">
-                    <option value="">Kamu tipe yang mana?</option>
+                    <option value="">Pilih Tipe Penghuni</option>
                     @foreach ($occupantTypeOptions as $option)
                         <option value="{{ $option['id'] }}">{{ $option['name'] }}</option>
                     @endforeach
@@ -74,8 +74,8 @@
                 {{-- Input Start Date --}}
                 <div class="relative min-w-0 flex-1">
                     <input wire:model.live="startDate" type="date" min="{{ date('Y-m-d') }}"
-                        class="{{ $inputBaseClass }} {{ $disabledClasses }} {{ $errors->has('startDate') ? 'border-red-500' : 'border-gray-300 dark:border-gray-600' }} {{ !$startDate ? 'text-gray-400' : 'text-gray-900 dark:text-white' }}"
-                        onchange="this.style.color = 'inherit';" {{ $isMonthly ? 'disabled' : '' }}>
+                        class="{{ $inputBaseClass }} {{ $errors->has('startDate') ? 'border-red-500' : 'border-gray-300 dark:border-gray-600' }} {{ !$startDate ? 'text-gray-400' : 'text-gray-900 dark:text-white' }}"
+                        onchange="this.style.color = 'inherit';">
                     @error('startDate')
                         <div
                             class="absolute z-10 bg-red-600 text-white text-xs px-2 py-1 rounded shadow-lg top-full left-0 mt-1 whitespace-nowrap">
@@ -110,7 +110,7 @@
         {{-- Tombol Cari --}}
         <div class="w-full lg:col-span-2">
             <button wire:click="checkAvailability()" type="button"
-                class="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-bold h-10 px-6 rounded-lg transition flex items-center justify-center"
+                class="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-bold h-10 px-6 rounded-lg transition flex items-center justify-center cursor-pointer"
                 wire:loading.attr="disabled" wire:target="checkAvailability">
                 <span wire:loading.remove
                     wire:target="checkAvailability">{{ request()->routeIs('home') ? 'Cari Kamar' : 'Terapkan' }}</span>

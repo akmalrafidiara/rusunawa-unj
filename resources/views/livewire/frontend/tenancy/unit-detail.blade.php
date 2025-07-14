@@ -73,7 +73,7 @@ new class extends Component {
             ],
         ]);
 
-        return redirect()->route('frontend.tenancy.form');
+        return $this->redirect(route('frontend.tenancy.form'), navigate: true);
     }
 
     private function calculateTotalDays()
@@ -172,9 +172,9 @@ new class extends Component {
                 </h3>
                 <p class="text-sm sm:text-base text-gray-600 dark:text-gray-300">Harga berdasarkan filter <span
                         class="font-bold">{{ $occupantType->name }},
-                        Sewa
-                        {{ $pricingBasis->label() }}
-                        {{ $pricingBasis->value == 'per_night' ? ', ' . \Carbon\Carbon::parse($startDate)->translatedFormat('d F Y') . ' sampai ' . \Carbon\Carbon::parse($endDate)->translatedFormat('d F Y') : '' }}</span>
+                        Sewa {{ $pricingBasis->label() }},
+                        {{ \Carbon\Carbon::parse($startDate)->translatedFormat('d F Y') . ' sampai ' . \Carbon\Carbon::parse($endDate)->translatedFormat('d F Y') }}
+                        Total {{ $totalDays }} hari.</span>
                 </p>
                 <a href="{{ route('tenancy.index', ['ed' => $encryptedData]) }}" wire:navigate
                     class="text-emerald-600 dark:text-emerald-400 font-semibold underline text-sm sm:text-base">

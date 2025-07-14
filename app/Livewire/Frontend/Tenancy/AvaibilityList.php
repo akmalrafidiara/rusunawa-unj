@@ -20,7 +20,8 @@ class AvaibilityList extends Component
         $occupantType,
         $pricingBasis,
         $startDate,
-        $endDate;
+        $endDate,
+        $totalDays;
 
     public function mount()
     {
@@ -39,6 +40,7 @@ class AvaibilityList extends Component
             $this->pricingBasis = $data['pricingBasis'] ?? null;
             $this->startDate = $data['startDate'] ?? null;
             $this->endDate = $data['endDate'] ?? null;
+            $this->totalDays = $data['totalDays'] ?? null;
             $this->queryFilters();
         }
     }
@@ -55,6 +57,7 @@ class AvaibilityList extends Component
         $this->pricingBasis = $filters['pricingBasis'] ?? null;
         $this->startDate = $filters['startDate'] ?? null;
         $this->endDate = $filters['endDate'] ?? null;
+        $this->totalDays = $filters['totalDays'] ?? null;
 
         $this->queryFilters();
     }
@@ -133,6 +136,7 @@ class AvaibilityList extends Component
             'pricingBasis' => $this->pricingBasis,
             'startDate' => $this->startDate,
             'endDate' => $this->endDate,
+            'totalDays' => $this->totalDays,
         ];
 
         return $this->redirect(route('frontend.tenancy.unit.detail', [

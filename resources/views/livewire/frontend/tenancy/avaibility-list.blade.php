@@ -6,10 +6,9 @@
                 <p>Menampilkan kamar untuk penghuni <span class="font-bold">{{ $occupantType }}</span>
                     dengan sewa
                     <span class="font-bold">{{ \App\Enums\PricingBasis::from($pricingBasis)->label() }}</span>
-                    @if (!empty($startDate) && !empty($endDate))
-                        , Periode <span class="font-bold">{{ \Carbon\Carbon::parse($startDate)->format('d F Y') }} -
-                            {{ \Carbon\Carbon::parse($endDate)->format('d F Y') }}</span>
-                    @endif
+                    , Periode <span class="font-bold">{{ \Carbon\Carbon::parse($startDate)->format('d F Y') }} -
+                        {{ \Carbon\Carbon::parse($endDate)->format('d F Y') }}</span>
+                    dengan total <span class="font-bold">{{ $totalDays }} hari.</span>
             @endif
             </p>
         </div>
@@ -95,6 +94,15 @@
                         </p>
                     </div>
                 @endforelse
+            </div>
+        </div>
+    @else
+        <div class="container mx-auto px-6">
+            <div class="text-center py-16">
+                <h3 class="text-xl font-semibold text-gray-800 dark:text-white">Filter kamar belum diterapkan</h3>
+                <p class="text-gray-500 dark:text-gray-400 mt-2">Isi terlebih dahulu
+                    untuk melihat tipe kamar yang tersedia
+                </p>
             </div>
         </div>
     @endif
