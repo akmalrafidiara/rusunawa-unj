@@ -4,6 +4,7 @@ namespace App\Livewire\Frontend\Tenancy;
 
 use App\Enums\GenderAllowed;
 use App\Enums\OccupantStatus;
+use App\Jobs\SendWelcomeEmail;
 use App\Mail\WelcomeOccupantMail;
 use App\Models\Contract;
 use App\Models\Invoice;
@@ -333,8 +334,7 @@ class TenancyForm extends Component
             );
 
             // Send welcome email to the occupant
-            Mail::to($this->email)->send(new WelcomeOccupantMail($contract, $this->authUrl, $invoice));
-            
+            SendWelcomeEmail::dispatch($occupant, $contract, $this->authUrl, $invoice);
             // Commit the transaction
             DB::commit();
 
