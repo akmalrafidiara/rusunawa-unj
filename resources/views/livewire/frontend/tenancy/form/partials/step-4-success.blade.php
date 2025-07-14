@@ -20,9 +20,11 @@
             class="border border-solid border-emerald-600 text-emerald-600 font-semibold px-6 py-2 rounded-lg hover:bg-emerald-600 hover:text-white transition-colors ">
             Hubungi Kami
         </a>
-        <a href="{{ route('home') }}" wire:navigate
-            class="bg-emerald-600 text-white font-semibold px-6 py-2 rounded-lg hover:bg-emerald-700 transition-colors">
-            Lihat Dashboard
-        </a>
+        @if ($authUrl)
+            <a href="{{ $authUrl }}" wire:navigate
+                class="bg-emerald-600 text-white font-semibold px-6 py-2 rounded-lg hover:bg-emerald-700 transition-colors">
+                Masuk ke Dashboard
+            </a>
+        @endif
     </div>
 </div>
