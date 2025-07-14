@@ -19,8 +19,6 @@ class AuthenticatedOccupantSessionController extends Controller
 
         Auth::guard('occupant')->login($contract->pic->first());
 
-        session()->forget('url.intended');
-
         return redirect()->route('occupant.dashboard');
     }
 
