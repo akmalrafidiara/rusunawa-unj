@@ -48,7 +48,8 @@
                         role="presentation"
                         style="width: 100%; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; border: 1px solid #e2e8f0;">
                         <tr>
-                            <td style="padding: 25px; text-align: center; background-color: #ffffff;">
+                            <td
+                                style="padding: 25px; padding-top: 50px; text-align: center; background-color: #ffffff;">
                                 <img src="https://unj.ac.id/wp-content/uploads/2025/02/UNJ-LOGO-512-PX-1.png"
                                     alt="Logo UNJ" width="150">
                             </td>
@@ -59,22 +60,80 @@
                                 <h1 style="font-size: 24px; color: #1a202c; margin-top: 0; font-weight: 600;">Selamat
                                     Datang, {{ $contract->pic->first()->full_name }}!</h1>
                                 <p style="font-size: 16px; line-height: 1.6; color: #4a5568;">
-                                    Pemesanan Anda untuk unit <strong>{{ $contract->unit->room_number }}</strong> telah
-                                    berhasil kami konfirmasi. Kami senang sekali Anda akan bergabung dengan kami!
+                                    Pemesanan Anda untuk unit <strong
+                                        style="font-size: 18px;">{{ $contract->unit->room_number }}</strong> telah
+                                    berhasil dibuat.
                                 </p>
 
                                 @if ($invoice)
-                                    <h2 style="color: #059669;">Langkah Selanjutnya: Pembayaran</h2>
-                                    <p>Pemesanan Anda telah kami konfirmasi. Silakan lakukan pembayaran sesuai dengan
-                                        **invoice yang terlampir** pada email ini.</p>
-                                    <p>Anda juga dapat melihat detail tagihan dan melakukan pembayaran melalui dashboard
-                                        Anda.</p>
+                                    <h2
+                                        style="font-size: 20px; color: #059669; border-top: 1px solid #eeeeee; padding-top: 25px; margin-top: 25px; font-weight: 600;">
+                                        Langkah Selanjutnya: Pembayaran</h2>
+                                    <p style="font-size: 16px; line-height: 1.6; color: #4a5568;">
+                                        Pemesanan Anda telah kami konfirmasi. Silakan lakukan pembayaran sesuai dengan
+                                        <strong>**invoice yang terlampir**</strong> pada email ini.
+                                    </p>
+                                    <p style="font-size: 16px; line-height: 1.6; color: #4a5568;">
+                                        Anda juga dapat melihat detail tagihan dan melakukan konfirmasi pembayaran
+                                        melalui <a href="{{ $url }}"
+                                            style="color: #059669; text-decoration: none;">dashboard Anda</a>.
+                                    </p>
+                                    <table width="100%" border="0" cellpadding="0" cellspacing="0"
+                                        role="presentation" style="margin: 20px 0;">
+                                        <tr>
+                                            <td style="padding: 20px; background-color: #f9fafb; border-radius: 8px;">
+                                                <table width="100%" border="0" cellpadding="0" cellspacing="0"
+                                                    role="presentation">
+                                                    <tr>
+                                                        <td style="padding: 5px 0; font-size: 15px; color: #4a5568;">
+                                                            Nomor Virtual Account (Mandiri)</td>
+                                                        <td
+                                                            style="padding: 5px 0; font-size: 16px; color: #1a202c; text-align: right; font-weight: 600;">
+                                                            {{ $contract->unit->virtual_account_number }}
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="padding: 5px 0; font-size: 15px; color: #4a5568;">
+                                                            Atas Nama</td>
+                                                        <td
+                                                            style="padding: 5px 0; font-size: 16px; color: #1a202c; text-align: right; font-weight: 600;">
+                                                            Rusunawa UNJ
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="padding: 5px 0; font-size: 15px; color: #4a5568;">
+                                                            Nominal Pembayaran</td>
+                                                        <td
+                                                            style="padding: 5px 0; font-size: 16px; color: #1a202c; text-align: right; font-weight: 600;">
+                                                            Rp {{ number_format($invoice->amount, 0, ',', '.') }}
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td
+                                                            style="padding: 10px 0 0 0; font-size: 15px; color: #4a5568; border-top: 1px solid #e2e8f0; margin-top: 10px;">
+                                                            Batas Waktu Pembayaran</td>
+                                                        <td
+                                                            style="padding: 10px 0 0 0; font-size: 16px; color: #dc3545; text-align: right; font-weight: 600; border-top: 1px solid #e2e8f0; margin-top: 10px;">
+                                                            {{-- {{ $invoice->due_date->format('d M Y, H:i') }} WIB --}}
+                                                            Maks 2 Jam setelah invoice dibuat
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
                                 @else
-                                    <h2 style="color: #059669;">Langkah Selanjutnya: Verifikasi Data</h2>
-                                    <p>Saat ini, tim kami sedang melakukan verifikasi terhadap data Anda. Proses ini
-                                        biasanya memakan waktu maksimal 1x24 jam.</p>
-                                    <p>Anda akan menerima email selanjutnya yang berisi instruksi pembayaran setelah
-                                        data Anda berhasil kami verifikasi.</p>
+                                    <h2
+                                        style="font-size: 20px; color: #059669; border-top: 1px solid #eeeeee; padding-top: 25px; margin-top: 25px; font-weight: 600;">
+                                        Langkah Selanjutnya: Verifikasi Data</h2>
+                                    <p style="font-size: 16px; line-height: 1.6; color: #4a5568;">
+                                        Saat ini, tim kami sedang melakukan verifikasi terhadap data Anda. Proses ini
+                                        biasanya memakan waktu maksimal <strong>1x24 jam</strong>.
+                                    </p>
+                                    <p style="font-size: 16px; line-height: 1.6; color: #4a5568;">
+                                        Anda akan menerima email selanjutnya yang berisi instruksi pembayaran setelah
+                                        data Anda berhasil kami verifikasi.
+                                    </p>
                                 @endif
 
                                 <h2
@@ -98,7 +157,7 @@
                                 </table>
 
                                 <div
-                                    style="background-color: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin-top: 30px;">
+                                    style="background-color: #f9fafb; border-radius: 8px; padding: 20px; margin-top: 30px;">
                                     <h3 style="font-size: 18px; color: #1a202c; margin-top: 0; font-weight: 600;">Metode
                                         Login Manual</h3>
                                     <p style="font-size: 15px; color: #4a5568;">Simpan informasi ini untuk login kapan
