@@ -13,7 +13,6 @@ use Livewire\Volt\Component;
 use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 use App\Enums\RoleUser;
 
-
 new #[Layout('components.layouts.auth')] class extends Component {
     #[Validate('required|string|email')]
     public string $email = '';
@@ -33,58 +32,32 @@ new #[Layout('components.layouts.auth')] class extends Component {
             if (!Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
                 RateLimiter::hit($this->throttleKey());
 
-                LivewireAlert::error()
-                    ->title('Login Gagal!')
-                    ->text('Email atau kata sandi yang Anda masukkan tidak sesuai. Silakan coba lagi.')
-                    ->toast()
-                    ->position('top-end')
-                    ->show();
+                LivewireAlert::error()->title('Login Gagal!')->text('Email atau kata sandi yang Anda masukkan tidak sesuai. Silakan coba lagi.')->toast()->position('top-end')->show();
                 return;
             }
 
             $user = Auth::user();
 
             // Definisi role yang diizinkan untuk masuk ke dashboard managers
-            $allowedRoles = [
-                RoleUser::ADMIN->value,
-                RoleUser::HEAD_OF_RUSUNAWA->value,
-                RoleUser::STAFF_OF_RUSUNAWA->value,
-            ];
+            $allowedRoles = [RoleUser::ADMIN->value, RoleUser::HEAD_OF_RUSUNAWA->value, RoleUser::STAFF_OF_RUSUNAWA->value];
 
-            
             if (!$user->hasAnyRole($allowedRoles)) {
                 Auth::logout();
                 Session::invalidate();
                 Session::regenerateToken();
 
-                LivewireAlert::warning()
-                    ->title('Akses Dibatasi!')
-                    ->text('Akun Anda tidak memiliki izin untuk mengakses halaman ini. Silakan hubungi administrator.')
-                    ->toast()
-                    ->position('top-end')
-                    ->show();
+                LivewireAlert::warning()->title('Akses Dibatasi!')->text('Akun Anda tidak memiliki izin untuk mengakses halaman ini. Silakan hubungi administrator.')->toast()->position('top-end')->show();
                 return;
             }
 
             RateLimiter::clear($this->throttleKey());
             Session::regenerate();
             $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
-
         } catch (ValidationException $e) {
-            LivewireAlert::error()
-                ->title('Input Tidak Valid!')
-                ->text('Mohon periksa kembali input yang Anda masukkan.')
-                ->toast()
-                ->position('top-end')
-                ->show();
+            LivewireAlert::error()->title('Input Tidak Valid!')->text('Mohon periksa kembali input yang Anda masukkan.')->toast()->position('top-end')->show();
             throw $e;
         } catch (\Exception $e) {
-            LivewireAlert::error()
-                ->title('Terjadi Kesalahan!')
-                ->text('Sistem sedang mengalami masalah. Mohon coba beberapa saat lagi.')
-                ->toast()
-                ->position('top-end')
-                ->show();
+            LivewireAlert::error()->title('Terjadi Kesalahan!')->text('Sistem sedang mengalami masalah. Mohon coba beberapa saat lagi.')->toast()->position('top-end')->show();
         }
     }
 
@@ -122,8 +95,10 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
 <div class="flex flex-col gap-6 w-full mx-auto items-center my-6 mb-6">
     <div class="text-left w-full">
-        <h1 class="text-2xl font-bold text-gray-900 mb-2 dark:text-gray-100">Masuk ke Dashboard Pengelola Rusunawa UNJ</h1>
-        <p class="text-gray-600 text-sm lg:text-m dark:text-gray-50">Silakan login menggunakan akun yang telah terdaftar untuk mengelola
+        <h1 class="text-2xl font-bold text-gray-900 mb-2 dark:text-gray-100">Masuk ke Dashboard Pengelola Rusunawa UNJ
+        </h1>
+        <p class="text-gray-600 text-sm lg:text-m dark:text-gray-50">Silakan login menggunakan akun yang telah terdaftar
+            untuk mengelola
             data penghuni, kamar, pengaduan, dan operasional Rusunawa Universitas Negeri Jakarta.
             Pastikan informasi akun Anda tetap aman dan tidak dibagikan kepada pihak lain.</p>
     </div>
