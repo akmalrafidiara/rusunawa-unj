@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\InvoiceStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
@@ -29,6 +30,7 @@ class Invoice extends Model
     protected $casts = [
         'due_date' => 'date',
         'paid_at' => 'datetime',
+        'status' => InvoiceStatus::class,
     ];
 
     protected static function boot()
@@ -73,7 +75,7 @@ class Invoice extends Model
             'invoice' => $this,
             'contract' => $this->contract,
         ]);
-        
+
         return $pdf->output();
     }
 }

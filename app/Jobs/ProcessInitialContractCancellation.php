@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Enums\ContractStatus;
+use App\Enums\InvoiceStatus;
 use App\Enums\UnitStatus;
 use App\Mail\ContractCancelledMail;
 use App\Models\Invoice;
@@ -37,17 +38,17 @@ class ProcessInitialContractCancellation implements ShouldQueue
         DB::transaction(function () {
             $contract = $this->invoice->contract;
 
-            $this->invoice->update(['status' => 'cancelled']);
-            $contract->update(['status' => ContractStatus::CANCELLED->value]);
+            $this->invoice->update(['status' => InvoiceStatus::CANCELLED]);
+            $contract->update(['status' => ContractStatus::CANCELLED]);
             if ($contract->unit) {
-                $contract->unit->update(['status' => UnitStatus::AVAILABLE->value]);
+                $contract->unit->update(['status' => UnitStatus::AVAILABLE]);
             }
 
             $pic = $contract->pic->first();
             if ($pic) {
                 Mail::to($pic->email)->send(new ContractCancelledMail($contract));
             }
-            
+
             Log::info("Kontrak #{$contract->contract_code} otomatis dibatalkan karena invoice pertama tidak dibayar.");
         });
     }

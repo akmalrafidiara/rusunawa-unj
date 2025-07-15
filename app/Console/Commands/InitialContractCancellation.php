@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Enums\ContractStatus;
+use App\Enums\InvoiceStatus;
 use App\Jobs\ProcessInitialContractCancellation;
 use App\Models\Invoice;
 use Illuminate\Console\Command;
@@ -32,10 +33,10 @@ class InitialContractCancellation extends Command
 
         $expirationHours = 2;
 
-        $expiredFirstInvoices = Invoice::where('status', 'unpaid')
+        $expiredFirstInvoices = Invoice::where('status', InvoiceStatus::UNPAID)
             ->where('created_at', '<=', now()->subHours($expirationHours))
             ->whereHas('contract', function ($query) {
-                $query->where('status', ContractStatus::PENDING_PAYMENT->value);
+                $query->where('status', ContractStatus::PENDING_PAYMENT);
             })
             ->with('contract.unit', 'contract.pic')
             ->get();
