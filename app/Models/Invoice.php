@@ -7,6 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 
+/**
+ * App\Models\Invoice
+ *
+ * @property-read Contract $contract
+ */
 class Invoice extends Model
 {
     use HasFactory;
