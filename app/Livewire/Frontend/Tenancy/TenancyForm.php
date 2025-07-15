@@ -2,10 +2,11 @@
 
 namespace App\Livewire\Frontend\Tenancy;
 
+use App\Enums\ContractStatus;
 use App\Enums\GenderAllowed;
+use App\Enums\InvoiceStatus;
 use App\Enums\OccupantStatus;
 use App\Jobs\SendWelcomeEmail;
-use App\Mail\WelcomeOccupantMail;
 use App\Models\Contract;
 use App\Models\Invoice;
 use App\Models\Occupant;
@@ -14,7 +15,7 @@ use App\Models\OccupantType;
 use App\Models\Regulation;
 use App\Models\UnitType;
 use App\Models\Unit;
-use Illuminate\Support\Str;
+use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use App\Data\AcademicData;
@@ -22,10 +23,8 @@ use App\Enums\UnitStatus;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
-use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 
 class TenancyForm extends Component
 {
@@ -265,7 +264,7 @@ class TenancyForm extends Component
         $this->validateOnly(field: 'agreeToRegulations');
 
         DB::beginTransaction();
-        
+
         try {
             // Handle Occupant creation or update
 
@@ -278,16 +277,16 @@ class TenancyForm extends Component
                     'full_name'            => $this->fullName,
                     'whatsapp_number'      => $this->whatsappNumber,
                     'agree_to_regulations' => $this->agreeToRegulations,
-                    'status'               => $this->occupantType->requires_verification ? OccupantStatus::PENDING_VERIFICATION : OccupantStatus::ACTIVE,
+                    'status'               => $this->occupantType->requires_verification ? OccupantStatus::PENDING_VERIFICATION : OccupantStatus::VERIFIED,
                     'is_student'           => $this->isStudent,
                     'student_id'           => $this->isStudent ? $this->studentId : null,
                     'faculty'              => $this->isStudent ? $this->faculty : null,
                     'study_program'        => $this->isStudent ? $this->studyProgram : null,
                     'class_year'           => $this->isStudent ? $this->classYear : null,
-                    
-                    'identity_card_file'   => $identityPath,    
+
+                    'identity_card_file'   => $identityPath,
                     'community_card_file'  => $communityPath,
-                ]           // Data untuk di-create atau di-update
+                ]
             );
 
             // Handle Contract creation
@@ -303,14 +302,14 @@ class TenancyForm extends Component
                 'end_date' => $this->endDate,
                 'pricing_basis' => $this->pricingBasis->value,
                 'total_price' => $this->totalPrice,
-                'status' => 'pending_payment',
+                'status' => ContractStatus::PENDING_PAYMENT,
             ]);
 
             // Attach the occupant to the contract
             $contract->occupants()->attach($occupant->id, ['is_pic' => true]);
 
             $invoice = null;
-            if ($occupant->status === OccupantStatus::ACTIVE) {
+            if ($occupant->status === OccupantStatus::VERIFIED) {
                 // Handle Invoice creation
                 $invoice = Invoice::create([
                     'invoice_number' => Invoice::generateInvoiceNumber(),
@@ -318,17 +317,17 @@ class TenancyForm extends Component
                     'description' => 'Pembayaran sewa pertama untuk unit ' . $this->unit->room_number,
                     'amount' => $this->totalPrice,
                     'due_date' => Carbon::now()->addDays(1),
-                    'status' => 'unpaid',
+                    'status' => InvoiceStatus::UNPAID,
                 ]);
             }
-            
+
             // Update unit status to NOT_AVAILABLE
             $this->unit->status = UnitStatus::NOT_AVAILABLE;
             $this->unit->save();
 
             // Create a signed URL for occupant login
             $this->authUrl = URL::temporarySignedRoute(
-                'occupant.auth.url',   
+                'occupant.auth.url',
                 now()->addHours(value: 1),
                 ['data' => encrypt($contract->id)]
             );
@@ -340,11 +339,13 @@ class TenancyForm extends Component
 
             // Clear session data
             session()->forget('tenancy_data');
+            LivewireAlert::title('Pemesanan Berhasil')
+            ->success()
+            ->show();
             $this->currentStep = 4;
         } catch (\Exception $e) {
             DB::rollBack();
 
-            // Hapus file yang sudah ter-upload jika terjadi error
             if (isset($identityPath) && Storage::disk('public')->exists($identityPath)) {
                 Storage::disk('public')->delete($identityPath);
             }
@@ -352,11 +353,11 @@ class TenancyForm extends Component
                 Storage::disk('public')->delete($communityPath);
             }
 
-            dd('Gagal membuat pesanan: ' . $e->getMessage());
-
-            // Tampilkan notifikasi error kepada pengguna
             Log::error('Gagal membuat pesanan: ' . $e->getMessage());
-            LivewireAlert::title('Terjadi Kesalahan')->error();
+            LivewireAlert::title('Terjadi Kesalahan')
+                ->text('Gagal membuat pesanan: ' . $e->getMessage())
+                ->error()
+                ->show();
         }
     }
 
