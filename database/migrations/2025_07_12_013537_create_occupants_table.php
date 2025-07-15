@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('occupants', function (Blueprint $table) {
             $table->id();
-            
+
             $table->string('full_name');
             $table->string('email')->unique();
             $table->string('whatsapp_number');
@@ -29,14 +29,14 @@ return new class extends Migration
 
             $table->boolean('agree_to_regulations')->default(false);
             $table->string('notes')->nullable();
-            
+
             $table->enum('status', [
-                'pending_verification', 
-                'active', 
-                'inactive', 
+                'pending_verification',
+                'verified',
+                'inactive',
                 'rejected'
             ])->default('pending_verification');
-            
+
             $table->timestamps();
         });
     }

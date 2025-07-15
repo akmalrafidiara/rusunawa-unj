@@ -6,7 +6,7 @@ enum OccupantStatus: string
 {
     // --- 1. Definisi Kasus ---
     case PENDING_VERIFICATION = 'pending_verification';
-    case ACTIVE = 'active';
+    case VERIFIED = 'verified';
     case INACTIVE = 'inactive';
     case REJECTED = 'rejected';
 
@@ -26,7 +26,7 @@ enum OccupantStatus: string
         // --- 2. Label untuk Setiap Status ---
         return match ($this) {
             self::PENDING_VERIFICATION => 'Menunggu Verifikasi',
-            self::ACTIVE => 'Aktif',
+            self::VERIFIED => 'Aktif',
             self::INACTIVE => 'Tidak Aktif',
             self::REJECTED => 'Ditolak',
         };
@@ -53,7 +53,7 @@ enum OccupantStatus: string
         // --- 3. Warna untuk Setiap Status ---
         return match ($this) {
             self::PENDING_VERIFICATION => ['bg-blue-100', 'text-blue-800', 'dark:bg-blue-900/30', 'dark:text-blue-400'],
-            self::ACTIVE => ['bg-green-100', 'text-green-800', 'dark:bg-green-900/30', 'dark:text-green-400'],
+            self::VERIFIED => ['bg-green-100', 'text-green-800', 'dark:bg-green-900/30', 'dark:text-green-400'],
             self::INACTIVE => ['bg-gray-100', 'text-gray-800', 'dark:bg-gray-900/30', 'dark:text-gray-400'],
             self::REJECTED => ['bg-red-100', 'text-red-800', 'dark:bg-red-900/30', 'dark:text-red-400'],
         };
