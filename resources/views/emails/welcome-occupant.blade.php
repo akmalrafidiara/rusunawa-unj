@@ -89,7 +89,10 @@
                                                             Nomor Virtual Account (Mandiri)</td>
                                                         <td
                                                             style="padding: 5px 0; font-size: 16px; color: #1a202c; text-align: right; font-weight: 600;">
-                                                            {{ $contract->unit->virtual_account_number }}
+                                                            <code
+                                                                style="background-color: #e5e7eb; padding: 3px 6px; border-radius: 4px; letter-spacing: 2px;">
+                                                                {{ chunk_split($contract->unit->virtual_account_number, 4, ' ') }}
+                                                            </code>
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -114,8 +117,7 @@
                                                             Batas Waktu Pembayaran</td>
                                                         <td
                                                             style="padding: 10px 0 0 0; font-size: 16px; color: #dc3545; text-align: right; font-weight: 600; border-top: 1px solid #e2e8f0; margin-top: 10px;">
-                                                            {{-- {{ $invoice->due_date->format('d M Y, H:i') }} WIB --}}
-                                                            Maks 2 Jam setelah invoice dibuat
+                                                            {{ $invoice->due_at->format('d M Y, H:i') }} WIB
                                                         </td>
                                                     </tr>
                                                 </table>

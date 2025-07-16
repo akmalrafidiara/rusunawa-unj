@@ -22,13 +22,13 @@ class Invoice extends Model
         'contract_id',
         'description',
         'amount',
-        'due_date',
+        'due_at',
         'paid_at',
         'status',
     ];
 
     protected $casts = [
-        'due_date' => 'date',
+        'due_at' => 'datetime',
         'paid_at' => 'datetime',
         'status' => InvoiceStatus::class,
     ];

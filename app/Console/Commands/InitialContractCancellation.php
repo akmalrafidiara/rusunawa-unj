@@ -31,10 +31,8 @@ class InitialContractCancellation extends Command
     {
        $this->info('Memeriksa invoice pembayaran pertama yang kedaluwarsa...');
 
-        $expirationHours = 2;
-
         $expiredFirstInvoices = Invoice::where('status', InvoiceStatus::UNPAID)
-            ->where('created_at', '<=', now()->subHours($expirationHours))
+            ->where('due_at', '<=', now()) 
             ->whereHas('contract', function ($query) {
                 $query->where('status', ContractStatus::PENDING_PAYMENT);
             })

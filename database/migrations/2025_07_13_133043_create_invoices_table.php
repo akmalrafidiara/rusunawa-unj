@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('description');
             $table->unsignedInteger('amount');
 
-            $table->date('due_date');
+            $table->timestamp('due_at');
             $table->timestamp('paid_at')->nullable();
             
             $table->enum('status', [

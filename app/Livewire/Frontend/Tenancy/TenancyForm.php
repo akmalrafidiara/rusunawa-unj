@@ -316,7 +316,7 @@ class TenancyForm extends Component
                     'contract_id' => $contract->id,
                     'description' => 'Pembayaran sewa pertama untuk unit ' . $this->unit->room_number,
                     'amount' => $this->totalPrice,
-                    'due_date' => Carbon::now()->addDays(1),
+                    'due_at' => Carbon::now()->addHours(config('tenancy.initial_payment_due_hours')),
                     'status' => InvoiceStatus::UNPAID,
                 ]);
             }
