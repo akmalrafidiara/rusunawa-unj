@@ -112,8 +112,8 @@ class ReportDetails extends Component
             $this->reportUniqueId = $report->unique_id;
             $this->reportSubject = $report->subject;
             $this->reportDescription = $report->description;
-            $this->reportReporterName = $report->reporter->name ?? 'N/A';
-            $this->reportReporterPhone = $report->reporter->phone ?? 'N/A';
+            $this->reportReporterName = $report->reporter->full_name ?? 'N/A';
+            $this->reportReporterPhone = $report->reporter->whatsapp_number ?? 'N/A';
             $this->reportReporterEmail = $report->reporter->email ?? 'N/A';
             $this->reportReporterType = $report->reporter_type->label();
             $this->reportRoomNumber = $report->contract->unit->room_number ?? 'N/A';
