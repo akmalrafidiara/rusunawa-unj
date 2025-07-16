@@ -8,10 +8,11 @@
     {{-- TOMBOL PREVIEW --}}
     <button type="button"
         @if ($file && str_starts_with($file->getMimeType(), 'image/')) {{-- Jika file adalah gambar, siapkan data untuk lightbox --}}
-                x-on:click="previewUrl = '{{ $file->temporaryUrl() }}'; showPreview = true"
-            @elseif ($file)
-                {{-- Jika bukan gambar (misal: PDF), buka di tab baru --}}
-                onclick="window.open('{{ $file->temporaryUrl() }}', '_blank')" @endif
+            x-on:click="previewUrl = '{{ $file->temporaryUrl() }}'; showPreview = true"
+        @elseif ($file)
+            {{-- Jika bukan gambar (misal: PDF), buka di tab baru --}}
+            onclick="window.open('{{ $file->temporaryUrl() }}', '_blank')" @endif
+        {{-- Class 'cursor-pointer' ditambahkan di sini --}}
         class="flex items-center gap-2 mt-1 text-emerald-600 dark:text-emerald-500 hover:text-emerald-700 transition-colors cursor-pointer">
 
         @if ($file && str_starts_with($file->getMimeType(), 'image/'))
@@ -35,17 +36,26 @@
     </button>
 
     {{-- ====================================================== --}}
-    {{--             MODAL LIGHTBOX UNTUK GAMBAR              --}}
+    {{-- MODAL LIGHTBOX UNTUK GAMBAR --}}
     {{-- ====================================================== --}}
     <div x-show="showPreview" x-on:keydown.escape.window="showPreview = false"
         class="fixed inset-0 z-50 flex items-center justify-center p-4" style="display: none;">
 
+        {{-- Latar belakang gelap --}}
         <div x-show="showPreview" x-transition.opacity class="fixed inset-0 bg-black/75"></div>
 
-        <div x-show="showPreview" x-transition class="relative w-full max-w-3xl rounded-lg">
-            <img :src="previewUrl" alt="Image Preview" class="w-full h-auto rounded-lg shadow-xl">
+        <div x-show="showPreview" x-transition class="relative w-full max-w-4xl rounded-lg">
+            {{--
+                PERBAIKAN UTAMA ADA DI SINI:
+                - max-h-[85vh]: Membatasi tinggi gambar menjadi 85% dari tinggi layar.
+                - object-contain: Memastikan seluruh gambar terlihat tanpa terpotong.
+            --}}
+            <img :src="previewUrl" alt="Image Preview"
+                class="w-full h-auto max-h-[85vh] object-contain rounded-lg shadow-xl">
+
+            {{-- Tombol Keluar Preview (Ditambahkan cursor-pointer) --}}
             <button x-on:click="showPreview = false"
-                class="absolute -top-2 -right-2 h-8 w-8 rounded-full bg-white text-gray-600 hover:bg-gray-200 flex items-center justify-center">
+                class="absolute -top-3 -right-3 h-9 w-9 rounded-full bg-white text-gray-700 hover:bg-gray-200 flex items-center justify-center cursor-pointer shadow-lg">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
