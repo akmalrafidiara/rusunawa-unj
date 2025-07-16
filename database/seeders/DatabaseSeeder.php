@@ -4,8 +4,6 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
-use App\Livewire\Managers\About;
-use App\Livewire\Managers\Location;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -39,6 +37,8 @@ class DatabaseSeeder extends Seeder
             GuestQuestionSeeder::class,
             MaintenanceScheduleSeeder::class,
             MaintenanceRecordSeeder::class,
+            ReportSeeder::class,
+            ReportLogSeeder::class,
         ]);
     }
 }

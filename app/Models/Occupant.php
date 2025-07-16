@@ -46,6 +46,11 @@ class Occupant extends Model implements Authenticatable
         return $this->belongsToMany(Contract::class, 'contract_occupant');
     }
 
+    public function reports()
+    {
+        return $this->hasMany(Report::class, 'reporter_id');
+    }
+
     /**
      * Mendapatkan semua log verifikasi untuk penghuni ini.
      */
