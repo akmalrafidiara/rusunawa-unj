@@ -86,6 +86,8 @@ class Regulation extends Component
 
     public function edit(RegulationModel $regulation)
     {
+        $this->resetErrorBag();
+        $this->resetValidation();
         $this->regulationIdBeingEdited = $regulation->id;
         $this->title = $regulation->title;
         $this->content = $regulation->content;
@@ -192,5 +194,7 @@ class Regulation extends Component
     {
         $this->reset(['title', 'content', 'regulationIdBeingEdited']);
         $this->dispatch('trix-reset');
+        $this->resetErrorBag();
+        $this->resetValidation();
     }
 }

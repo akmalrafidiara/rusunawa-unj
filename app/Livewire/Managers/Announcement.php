@@ -77,16 +77,33 @@ class Announcement extends Component
      * @return array
      */
     public function rules()
-    {
-        return [
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'status' => ['required', Rule::in(AnnouncementStatus::values())],
-            'category' => ['required', Rule::in(AnnouncementCategory::values())],
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'attachments.*' => 'nullable|file|max:5120',
-        ];
+{
+    // Aturan validasi umum
+    $rules = [
+        'title' => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'status' => ['required', Rule::in(AnnouncementStatus::values())],
+        'category' => ['required', Rule::in(AnnouncementCategory::values())],
+        'attachments.*' => 'nullable|file|max:5120',
+    ];
+
+    // Logika dinamis untuk validasi 'image'
+    // Jika sedang membuat pengumuman baru (announcementIdBeingEdited null)
+    if (is_null($this->announcementIdBeingEdited)) {
+        $rules['image'] = 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048';
+    } else {
+        // Jika sedang mengedit pengumuman yang sudah ada
+        // Dan pengumuman yang diedit belum punya gambar (existingImage null)
+        if (is_null($this->existingImage)) {
+            $rules['image'] = 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048';
+        } else {
+            // Jika pengumuman yang diedit sudah punya gambar (existingImage tidak null)
+            $rules['image'] = 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048';
+        }
     }
+
+    return $rules;
+}
 
     // PESAN VALIDASI DALAM BAHASA INDONESIA
     protected $messages = [
@@ -155,6 +172,8 @@ class Announcement extends Component
      */
     public function edit(AnnouncementModel $announcement)
     {
+        $this->resetErrorBag();
+        $this->resetValidation();
         $this->fillData($announcement);
         $this->modalType = 'form';
         $this->showModal = true;
@@ -174,6 +193,8 @@ class Announcement extends Component
      */
     public function detail(AnnouncementModel $announcement)
     {
+        $this->resetErrorBag();
+        $this->resetValidation();
         $this->fillData(announcement: $announcement);
         $this->modalType = 'detail';
         $this->showModal = true;

@@ -87,6 +87,8 @@ class Faq extends Component
 
     public function edit(FaqModel $faq)
     {
+        $this->resetErrorBag();
+        $this->resetValidation();
         $this->faqIdBeingEdited = $faq->id;
         $this->question = $faq->question;
         $this->answer = $faq->answer;
@@ -190,5 +192,7 @@ class Faq extends Component
     {
         $this->reset(['question', 'answer', 'faqIdBeingEdited']);
         $this->dispatch('trix-reset');
+        $this->resetErrorBag();
+        $this->resetValidation();
     }
 }

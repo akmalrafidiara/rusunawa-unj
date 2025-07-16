@@ -113,6 +113,8 @@ class EmergencyContact extends Component
      */
     public function edit(ContactModel $contact)
     {
+        $this->resetErrorBag();
+        $this->resetValidation();
         $this->fillData($contact);
         $this->modalType = 'form';
         $this->showModal = true;
