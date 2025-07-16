@@ -1,12 +1,4 @@
 {{-- Isi dari _sidebar-schedule-list.blade.php --}}
-<div class="flex justify-between items-center mb-4">
-    <h4 class="text-lg font-bold text-gray-800 dark:text-white">Daftar Kamar AC</h4>
-    @if (!$is_admin_user)
-        <x-managers.ui.button wire:click="createSchedule" variant="primary" size="sm">
-            Buat Jadwal AC Baru
-        </x-managers.ui.button>
-    @endif
-</div>
 <div class="flex flex-col gap-3 overflow-y-auto pr-2" style="max-height: 70vh;">
     @forelse ($schedules as $schedule)
         <div wire:key="list-schedule-{{ $schedule->id }}"
