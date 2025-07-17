@@ -13,6 +13,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
 use App\Enums\RoleUser;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Url;
 use Livewire\Livewire;
 
 class MaintenanceSchedules extends Component
@@ -49,7 +50,9 @@ class MaintenanceSchedules extends Component
     public $sort = 'asc';
 
     // Property untuk komunikasi dengan MaintenanceRecords
+    #[Url(as: 'selectedScheduleId', keep: true)]
     public $selectedScheduleId = null;
+    
 
     protected $queryString = [
         'search' => ['except' => ''],
@@ -122,6 +125,11 @@ class MaintenanceSchedules extends Component
             'value' => $i,
             'label' => $i . ' Bulan Sekali',
         ])->toArray();
+
+        if ($this->selectedScheduleId) {
+            // 3. Kirim event ke browser untuk memberitahu ada item yang dipilih
+            $this->dispatch('schedule-selected', id: $this->selectedScheduleId);
+        }
     }
 
     private function updateUnitOptionsForCreateSchedule()

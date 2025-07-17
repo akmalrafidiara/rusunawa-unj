@@ -9,3 +9,5 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('contracts:cancel-unpaid-initial')->everyFiveSeconds();
+
+Schedule::command('maintenance:check-schedule')->everyFiveSeconds();

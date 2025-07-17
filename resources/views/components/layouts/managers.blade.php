@@ -11,6 +11,10 @@
         <!-- Mobile User Menu -->
         <x-layouts.managers.mobile-menu />
 
+        <div class="hidden lg:flex justify-end p-4">
+            <livewire:managers.notifications />
+        </div>
+
         <flux:main>
             {{ $slot }}
         </flux:main>

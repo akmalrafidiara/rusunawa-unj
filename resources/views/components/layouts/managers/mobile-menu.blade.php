@@ -44,4 +44,6 @@
             </form>
         </flux:menu>
     </flux:dropdown>
+
+    <livewire:managers.notifications />
 </flux:header>

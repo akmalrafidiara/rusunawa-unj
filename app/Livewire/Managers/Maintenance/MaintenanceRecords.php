@@ -21,6 +21,7 @@ use App\Enums\RoleUser;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Spatie\LivewireFilepond\WithFilePond;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Url;
 
 
 class MaintenanceRecords extends Component
@@ -49,6 +50,9 @@ class MaintenanceRecords extends Component
     public $modalType = ''; // 'create_record', 'edit_record', 'detail_record'
 
     // Properties for handling selected schedule from parent
+    // Ini akan secara otomatis diisi saat halaman dimuat dengan ?selectedScheduleId=...
+    #[Url(as: 'selectedScheduleId', keep: true)]
+    public $selectedScheduleIdFromUrl = null;
     public $selectedSchedule = null;
     public $selectedScheduleIdFromParent = null; // New property to store the ID from parent
 
@@ -127,12 +131,17 @@ class MaintenanceRecords extends Component
 
         $this->is_admin_user = Auth::user()->hasRole(RoleUser::ADMIN->value);
         $this->is_head_of_rusunawa_user = Auth::user()->hasRole(RoleUser::HEAD_OF_RUSUNAWA->value);
+
+        if ($this->selectedScheduleIdFromUrl) {
+            $this->handleScheduleSelected($this->selectedScheduleIdFromUrl);
+        }
     }
 
     #[On('scheduleSelected')]
     public function handleScheduleSelected($scheduleId)
     {
         $this->selectedScheduleIdFromParent = $scheduleId;
+        $this->selectedScheduleIdFromUrl = $scheduleId;
         if ($scheduleId) {
             $this->selectedSchedule = MaintenanceSchedule::with(['unit.unitCluster'])->find($scheduleId);
         } else {
