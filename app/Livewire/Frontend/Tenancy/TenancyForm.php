@@ -184,6 +184,7 @@ class TenancyForm extends Component
         return [
             // Rules step 1
             'unitId'           => 'required',
+            'genderSelected' => 'required|in:' . implode(',', GenderAllowed::withoutGeneralValues()),
 
             // Rules step 2
             'fullName'         => 'required|string|max:255',
@@ -207,6 +208,7 @@ class TenancyForm extends Component
     {
         return [
             'unitId.required'           => 'Silakan pilih unit kamar terlebih dahulu.',
+            'genderSelected.required'   => 'Jenis kelamin wajib dipilih.',
             'fullName.required'         => 'Nama lengkap wajib diisi.',
             'email.required'            => 'Email wajib diisi.',
             'whatsappNumber.required'   => 'Nomor WhatsApp wajib diisi.',
@@ -227,7 +229,8 @@ class TenancyForm extends Component
     public function firstStepSubmit()
     {
         $this->validateOnly('unitId');
-
+        $this->validateOnly('genderSelected');
+        
         $this->unit = Unit::find($this->unitId);
         $this->unitCluster = UnitCluster::find($this->unitClusterSelectedId);
 
@@ -276,6 +279,7 @@ class TenancyForm extends Component
                 [
                     'full_name'            => $this->fullName,
                     'whatsapp_number'      => $this->whatsappNumber,
+                    'gender'               => $this->genderSelected,
                     'agree_to_regulations' => $this->agreeToRegulations,
                     'status'               => $this->occupantType->requires_verification ? OccupantStatus::PENDING_VERIFICATION : OccupantStatus::VERIFIED,
                     'is_student'           => $this->isStudent,

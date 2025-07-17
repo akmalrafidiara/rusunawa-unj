@@ -13,6 +13,11 @@ enum GenderAllowed: string
         return array_column(self::cases(), 'value');
     }
 
+    public static function withoutGeneralValues(): array
+    {
+        return array_column(array_filter(self::cases(), fn($case) => $case !== self::GENERAL), 'value');
+    }
+
     public function label(): string
     {
         return match ($this) {
