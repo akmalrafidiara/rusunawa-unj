@@ -18,6 +18,7 @@ class Occupant extends Model implements Authenticatable
         'full_name',
         'email',
         'whatsapp_number',
+        'gender',
         'identity_card_file',
         'community_card_file',
         'is_student',

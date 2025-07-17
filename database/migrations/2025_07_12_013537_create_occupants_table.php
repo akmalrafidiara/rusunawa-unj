@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('full_name');
             $table->string('email')->unique();
             $table->string('whatsapp_number');
+            $table->enum('gender', ['male', 'female']);
 
             $table->string('identity_card_file');
             $table->string('community_card_file')->nullable();
