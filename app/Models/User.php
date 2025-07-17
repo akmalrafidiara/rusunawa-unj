@@ -60,8 +60,17 @@ class User extends Authenticatable
             ->implode('');
     }
 
-    public function unitCluster()
+    // Remove this if staff_id is removed from unit_clusters table
+    // public function unitCluster()
+    // {
+    //     return $this->belongsTo(UnitCluster::class);
+    // }
+
+    /**
+     * Define a many-to-many relationship with UnitCluster for staff.
+     */
+    public function unitClusters()
     {
-        return $this->belongsTo(UnitCluster::class);
+        return $this->belongsToMany(UnitCluster::class, 'user_unit_cluster');
     }
 }

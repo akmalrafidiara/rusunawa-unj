@@ -11,12 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('unit_clusters', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('address');
-            $table->string('image')->nullable();
-            $table->text('description')->nullable();
+        Schema::create('user_unit_cluster', function (Blueprint $table) {
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('unit_cluster_id')->constrained('unit_clusters')->onDelete('cascade');
+            $table->primary(['user_id', 'unit_cluster_id']);
             $table->timestamps();
         });
     }
@@ -26,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('unit_clusters');
+        Schema::dropIfExists('user_unit_cluster');
     }
 };

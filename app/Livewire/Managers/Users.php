@@ -7,7 +7,8 @@ use App\Models\User;
 use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Illuminate\Support\Facades\Auth; // Import Auth facade
+use Illuminate\Support\Facades\Auth;
+use App\Models\UnitCluster;
 
 class Users extends Component
 {
@@ -16,9 +17,11 @@ class Users extends Component
 
     // Main data properties
     public $name, $email, $password, $phone, $role;
+    public $assignedClusters = [];
 
     // Options properties
     public $roleOptions;
+    public $unitClusterOptions;
 
     // Toolbar properties
     public $search = '';
@@ -59,6 +62,14 @@ class Users extends Component
             // For other roles (e.g., admin), show all options
             $this->roleOptions = $allRoleOptions;
         }
+
+        // Populate unit cluster options
+        $this->unitClusterOptions = UnitCluster::all()->map(function ($cluster) {
+            return [
+                'value' => $cluster->id,
+                'label' => $cluster->name,
+            ];
+        })->toArray();
     }
 
     /**
@@ -77,7 +88,8 @@ class Users extends Component
             $users->whereDoesntHave('roles', fn($r) => $r->where('name', RoleUser::ADMIN->value));
         }
 
-        $users = $users->orderBy($this->orderBy, $this->sort)
+        // Eager load unitClusters for users
+        $users = $users->with('unitClusters')->orderBy($this->orderBy, $this->sort)
             ->paginate($this->perPage);
 
         // Use map to efficiently add wa_link to each user
@@ -112,11 +124,14 @@ class Users extends Component
     public function edit(User $user)
     {
         $this->search = '';
+        $this->resetForm(); // Call resetForm first to clear previous state and errors
         $this->userIdBeingEdited = $user->id;
         $this->name = $user->name;
         $this->email = $user->email;
         $this->phone = $user->phone;
         $this->role = $user->getRoleNames()->first() ?? '';
+        // Load assigned clusters for editing
+        $this->assignedClusters = $user->unitClusters->pluck('id')->toArray();
         $this->showModal = true;
     }
 
@@ -134,11 +149,18 @@ class Users extends Component
             'password' => $this->userIdBeingEdited ? 'nullable|min:6' : 'required|min:6',
             'phone' => 'nullable|string|max:15',
             'role' => 'required|exists:roles,name',
+            'assignedClusters' => 'nullable|array', // New rule for assigned clusters
+            'assignedClusters.*' => 'exists:unit_clusters,id', // Validate each ID in the array
         ];
 
         // Add a custom rule to prevent 'head_of_rusunawa' from assigning 'admin' role
         if (Auth::user()->hasRole(RoleUser::HEAD_OF_RUSUNAWA->value)) {
             $rules['role'] .= '|not_in:' . RoleUser::ADMIN->value;
+        }
+
+        // Make assignedClusters required if role is staff_of_rusunawa
+        if ($this->role === RoleUser::STAFF_OF_RUSUNAWA->value) {
+            $rules['assignedClusters'] .= '|required';
         }
 
         return $rules;
@@ -180,6 +202,14 @@ class Users extends Component
 
         if (!$user->hasRole($this->role)) {
             $user->syncRoles([$this->role]);
+        }
+
+        // Sync assigned clusters if the role is staff_of_rusunawa
+        if ($this->role === RoleUser::STAFF_OF_RUSUNAWA->value) {
+            $user->unitClusters()->sync($this->assignedClusters);
+        } else {
+            // If the role is not staff, detach all clusters
+            $user->unitClusters()->detach();
         }
 
         LivewireAlert::title($this->userIdBeingEdited ? 'Data berhasil diperbarui.' : 'Pengguna berhasil ditambahkan.')
@@ -242,7 +272,7 @@ class Users extends Component
     }
 
     /**
-     * Reset the form fields.
+     * Reset the form fields and errors.
      */
     private function resetForm()
     {
@@ -252,5 +282,8 @@ class Users extends Component
         $this->phone = '';
         $this->role = '';
         $this->userIdBeingEdited = null;
+        $this->assignedClusters = [];
+        $this->resetErrorBag(); // Clear validation errors
+        $this->resetValidation(); // Clear validation state
     }
 }
