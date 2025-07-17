@@ -1,21 +1,26 @@
-@props(['options', 'label'])
+@props([
+    'options' => [],
+    'label' => '',
+])
 
 @php
-    // Ambil wire:model sebagai name untuk error validation
     $wireModel = $attributes->whereStartsWith('wire:model')->first();
-    $name = $attributes->get('name', $wireModel);
     $error = $wireModel && $errors->has($wireModel);
 @endphp
 
 <div class="w-full">
-    <select {{ $attributes->whereStartsWith('wire:model') }}
-        class="bg-transparant dark:bg-transparent {{ $error ? 'border-red-500' : 'border-gray-500' }} text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full py-2 px-4 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-        <option value="" disabled class="dark:bg-zinc-800">{{ $label }}</option>
+
+    <select
+        {{ $attributes->merge(['class' => 'block w-full rounded-md shadow-sm focus:border-emerald-500 focus:ring-emerald-500 dark:bg-zinc-800 dark:border-gray-600 dark:text-white dark:placeholder-zinc-500 py-2 px-4 ' . ($error ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-gray-300')]) }}>
+        <option value="" disabled>{{ $label }}</option>
+
         @foreach ($options as $option)
+            {{-- The options will now have a consistent dark mode background --}}
             <option value="{{ $option['value'] }}" class="dark:bg-zinc-800">{{ $option['label'] }}</option>
         @endforeach
     </select>
 
+    {{-- Error message display remains the same --}}
     @if ($error)
         <span class="mt-1 text-sm text-red-600">{{ $errors->first($wireModel) }}</span>
     @endif
