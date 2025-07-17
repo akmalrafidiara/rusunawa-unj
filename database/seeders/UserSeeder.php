@@ -7,6 +7,7 @@ use Spatie\Permission\Models\Role;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Faker\Factory as Faker;
+use App\Models\UnitCluster; // Import UnitCluster model
 
 class UserSeeder extends Seeder
 {
@@ -18,7 +19,7 @@ class UserSeeder extends Seeder
         $faker = Faker::create('id_ID'); // Gunakan locale Indonesia untuk nomor telepon
 
         // Data pengguna spesifik
-        $specificUsers = [
+        $specificUsersData = [
             [
                 'name' => 'Pengelola BPU',
                 'email' => 'admin@test.com',
@@ -57,7 +58,7 @@ class UserSeeder extends Seeder
         ];
 
         // Proses pengguna spesifik
-        foreach ($specificUsers as $userData) {
+        foreach ($specificUsersData as $userData) {
             $user = User::where('email', $userData['email'])->first();
 
             if (!$user) {
@@ -80,7 +81,7 @@ class UserSeeder extends Seeder
         // Pastikan role staff_of_rusunawa ada
         $staffRole = Role::firstOrCreate(['name' => 'staff_of_rusunawa']);
 
-        // Buat 5 user random dengan role staff_of_rusunawa
+        // Buat 1 user random dengan role staff_of_rusunawa (as per original loop limit)
         for ($i = 0; $i < 1; $i++) {
             $email = $faker->unique()->safeEmail;
 
@@ -99,6 +100,25 @@ class UserSeeder extends Seeder
                 $user->assignRole($staffRole);
             }
         }
+
+        // Assign unit clusters to staff users
+        // Ensure UnitClusterSeeder runs before UserSeeder for this to work correctly
+        $gedungA = UnitCluster::where('name', 'Gedung A')->first();
+        $gedungB = UnitCluster::where('name', 'Gedung B')->first();
+
+        // Assign 'Staf 1 Rusunawa' to Gedung A and Gedung B
+        $staf1 = User::where('email', 'staf1rusunawa@test.com')->first();
+        if ($staf1 && $gedungA && $gedungB) {
+            $staf1->unitClusters()->sync([$gedungA->id, $gedungB->id]);
+        }
+
+        // Assign 'Staf 2 Rusunawa' to Gedung A
+        $staf2 = User::where('email', 'staf2rusunawa@test.com')->first();
+        if ($staf2 && $gedungA) {
+            $staf2->unitClusters()->sync([$gedungA->id]);
+        }
+
+        // Staf 3 Rusunawa will not be assigned any clusters by default
     }
 
     /**
