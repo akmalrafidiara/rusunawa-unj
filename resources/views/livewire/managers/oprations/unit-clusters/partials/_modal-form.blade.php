@@ -1,23 +1,19 @@
- {{-- Modal Create --}}
+{{-- Modal Create --}}
  <x-managers.ui.modal title="Form Tipe Kamar" :show="$showModal && $modalType === 'form'" class="max-w-md">
      <form wire:submit.prevent="save" class="space-y-4">
-         <!-- Nama Tipe -->
          <x-managers.form.label>Nama Cluster</x-managers.form.label>
          <x-managers.form.input wire:model.live="name" placeholder="Contoh: Gedung A.." />
 
-         <!-- PIC (Staff) -->
-         <x-managers.form.label>Staff Penanggung Jawab</x-managers.form.label>
-         <x-managers.form.select wire:model.live="staffId" :options="$staffOptions" label="Pilih Staff" />
+         {{-- PIC (Staff) - REMOVED --}}
+         {{-- <x-managers.form.label>Staff Penanggung Jawab</x-managers.form.label>
+         <x-managers.form.select wire:model.live="staffId" :options="$staffOptions" label="Pilih Staff" /> --}}
 
-         <!-- Alamat -->
          <x-managers.form.label>Alamat Cluster</x-managers.form.label>
          <x-managers.form.input wire:model.live="address" placeholder="Contoh: Jl. Raya No. 123" />
 
-         <!-- Deskripsi -->
          <x-managers.form.label>Deskripsi Tipe</x-managers.form.label>
          <x-managers.form.textarea wire:model.live="description" rows="3" />
 
-         <!-- Upload Gambar -->
          <x-managers.form.label>Gambar Tipe</x-managers.form.label>
          @if ($image)
              <div class="inline-flex gap-2 border border-gray-300 rounded p-2 mb-2">
@@ -37,7 +33,6 @@
 
          <x-filepond::upload wire:model.live="image" />
 
-         <!-- Tombol Aksi -->
          <div class="flex justify-end gap-2 mt-10">
              <x-managers.ui.button type="button" variant="secondary"
                  wire:click="$set('showModal', false)">Batal</x-managers.ui.button>
