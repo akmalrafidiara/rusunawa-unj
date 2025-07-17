@@ -26,7 +26,7 @@ enum OccupantStatus: string
         // --- 2. Label untuk Setiap Status ---
         return match ($this) {
             self::PENDING_VERIFICATION => 'Menunggu Verifikasi',
-            self::VERIFIED => 'Aktif',
+            self::VERIFIED => 'Terverifikasi',
             self::INACTIVE => 'Tidak Aktif',
             self::REJECTED => 'Ditolak',
         };

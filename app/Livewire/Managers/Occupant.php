@@ -2,9 +2,14 @@
 
 namespace App\Livewire\Managers;
 
+use App\Data\AcademicData;
+use App\Enums\GenderAllowed;
 use App\Enums\OccupantStatus;
+use App\Models\Contract;
 use App\Models\Occupant as OccupantModel;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 use Livewire\Component;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
@@ -23,6 +28,7 @@ class Occupant extends Component
         $fullName,
         $email,
         $whatsappNumber,
+        $gender,
         $identityCardFile,
         $communityCardFile,
         $agreeToRegulation,
@@ -37,13 +43,24 @@ class Occupant extends Component
         $studyProgram,
         $classYear;
 
+    // Relational data properties
+    public 
+        $contracts,
+        $contractIds;
+
     // Temporary file properties for uploads
     public
         $temporaryIdentityCardFile,
         $temporaryCommunityCardFile;
 
     // Options
-    public $statusOptions;
+    public
+        $statusOptions,
+        $genderOptions,
+        $facultyOptions,
+        $studyProgramOptions,
+        $classYearOptions,
+        $contractOptions;
 
     // Filter properties
     public $search = '';
@@ -57,7 +74,7 @@ class Occupant extends Component
     // Modal properties
     public $showModal = false;
     public $modalType = '';
-    public $occupantIdBeingEdited = null;
+    public $occupantIdBeingSelected = null;
 
     // Query sting properties
     protected $queryString = [
@@ -71,6 +88,24 @@ class Occupant extends Component
     public function mount()
     {
         $this->statusOptions = OccupantStatus::options();
+        $this->genderOptions = GenderAllowed::optionsWithoutGeneral();
+
+        $this->facultyOptions = $this->convertToOptions(
+            collect(AcademicData::getFacultiesAndPrograms())->keys()->toArray()
+        );
+
+        $this->classYearOptions = $this->convertToOptions(
+            range(date('Y'), date('Y') - 7)
+        );
+
+        $this->contractOptions = Contract::query()
+            ->get()
+            ->map(function ($contract) {
+                return [
+                    'value' => $contract->id,
+                    'label' => $contract->contract_code . ' - ' . $contract->unit->unitCluster->name . ' | ' . $contract->unit->room_number,
+                ];
+            })->toArray();
     }
 
     private function buildUnitQuery()
@@ -119,29 +154,32 @@ class Occupant extends Component
 
     public function fillData(OccupantModel $occupant)
     {
-        $this->occupantIdBeingEdited = $occupant->id;
+        $this->occupantIdBeingSelected = $occupant->id;
         $this->fullName = $occupant->full_name;
         $this->email = $occupant->email;
         $this->whatsappNumber = $occupant->whatsapp_number;
+        $this->gender = $occupant->gender;
         $this->identityCardFile = $occupant->identity_card_file;
         $this->communityCardFile = $occupant->community_card_file;
         $this->agreeToRegulation = $occupant->agree_to_regulation;
         $this->notes = $occupant->notes;
-        $this->status = $occupant->status;
+        $this->status = $occupant->status->value;
 
         if ($occupant->is_student) {
             $this->isStudent = true;
             $this->studentId = $occupant->student_id;
             $this->faculty = $occupant->faculty;
+            $this->updatedFaculty($this->faculty);
             $this->studyProgram = $occupant->study_program;
             $this->classYear = $occupant->class_year;
-        } else {
-            $this->isStudent = false;
-            $this->studentId = null;
-            $this->faculty = null;
-            $this->studyProgram = null;
-            $this->classYear = null;
         }
+
+        $this->contracts = $occupant->contracts;
+        $this->contractIds = $occupant->contracts->pluck('id')->toArray();
+
+        // Filling files data
+        $this->temporaryIdentityCardFile = $this->identityCardFile;
+        $this->temporaryCommunityCardFile = $this->communityCardFile;
     }
 
     public function rules()
@@ -150,12 +188,20 @@ class Occupant extends Component
             'fullName' => 'required|string|max:255',
             'email' => 'nullable|email|max:255',
             'whatsappNumber' => 'nullable|string|max:20',
-            'identityCardFile' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
-            'communityCardFile' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
-            'agreeToRegulation' => 'accepted',
+            // 'agreeToRegulation' => 'accepted',
             'notes' => 'nullable|string|max:500',
-            'status' => 'required|in:' . implode(',', OccupantStatus::values()),
+            'status' => ['required', Rule::in(OccupantStatus::values())],
+
+            'identityCardFile' => $this->occupantIdBeingSelected && $this->identityCardFile === $this->temporaryIdentityCardFile
+                ? 'nullable'
+                : 'required|file|mimes:jpeg,png,jpg,pdf|max:2048',
+
+            'communityCardFile' => $this->occupantIdBeingSelected && $this->communityCardFile === $this->temporaryCommunityCardFile
+                ? 'nullable'
+                : 'nullable|file|mimes:jpeg,png,jpg,pdf|max:2048',
         ];
+
+        
 
         if ($this->isStudent) {
             $rules['studentId'] = 'required|string|max:20';
@@ -173,6 +219,7 @@ class Occupant extends Component
             'fullName.required' => 'Nama lengkap wajib diisi.',
             'email.email' => 'Format email tidak valid.',
             'whatsappNumber.max' => 'Nomor WhatsApp tidak boleh lebih dari 20 karakter.',
+            'gender.required' => 'Jenis kelamin wajib diisi.',
             'identityCardFile.file' => 'File KTP harus berupa file.',
             'communityCardFile.file' => 'File Kartu Komunitas harus berupa file.',
             'agreeToRegulation.accepted' => 'Anda harus menyetujui peraturan.',
@@ -207,6 +254,7 @@ class Occupant extends Component
             'full_name' => $this->fullName,
             'email' => $this->email,
             'whatsapp_number' => $this->whatsappNumber,
+            'gender' => $this->gender,
             'agree_to_regulation' => $this->agreeToRegulation,
             'notes' => $this->notes,
             'status' => $this->status,
@@ -218,20 +266,20 @@ class Occupant extends Component
             'class_year'           => $this->isStudent ? $this->classYear : null,
         ];
 
-        if ($this->identityCardFile !== $this->temporaryidentityCardFile && $this->temporaryidentityCardFile != null) {
-            Storage::disk('public')->delete($this->temporaryidentityCardFile);
+        if ($this->identityCardFile !== $this->temporaryIdentityCardFile && $this->temporaryIdentityCardFile != null) {
+            Storage::disk('public')->delete($this->temporaryIdentityCardFile);
             $data['identity_card_file'] = null;
         }
 
-        if ($this->communityCardFile !== $this->temporarycommunityCardFile && $this->temporarycommunityCardFile != null) {
-            Storage::disk('public')->delete($this->temporarycommunityCardFile);
+        if ($this->communityCardFile !== $this->temporaryCommunityCardFile && $this->temporaryCommunityCardFile != null) {
+            Storage::disk('public')->delete($this->temporaryCommunityCardFile);
             $data['community_card_file'] = null;
         }
 
         if ($this->identityCardFile instanceof TemporaryUploadedFile) {
-            if ($this->occupantIdBeingEdited && $this->temporaryidentityCardFile != null) {
-                if ($this->identityCardFile !== $this->temporaryidentityCardFile) {
-                    Storage::disk('public')->delete($this->temporaryidentityCardFile);
+            if ($this->occupantIdBeingSelected && $this->temporaryIdentityCardFile != null) {
+                if ($this->identityCardFile !== $this->temporaryIdentityCardFile) {
+                    Storage::disk('public')->delete($this->temporaryIdentityCardFile);
                 }
             }
             
@@ -239,7 +287,7 @@ class Occupant extends Component
         }
 
         if ($this->communityCardFile instanceof TemporaryUploadedFile) {
-            if ($this->occupantIdBeingEdited && $this->temporarycommunityCardFile != null) {
+            if ($this->occupantIdBeingSelected && $this->temporarycommunityCardFile != null) {
                 if ($this->communityCardFile !== $this->temporarycommunityCardFile) {
                     Storage::disk('public')->delete($this->temporarycommunityCardFile);
                 }
@@ -248,9 +296,11 @@ class Occupant extends Component
             $data['community_card_file'] = $this->communityCardFile->store('occupant', 'public');
         }
 
-        Occupant::updateOrCreate(['id' => $this->occupantIdBeingEdited], $data);
+        $occupant = OccupantModel::updateOrCreate(['id' => $this->occupantIdBeingSelected], $data);
 
-        LivewireAlert::title($this->occupantIdBeingEdited ? 'Data berhasil diperbarui.' : 'Unit berhasil ditambahkan.')
+        $occupant->contracts()->sync($this->contractIds);
+
+        LivewireAlert::title($this->occupantIdBeingSelected ? 'Data berhasil diperbarui.' : 'Unit berhasil ditambahkan.')
         ->success()
         ->toast()
         ->position('top-end')
@@ -266,6 +316,7 @@ class Occupant extends Component
             'fullName',
             'email',
             'whatsappNumber',
+            'gender',
             'identityCardFile',
             'communityCardFile',
             'agreeToRegulation',
@@ -280,7 +331,67 @@ class Occupant extends Component
             'temporaryCommunityCardFile',
         ]);
 
-        $this->occupantIdBeingEdited = null;
+        $this->occupantIdBeingSelected = null;
         $this->showModal = false;
+    }
+
+    public function updatedFaculty($facultyName)
+    {
+        if (!empty($facultyName)) {
+            $this->studyProgramOptions = $this->convertToOptions(
+                AcademicData::getFacultiesAndPrograms()[$facultyName] ?? []
+            );
+        } else {
+            $this->studyProgramOptions = $this->convertToOptions([]);
+        }
+        $this->reset('studyProgram');
+    }
+
+    private function convertToOptions($array)
+    {
+        return collect($array)->map(function ($item) {
+            return ['value' => $item, 'label' => $item];
+        })->toArray();
+    }
+
+    public function exportPdf()
+    {
+        // Validate the search and filter parameters
+        $occupants = $this->buildUnitQuery()->get();
+
+        // Prepare data for PDF export
+        $pdfData = $occupants->map(function ($occupant) {
+            return [
+                'full_name' => $occupant->full_name,
+                'email' => $occupant->email,
+                'whatsapp_number' => $occupant->whatsapp_number,
+                'gender' => $occupant->gender,
+                'status' => $occupant->status->label(),
+                'is_student' => $occupant->is_student ? 'Ya' : 'Tidak',
+                'student_id' => $occupant->student_id,
+                'faculty' => $occupant->faculty,
+                'study_program' => $occupant->study_program,
+                'class_year' => $occupant->class_year,
+                'contracts' => $occupant->contracts->map(function ($contract) {
+                    return $contract->contract_code . ' - ' . $contract->unit->unitCluster->name . ' | ' . $contract->unit->room_number;
+                })->implode(', '),
+            ];
+        });
+
+        // Show processing alert
+        LivewireAlert::title('PDF Berhasil Diunduh')
+            ->text('Data penghuni berhasil diekspor ke PDF.')
+            ->success()
+            ->toast()
+            ->position('top-end')
+            ->show();
+
+        // Load the PDF view with the data
+        $pdf = Pdf::loadView('exports.occupants', ['occupants' => $pdfData]);
+
+        // Return the PDF as a downloadable response
+        return response()->streamDownload(function () use ($pdf) {
+            echo $pdf->output();
+        }, now()->format('Y-m-d') . '_occupants.pdf');
     }
 }

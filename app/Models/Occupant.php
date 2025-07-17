@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\GenderAllowed;
 use App\Enums\OccupantStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -32,6 +33,7 @@ class Occupant extends Model implements Authenticatable
     ];
 
     protected $casts = [
+        'gender' => GenderAllowed::class,
         'is_student' => 'boolean',
         'agree_to_regulations' => 'boolean',
         'status' => OccupantStatus::class,

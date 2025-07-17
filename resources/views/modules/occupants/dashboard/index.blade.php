@@ -1,197 +1,199 @@
+@php
+    // --- MENGAMBIL DATA LANGSUNG DARI AUTHENTIKASI ---
+
+    // 1. Dapatkan penghuni yang sedang login
+    $occupant = Auth::guard('occupant')->user();
+
+    // 2. Dapatkan kontrak yang paling baru
+    // Kita eager load semua relasi agar efisien
+    $contract = $occupant
+        ->contracts()
+        ->with(['unit', 'invoices' => fn($q) => $q->latest()])
+        ->latest()
+        ->first();
+
+    // Jika pengguna tidak memiliki kontrak, tangani kasusnya
+    if (!$contract) {
+        // Hentikan eksekusi dan tampilkan pesan, atau redirect.
+        // Untuk testing, kita akan buat data dummy agar tidak error.
+        $contract = (object) [
+            'unit' => (object) ['room_number' => 'N/A'],
+            'status' => (object) ['label' => 'Tidak Ada'],
+            'start_date' => now(),
+            'end_date' => now(),
+            'invoices' => collect(),
+        ];
+        $nextUnpaidInvoice = null;
+        $duration = '0 Bulan';
+    } else {
+        // 3. Cari tagihan selanjutnya yang belum dibayar
+        $nextUnpaidInvoice = $contract->invoices->where('status', 'unpaid')->first();
+
+        // 4. Hitung sisa durasi kontrak
+        $duration = $contract->end_date->diffForHumans($contract->start_date, true);
+    }
+@endphp
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Dashboard Penghuni</title>
+        <title>Dashboard Penghuni - {{ $occupant->full_name }}</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        <style>
+            .bg-rusunawa {
+                background-color: #059669;
+            }
+
+            .hover\:bg-rusunawa-dark:hover {
+                background-color: #047857;
+            }
+
+            .text-rusunawa {
+                color: #059669;
+            }
+        </style>
     </head>
 
-    <body class="bg-gray-100">
+    <body class="bg-gray-100 font-sans">
         <div class="container mx-auto px-4 py-8">
-            <!-- Header -->
             <div class="mb-8">
                 <div class="flex justify-between items-center">
-                    <h1 class="text-3xl font-bold text-gray-800">Dashboard Penghuni</h1>
-                    <div class="text-gray-600">
-                        <i class="fas fa-calendar-alt mr-2"></i>{{ date('d M Y') }}
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-800">Dashboard Penghuni</h1>
+                        <p class="text-gray-600">Selamat datang kembali, {{ explode(' ', $occupant->full_name)[0] }}!
+                        </p>
                     </div>
+                    <form method="POST" action="{{ route('occupant.auth.logout') }}">
+                        @csrf
+                        <button type="submit"
+                            class="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg transition duration-200">
+                            Logout
+                        </button>
+                    </form>
                 </div>
             </div>
 
-            <!-- User Session Info -->
-            <div class="mb-4 text-sm text-gray-600">
-                <p>Occupant Name: {{ Auth::guard('occupant')->user()->full_name }}</p>
-                <form method="POST" action="{{ route('occupant.auth.logout') }}">
-                    @csrf
-
-                    <button type="submit"
-                        style="background-color: #dc3545; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer;">
-                        Logout
-                    </button>
-                </form>
-            </div>
-
-            <!-- Info Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div class="bg-blue-500 text-white rounded-lg p-6">
+                <div class="bg-white text-gray-800 rounded-lg p-6 shadow-md">
                     <div class="flex justify-between items-center">
                         <div>
-                            <h5 class="text-lg font-medium">Kamar</h5>
-                            <h2 class="text-3xl font-bold">A-205</h2>
+                            <h5 class="text-lg font-medium text-gray-500">Kamar Anda</h5>
+                            <h2 class="text-3xl font-bold text-rusunawa">{{ $contract->unit->room_number }}</h2>
                         </div>
-                        <div>
-                            <i class="fas fa-home text-4xl opacity-80"></i>
-                        </div>
+                        <div><i class="fas fa-home text-4xl text-gray-300"></i></div>
                     </div>
                 </div>
-                <div class="bg-green-500 text-white rounded-lg p-6">
+                <div class="bg-white text-gray-800 rounded-lg p-6 shadow-md">
                     <div class="flex justify-between items-center">
                         <div>
-                            <h5 class="text-lg font-medium">Status</h5>
-                            <h4 class="text-2xl font-bold">Aktif</h4>
+                            <h5 class="text-lg font-medium text-gray-500">Status Kontrak</h5>
+                            <h4 class="text-2xl font-bold">{{ $contract->status->label() }}</h4>
                         </div>
-                        <div>
-                            <i class="fas fa-check-circle text-4xl opacity-80"></i>
-                        </div>
+                        <div><i class="fas fa-check-circle text-4xl text-gray-300"></i></div>
                     </div>
                 </div>
-                <div class="bg-yellow-500 text-white rounded-lg p-6">
+                <div class="bg-white text-gray-800 rounded-lg p-6 shadow-md">
                     <div class="flex justify-between items-center">
                         <div>
-                            <h5 class="text-lg font-medium">Tagihan</h5>
-                            <h4 class="text-2xl font-bold">Rp 350.000</h4>
+                            <h5 class="text-lg font-medium text-gray-500">Tagihan Berikutnya</h5>
+                            @if ($nextUnpaidInvoice)
+                                <h4 class="text-2xl font-bold">Rp
+                                    {{ number_format($nextUnpaidInvoice->amount, 0, ',', '.') }}</h4>
+                            @else
+                                <h4 class="text-2xl font-bold text-green-500">Lunas</h4>
+                            @endif
                         </div>
-                        <div>
-                            <i class="fas fa-money-bill text-4xl opacity-80"></i>
-                        </div>
+                        <div><i class="fas fa-money-bill-wave text-4xl text-gray-300"></i></div>
                     </div>
                 </div>
-                <div class="bg-cyan-500 text-white rounded-lg p-6">
+                <div class="bg-white text-gray-800 rounded-lg p-6 shadow-md">
                     <div class="flex justify-between items-center">
                         <div>
-                            <h5 class="text-lg font-medium">Kontrak</h5>
-                            <h4 class="text-2xl font-bold">8 Bulan</h4>
+                            <h5 class="text-lg font-medium text-gray-500">Durasi Sewa</h5>
+                            <h4 class="text-2xl font-bold">{{ $duration }}</h4>
                         </div>
-                        <div>
-                            <i class="fas fa-file-contract text-4xl opacity-80"></i>
-                        </div>
+                        <div><i class="fas fa-file-contract text-4xl text-gray-300"></i></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Main Content -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Profile Info -->
                 <div class="lg:col-span-1">
-                    <div class="bg-white rounded-lg shadow p-6">
+                    <div class="bg-white rounded-lg shadow-md p-6">
                         <div class="border-b border-gray-200 pb-4 mb-4">
                             <h5 class="text-xl font-semibold">Informasi Penghuni</h5>
                         </div>
                         <div class="text-center mb-6">
-                            <img src="https://via.placeholder.com/100x100" class="rounded-full mx-auto" alt="Profile">
+                            <img src="{{ $occupant->profile_photo_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($occupant->full_name) . '&background=059669&color=fff' }}"
+                                class="rounded-full h-24 w-24 mx-auto" alt="Profile">
                         </div>
-                        <div class="space-y-3">
-                            <div class="flex">
-                                <span class="font-semibold w-24">Nama</span>
-                                <span>: Ahmad Rizki</span>
-                            </div>
-                            <div class="flex">
-                                <span class="font-semibold w-24">NIM</span>
-                                <span>: 2103118001</span>
-                            </div>
-                            <div class="flex">
-                                <span class="font-semibold w-24">Fakultas</span>
-                                <span>: Teknik</span>
-                            </div>
-                            <div class="flex">
-                                <span class="font-semibold w-24">Jurusan</span>
-                                <span>: Informatika</span>
-                            </div>
-                            <div class="flex">
-                                <span class="font-semibold w-24">No. HP</span>
-                                <span>: 081234567890</span>
-                            </div>
-                            <div class="flex">
-                                <span class="font-semibold w-24">Masa Tinggal</span>
-                                <span>: Jan 2024 - Sep 2024</span>
-                            </div>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between"><span class="font-semibold text-gray-500">Nama</span><span
+                                    class="text-right">{{ $occupant->full_name }}</span></div>
+                            <div class="flex justify-between"><span class="font-semibold text-gray-500">No.
+                                    HP</span><span class="text-right">{{ $occupant->whatsapp_number }}</span></div>
+                            <div class="flex justify-between"><span class="font-semibold text-gray-500">Masa
+                                    Tinggal</span><span class="text-right">{{ $contract->start_date->format('d M Y') }}
+                                    - {{ $contract->end_date->format('d M Y') }}</span></div>
+                            @if ($occupant->is_student)
+                                <div class="pt-4 border-t mt-4">
+                                    <div class="flex justify-between mt-3"><span
+                                            class="font-semibold text-gray-500">NIM</span><span
+                                            class="text-right">{{ $occupant->student_id }}</span></div>
+                                    <div class="flex justify-between mt-3"><span
+                                            class="font-semibold text-gray-500">Fakultas</span><span
+                                            class="text-right">{{ $occupant->faculty }}</span></div>
+                                    <div class="flex justify-between mt-3"><span
+                                            class="font-semibold text-gray-500">Jurusan</span><span
+                                            class="text-right">{{ $occupant->study_program }}</span></div>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>
 
-                <!-- Recent Activities & Payments -->
                 <div class="lg:col-span-2">
-                    <div class="space-y-6">
-                        <!-- Payment History -->
-                        <div class="bg-white rounded-lg shadow p-6">
-                            <div class="border-b border-gray-200 pb-4 mb-4">
-                                <h5 class="text-xl font-semibold">Riwayat Pembayaran</h5>
-                            </div>
-                            <div class="overflow-x-auto">
-                                <table class="w-full">
-                                    <thead>
-                                        <tr class="border-b">
-                                            <th class="text-left py-3">Bulan</th>
-                                            <th class="text-left py-3">Jumlah</th>
-                                            <th class="text-left py-3">Tanggal Bayar</th>
-                                            <th class="text-left py-3">Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr class="border-b">
-                                            <td class="py-3">Februari 2024</td>
-                                            <td class="py-3">Rp 350.000</td>
-                                            <td class="py-3">01 Feb 2024</td>
-                                            <td class="py-3"><span
-                                                    class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Lunas</span>
-                                            </td>
-                                        </tr>
-                                        <tr class="border-b">
-                                            <td class="py-3">Januari 2024</td>
-                                            <td class="py-3">Rp 350.000</td>
-                                            <td class="py-3">02 Jan 2024</td>
-                                            <td class="py-3"><span
-                                                    class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Lunas</span>
-                                            </td>
-                                        </tr>
-                                        <tr class="border-b">
-                                            <td class="py-3">Maret 2024</td>
-                                            <td class="py-3">Rp 350.000</td>
-                                            <td class="py-3">-</td>
-                                            <td class="py-3"><span
-                                                    class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">Belum
-                                                    Bayar</span></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <div class="border-b border-gray-200 pb-4 mb-4">
+                            <h5 class="text-xl font-semibold">Riwayat Pembayaran</h5>
                         </div>
-
-                        <!-- Announcements -->
-                        <div class="bg-white rounded-lg shadow p-6">
-                            <div class="border-b border-gray-200 pb-4 mb-4">
-                                <h5 class="text-xl font-semibold">Pengumuman</h5>
-                            </div>
-                            <div class="space-y-4">
-                                <div class="bg-blue-50 border border-blue-200 rounded p-4">
-                                    <strong class="text-blue-800">Pengumuman!</strong>
-                                    <span class="text-blue-700">Pembayaran bulan Maret 2024 jatuh tempo pada tanggal 5
-                                        Maret 2024.</span>
-                                </div>
-                                <div class="bg-yellow-50 border border-yellow-200 rounded p-4">
-                                    <strong class="text-yellow-800">Reminder:</strong>
-                                    <span class="text-yellow-700">Harap menjaga kebersihan area bersama dan tidak
-                                        membuat keributan setelah jam 22:00.</span>
-                                </div>
-                                <div class="bg-green-50 border border-green-200 rounded p-4">
-                                    <strong class="text-green-800">Info:</strong>
-                                    <span class="text-green-700">Fasilitas WiFi telah diperbaiki dan dapat digunakan
-                                        kembali.</span>
-                                </div>
-                            </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm">
+                                <thead>
+                                    <tr class="border-b">
+                                        <th class="text-left font-semibold text-gray-600 py-3">Deskripsi</th>
+                                        <th class="text-left font-semibold text-gray-600 py-3">Jumlah</th>
+                                        <th class="text-left font-semibold text-gray-600 py-3">Tanggal Bayar</th>
+                                        <th class="text-center font-semibold text-gray-600 py-3">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($contract->invoices as $invoice)
+                                        <tr class="border-b last:border-b-0">
+                                            <td class="py-3">{{ $invoice->description }}</td>
+                                            <td class="py-3">Rp {{ number_format($invoice->amount, 0, ',', '.') }}
+                                            </td>
+                                            <td class="py-3">
+                                                {{ $invoice->paid_at ? $invoice->paid_at->format('d M Y') : '-' }}</td>
+                                            <td class="py-3 text-center">
+                                                <span
+                                                    class="text-xs font-medium px-2.5 py-1 rounded-full {{ is_array($invoice->status->color()) ? implode(' ', $invoice->status->color()) : $invoice->status->color() }}">
+                                                    {{ ucfirst($invoice->status->value ?? $invoice->status) }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="4" class="text-center py-4 text-gray-500">Belum ada riwayat
+                                                pembayaran.</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
