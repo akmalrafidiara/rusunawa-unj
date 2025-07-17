@@ -358,7 +358,7 @@ new #[Layout('components.layouts.frontend'), Title('Rusunawa UNJ | Lacak Pengadu
             </x-frontend.complaint.card>
             @elseif ($reportNotFound)
             <div class="flex flex-col items-center justify-center min-h-[400px] p-8 text-center rounded-lg mt-8">
-                <img src="{{ asset('images/dummy-data-not-found.png') }}" alt="Laporan Tidak Ditemukan" class="w-60 h-60 object-contain mx-auto">
+                <flux:icon.exclamation-triangle class="w-24 h-24 text-red-500 mb-4" />
                 <h2 class="text-xl lg:text-2xl font-semibold text-gray-800 mb-2 dark:text-gray-100">Laporan Tidak Ditemukan</h2>
                 <p class="text-m lg:text-lg text-gray-600 mb-6 dark:text-gray-300">ID Laporan yang Anda masukkan tidak valid atau tidak ada dalam sistem. Mohon periksa kembali.</p>
             </div>
