@@ -58,6 +58,11 @@ class Contract extends Model
         return $this->hasMany(Invoice::class);
     }
 
+    public function reports()
+    {
+        return $this->hasMany(Report::class);
+    }
+
     public static function generateContractCode($unitCluster, $occupantType, $pricingBasis): string
     {
         $clusterChar = substr($unitCluster->name, -1);

@@ -1,231 +1,74 @@
-@php
-    // --- MENGAMBIL DATA LANGSUNG DARI AUTHENTIKASI ---
+<x-layouts.frontend title="Dashboard Penghuni">
 
-    // 1. Dapatkan penghuni yang sedang login
-    $occupant = Auth::guard('occupant')->user();
+    @php
+        // Mengambil data kontrak dan PIC dari penghuni yang sedang login
+        $occupantUser = Auth::guard('occupant')->user();
+        $contract = $occupantUser?->contracts()->with('pic')->first();
 
-    // 2. Dapatkan kontrak yang paling baru
-    // Kita eager load semua relasi agar efisien
-    $contract = $occupant
-        ->contracts()
-        ->with(['unit', 'invoices' => fn($q) => $q->latest()])
-        ->latest()
-        ->first();
+        // Jika PIC ditemukan, gunakan namanya. Jika tidak, gunakan nama penghuni sebagai fallback.
+        $picName = $contract && $contract->pic->isNotEmpty() ? $contract->pic->first()->full_name : $occupantUser->full_name;
+    @endphp
 
-    // Jika pengguna tidak memiliki kontrak, tangani kasusnya
-    if (!$contract) {
-        // Hentikan eksekusi dan tampilkan pesan, atau redirect.
-        // Untuk testing, kita akan buat data dummy agar tidak error.
-        $contract = (object) [
-            'unit' => (object) ['room_number' => 'N/A'],
-            'status' => (object) ['label' => 'Tidak Ada'],
-            'start_date' => now(),
-            'end_date' => now(),
-            'invoices' => collect(),
-        ];
-        $nextUnpaidInvoice = null;
-        $duration = '0 Bulan';
-    } else {
-        // 3. Cari tagihan selanjutnya yang belum dibayar
-        $nextUnpaidInvoice = $contract->invoices->where('status', 'unpaid')->first();
-
-        // 4. Hitung sisa durasi kontrak
-        $duration = $contract->end_date->diffForHumans($contract->start_date, true);
-    }
-@endphp
-
-<!DOCTYPE html>
-<html lang="id">
-
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Dashboard Penghuni - {{ $occupant->full_name }}</title>
-        <script src="https://cdn.tailwindcss.com"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-        <style>
-            .bg-rusunawa {
-                background-color: #059669;
-            }
-
-            .hover\:bg-rusunawa-dark:hover {
-                background-color: #047857;
-            }
-
-            .text-rusunawa {
-                color: #059669;
-            }
-        </style>
-    </head>
-
-    <body class="bg-gray-100 font-sans">
-        <div class="container mx-auto px-4 py-8">
-            <div class="mb-8">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <h1 class="text-3xl font-bold text-gray-800">Dashboard Penghuni</h1>
-                        <p class="text-gray-600">Selamat datang kembali, {{ explode(' ', $occupant->full_name)[0] }}!
-                        </p>
-                    </div>
-                    <form method="POST" action="{{ route('occupant.auth.logout') }}">
-                        @csrf
-                        <button type="submit"
-                            class="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg transition duration-200">
-                            Logout
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div class="bg-white text-gray-800 rounded-lg p-6 shadow-md">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <h5 class="text-lg font-medium text-gray-500">Kamar Anda</h5>
-                            <h2 class="text-3xl font-bold text-rusunawa">{{ $contract->unit->room_number }}</h2>
-                        </div>
-                        <div><i class="fas fa-home text-4xl text-gray-300"></i></div>
-                    </div>
-                </div>
-                <div class="bg-white text-gray-800 rounded-lg p-6 shadow-md">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <h5 class="text-lg font-medium text-gray-500">Status Kontrak</h5>
-                            <h4 class="text-2xl font-bold">{{ $contract->status->label() }}</h4>
-                        </div>
-                        <div><i class="fas fa-check-circle text-4xl text-gray-300"></i></div>
-                    </div>
-                </div>
-                <div class="bg-white text-gray-800 rounded-lg p-6 shadow-md">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <h5 class="text-lg font-medium text-gray-500">Tagihan Berikutnya</h5>
-                            @if ($nextUnpaidInvoice)
-                                <h4 class="text-2xl font-bold">Rp
-                                    {{ number_format($nextUnpaidInvoice->amount, 0, ',', '.') }}</h4>
-                            @else
-                                <h4 class="text-2xl font-bold text-green-500">Lunas</h4>
-                            @endif
-                        </div>
-                        <div><i class="fas fa-money-bill-wave text-4xl text-gray-300"></i></div>
-                    </div>
-                </div>
-                <div class="bg-white text-gray-800 rounded-lg p-6 shadow-md">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <h5 class="text-lg font-medium text-gray-500">Durasi Sewa</h5>
-                            <h4 class="text-2xl font-bold">{{ $duration }}</h4>
-                        </div>
-                        <div><i class="fas fa-file-contract text-4xl text-gray-300"></i></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-1">
-                    <div class="bg-white rounded-lg shadow-md p-6">
-                        <div class="border-b border-gray-200 pb-4 mb-4">
-                            <h5 class="text-xl font-semibold">Informasi Penghuni</h5>
-                        </div>
-                        <div class="text-center mb-6">
-                            <img src="{{ $occupant->profile_photo_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($occupant->full_name) . '&background=059669&color=fff' }}"
-                                class="rounded-full h-24 w-24 mx-auto" alt="Profile">
-                        </div>
-                        <div class="space-y-3 text-sm">
-                            <div class="flex justify-between"><span class="font-semibold text-gray-500">Nama</span><span
-                                    class="text-right">{{ $occupant->full_name }}</span></div>
-                            <div class="flex justify-between"><span class="font-semibold text-gray-500">No.
-                                    HP</span><span class="text-right">{{ $occupant->whatsapp_number }}</span></div>
-                            <div class="flex justify-between"><span class="font-semibold text-gray-500">Masa
-                                    Tinggal</span><span class="text-right">{{ $contract->start_date->format('d M Y') }}
-                                    - {{ $contract->end_date->format('d M Y') }}</span></div>
-                            @if ($occupant->is_student)
-                                <div class="pt-4 border-t mt-4">
-                                    <div class="flex justify-between mt-3"><span
-                                            class="font-semibold text-gray-500">NIM</span><span
-                                            class="text-right">{{ $occupant->student_id }}</span></div>
-                                    <div class="flex justify-between mt-3"><span
-                                            class="font-semibold text-gray-500">Fakultas</span><span
-                                            class="text-right">{{ $occupant->faculty }}</span></div>
-                                    <div class="flex justify-between mt-3"><span
-                                            class="font-semibold text-gray-500">Jurusan</span><span
-                                            class="text-right">{{ $occupant->study_program }}</span></div>
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-
-                <div class="lg:col-span-2">
-                    <div class="bg-white rounded-lg shadow-md p-6">
-                        <div class="border-b border-gray-200 pb-4 mb-4">
-                            <h5 class="text-xl font-semibold">Riwayat Pembayaran</h5>
-                        </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-sm">
-                                <thead>
-                                    <tr class="border-b">
-                                        <th class="text-left font-semibold text-gray-600 py-3">Deskripsi</th>
-                                        <th class="text-left font-semibold text-gray-600 py-3">Jumlah</th>
-                                        <th class="text-left font-semibold text-gray-600 py-3">Tanggal Bayar</th>
-                                        <th class="text-center font-semibold text-gray-600 py-3">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse($contract->invoices as $invoice)
-                                        <tr class="border-b last:border-b-0">
-                                            <td class="py-3">{{ $invoice->description }}</td>
-                                            <td class="py-3">Rp {{ number_format($invoice->amount, 0, ',', '.') }}
-                                            </td>
-                                            <td class="py-3">
-                                                {{ $invoice->paid_at ? $invoice->paid_at->format('d M Y') : '-' }}</td>
-                                            <td class="py-3 text-center">
-                                                <span
-                                                    class="text-xs font-medium px-2.5 py-1 rounded-full {{ is_array($invoice->status->color()) ? implode(' ', $invoice->status->color()) : $invoice->status->color() }}">
-                                                    {{ ucfirst($invoice->status->value ?? $invoice->status) }}
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="4" class="text-center py-4 text-gray-500">Belum ada riwayat
-                                                pembayaran.</td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Quick Actions -->
-            <div class="mt-8">
-                <div class="bg-white rounded-lg shadow p-6">
-                    <div class="border-b border-gray-200 pb-4 mb-6">
-                        <h5 class="text-xl font-semibold">Aksi Cepat</h5>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <a href="#"
-                            class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-4 rounded-lg text-center transition duration-200">
-                            <i class="fas fa-credit-card mr-2"></i>Bayar Tagihan
-                        </a>
-                        <a href="#"
-                            class="bg-green-500 hover:bg-green-600 text-white font-medium py-3 px-4 rounded-lg text-center transition duration-200">
-                            <i class="fas fa-history mr-2"></i>Riwayat Pembayaran
-                        </a>
-                        <a href="#"
-                            class="bg-cyan-500 hover:bg-cyan-600 text-white font-medium py-3 px-4 rounded-lg text-center transition duration-200">
-                            <i class="fas fa-user-edit mr-2"></i>Edit Profile
-                        </a>
-                        <a href="#"
-                            class="bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-3 px-4 rounded-lg text-center transition duration-200">
-                            <i class="fas fa-exclamation-triangle mr-2"></i>Lapor Masalah
-                        </a>
-                    </div>
-                </div>
+    {{-- HEADER DENGAN BACKGROUND --}}
+    {{-- UKURAN DIPERBESAR: Ditambahkan class 'h-64' untuk membuat banner lebih tinggi --}}
+    <div class="w-full bg-cover bg-center h-64"
+        style="background-image: url('{{ asset('images/banner-image-complaint.jpg') }}');">
+        <div class="w-full h-full bg-gray-900/50 flex items-center">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                {{-- Judul Halaman --}}
+                <h1 class="text-4xl lg:text-5xl font-bold text-white" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.6);">
+                    Kamar Saya
+                </h1>
             </div>
         </div>
-    </body>
+    </div>
 
-</html>
+    {{-- KONTEN UTAMA --}}
+    {{-- Margin atas disesuaikan agar tumpukan terlihat bagus dengan header yang lebih tinggi --}}
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 -mt-20">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            {{-- Kolom Kiri --}}
+            <div class="lg:col-span-1 flex flex-col gap-6">
+                <livewire:occupants.dashboard.payment-details />
+                <livewire:occupants.dashboard.occupant-data />
+            </div>
+
+            {{-- Kolom Kanan --}}
+            <div class="lg:col-span-2 flex flex-col gap-6">
+                
+                {{-- CARD BARU: Informasi PIC dan Notifikasi dipindahkan ke sini --}}
+                <div class="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-4 border dark:border-zinc-700">
+                    <div class="flex justify-between items-center gap-4">
+                        {{-- Info PIC --}}
+                        <div>
+                             <p class="text-sm text-gray-500 dark:text-gray-400">Selamat Datang,</p>
+                             <p class="font-semibold text-lg text-gray-900 dark:text-white">{{ $picName }}</p>
+                        </div>
+                        
+                        {{-- Tombol Notifikasi --}}
+                        <a href="#"
+                            class="relative p-2 text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white focus:outline-none bg-gray-100 hover:bg-gray-200 dark:bg-zinc-700 dark:hover:bg-zinc-600 rounded-full transition-colors">
+                            <span class="sr-only">Lihat Notifikasi</span>
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
+                                </path>
+                            </svg>
+                            <span class="absolute top-1 right-1 h-3 w-3 flex items-center justify-center">
+                                <span
+                                    class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                            </span>
+                        </a>
+                    </div>
+                </div>
+
+                <livewire:occupants.dashboard.announcements />
+                <livewire:occupants.dashboard.complaints />
+                <livewire:occupants.dashboard.emergency-contacts />
+            </div>
+        </div>
+    </div>
+</x-layouts.frontend>
