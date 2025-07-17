@@ -238,7 +238,8 @@ class ReportDetails extends Component
             ]);
         }
 
-        LivewireAlert::success('Status laporan berhasil diperbarui!')
+        LivewireAlert::title('Status laporan berhasil diperbarui!')
+            ->success()
             ->toast()
             ->position('top-end')
             ->show();
