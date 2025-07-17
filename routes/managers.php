@@ -15,6 +15,13 @@ Route::prefix('managers')->middleware(['auth', 'verified', 'role:'.RoleUser::ADM
     Volt::route('settings/password', 'managers.settings.password')->name('managers.settings.password');
     Volt::route('settings/appearance', 'managers.settings.appearance')->name('managers.settings.appearance');
 
+    //Tenancy
+    Route::view('invoices', 'modules.managers.tenancy.invoices')->name('invoices');
+    Route::view('occupants', 'modules.managers.tenancy.occupants')->name('occupants');
+
+    // COmplaints
+    Route::view('reports-and-complaints', 'modules.managers.oprations.reports-and-complaints.index')->name('reports.and.complaints');
+
     // Role: ADMIN, Kepala Rusunawa
     Route::middleware(['role:'.RoleUser::ADMIN->value.'|'.RoleUser::HEAD_OF_RUSUNAWA->value])->group(function () {
          // Responses
@@ -23,13 +30,11 @@ Route::prefix('managers')->middleware(['auth', 'verified', 'role:'.RoleUser::ADM
 
         // Tenancy
         Route::view('contracts', 'modules.managers.tenancy.contracts')->name('contracts');
-        Route::view('invoices', 'modules.managers.tenancy.invoices')->name('invoices');
-        Route::view('occupants', 'modules.managers.tenancy.occupants')->name('occupants');
+        
 
         // Oprations
         Route::view('users', 'modules.managers.oprations.users.index')->name('users');
         Route::view('incomes-reports', 'modules.managers.oprations.income-reports.index')->name('income.reports');
-        Route::view('reports-and-complaints', 'modules.managers.oprations.reports-and-complaints.index')->name('reports.and.complaints');
         Route::view('maintenance', 'modules.managers.oprations.maintenance.index')->name('maintenance');
         Route::prefix('units')->group(function () {
             Route::view('/', 'modules.managers.oprations.units.index')->name('units');
