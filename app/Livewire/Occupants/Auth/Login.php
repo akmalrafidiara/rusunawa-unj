@@ -20,6 +20,13 @@ class Login extends Component
     public string $phoneNumberSuffix = '';
     public bool $remember = false;
 
+    public function mount()
+    {
+        if (request()->has('redirect')) {
+            session(['url.intended' => request('redirect')]);
+        }
+    }
+
     public function login()
     {
         try {
@@ -57,7 +64,9 @@ class Login extends Component
             RateLimiter::clear($this->throttleKey());
             Session::regenerate();
 
-            $this->redirect(route('occupant.dashboard'), navigate: true);
+            // Ubah baris ini untuk mengarahkan ke URL yang dituju
+            $this->redirectIntended(default: route('occupant.dashboard', absolute: false), navigate: true);
+
         } catch (ValidationException $e) {
             LivewireAlert::error()
                     ->title('Input Tidak Valid!')
