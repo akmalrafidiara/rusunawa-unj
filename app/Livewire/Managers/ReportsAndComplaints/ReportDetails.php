@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Storage;
 use Throwable;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\On;
-
+use App\Models\UnitCluster; // Import UnitCluster model
 
 class ReportDetails extends Component
 {
@@ -86,8 +86,9 @@ class ReportDetails extends Component
         $this->is_head_of_rusunawa_user = Auth::user()->hasRole(RoleUser::HEAD_OF_RUSUNAWA->value);
         $this->is_staff_of_rusunawa_user = Auth::user()->hasRole(RoleUser::STAFF_OF_RUSUNAWA->value);
 
+        // MODIFIED: Populate user_cluster_ids from the new many-to-many relationship
         if ($this->is_staff_of_rusunawa_user || $this->is_head_of_rusunawa_user) {
-            $this->user_cluster_ids = \App\Models\UnitCluster::where('staff_id', Auth::id())->pluck('id')->toArray();
+            $this->user_cluster_ids = Auth::user()->unitClusters->pluck('id')->toArray();
         }
     }
 

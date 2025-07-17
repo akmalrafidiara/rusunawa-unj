@@ -19,7 +19,7 @@ class ReportList extends Component
     public $statusFilter = '';
     public $tab = 'aktif';
     // Hapus clusterFilter karena tidak lagi digunakan di UI
-    // public $clusterFilter = ''; 
+    // public $clusterFilter = '';
 
     public $statusOptions = [];
     public $clusterOptions = []; // Tetap ada untuk penggunaan internal jika diperlukan
@@ -81,9 +81,11 @@ class ReportList extends Component
         $this->is_head_of_rusunawa_user = Auth::user()->hasRole(RoleUser::HEAD_OF_RUSUNAWA->value);
         $this->is_staff_of_rusunawa_user = Auth::user()->hasRole(RoleUser::STAFF_OF_RUSUNAWA->value);
 
-        if ($this->is_staff_of_rusunawa_user || $this->is_head_of_rusunawa_user) {
-            $this->user_cluster_ids = UnitCluster::where('staff_id', Auth::id())->pluck('id')->toArray();
+        // Hanya ambil cluster IDs jika pengguna adalah staf rusunawa
+        if ($this->is_staff_of_rusunawa_user) {
+            $this->user_cluster_ids = Auth::user()->unitClusters->pluck('id')->toArray();
         }
+        // Kepala Rusunawa tidak perlu difilter berdasarkan cluster, jadi user_cluster_ids dibiarkan kosong
     }
 
     public function render()
@@ -157,10 +159,17 @@ class ReportList extends Component
                       ->orWhereHas('logs', fn($log) => $log->where('new_status', ReportStatus::DISPOSED_TO_ADMIN->value));
                  });
             })
-            ->when($this->is_staff_of_rusunawa_user, function ($query) {
-                // Staff hanya melihat laporan dari cluster unit yang menjadi tanggung jawabnya
-                $query->whereHas('contract.unit', fn($q) => $q->whereIn('unit_cluster_id', $this->user_cluster_ids));
+            // NEW: If staff of rusunawa and no clusters assigned, return no reports
+            // This condition explicitly applies only to staff, not head of rusunawa
+            ->when($this->is_staff_of_rusunawa_user && empty($this->user_cluster_ids), function ($query) {
+                $query->whereRaw('0 = 1'); // This will ensure no results are returned
             })
+            // Existing: Filter for staff based on assigned unit clusters
+            // This condition explicitly applies only to staff, not head of rusunawa
+            ->when($this->is_staff_of_rusunawa_user && !empty($this->user_cluster_ids), function ($query) {
+                $query->whereHas('contract.unit.unitCluster', fn($q) => $q->whereIn('unit_clusters.id', $this->user_cluster_ids));
+            })
+            // Kepala Rusunawa tidak memiliki filter cluster, jadi tidak ada 'when' clause tambahan untuk mereka di sini.
             ->orderBy('created_at', 'desc');
     }
 
