@@ -15,16 +15,7 @@ Route::prefix('occupant')->group(function () {
     Route::middleware(['auth.occupant'])->group(function () {
         // Rute untuk dashboard penghuni
         Route::get('/', function () {
-            // Ambil data dari session
-            $contractId = session('occupant_contract_id');
-            $occupantId = session('logged_in_occupant_id');
-
-            $contract = \App\Models\Contract::find($contractId);
-            $occupant = \App\Models\Occupant::find($occupantId);
-
-            // Kirim data ke view dashboard Anda
-            return view('modules.occupants.dashboard.index', compact('contract', 'occupant'));
-
+            return view('modules.occupants.dashboard.index');
         })->name('occupant.dashboard');
     });
 });

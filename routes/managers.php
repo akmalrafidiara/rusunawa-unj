@@ -25,12 +25,13 @@ Route::prefix('managers')->middleware(['auth', 'verified', 'role:'.RoleUser::ADM
     // Role: ADMIN, Kepala Rusunawa
     Route::middleware(['role:'.RoleUser::ADMIN->value.'|'.RoleUser::HEAD_OF_RUSUNAWA->value])->group(function () {
          // Responses
-        Route::view('occupant-verification', 'modules.managers.responses.occupant-verification')->name('occupant.verification');
-        Route::view('payment-confirmation', 'modules.managers.responses.payment-confirmation')->name('payment.confirmation');
+        Route::view('occupant-verification', 'modules.managers.responses.occupant-verification.index')->name('occupant.verification');
+        Route::view('payment-confirmation', 'modules.managers.responses.payment-confirmation.index')->name('payment.confirmation');
 
         // Tenancy
-        Route::view('contracts', 'modules.managers.tenancy.contracts')->name('contracts');
-        
+        Route::view('contracts', 'modules.managers.tenancy.contracts.index')->name('contracts');
+        Route::view('invoices', 'modules.managers.tenancy.invoices.index')->name('invoices');
+        Route::view('occupants', 'modules.managers.tenancy.occupants.index')->name('occupants');
 
         // Oprations
         Route::view('users', 'modules.managers.oprations.users.index')->name('users');
