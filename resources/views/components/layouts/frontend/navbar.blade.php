@@ -195,7 +195,7 @@ $navMenu = [
                             Dashboard
                         </a>
                     @else
-                        <a href="{{ route('login') }}" wire:navigate @click="open = false"
+                        <a href="{{ route('occupant.auth') }}"  wire:navigate @click="open = false"
                             class="block w-full text-center bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2 rounded-lg transition text-base">
                             Masuk
                         </a>

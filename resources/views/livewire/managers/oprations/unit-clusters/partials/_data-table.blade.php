@@ -1,29 +1,26 @@
-<!-- Tabel Data -->
 <x-managers.ui.card class="p-0">
-    <x-managers.table.table :headers="['Nama', 'Staf', 'Alamat', 'Deskripsi', 'Gambar', 'Aksi']">
+    <x-managers.table.table :headers="['Nama', 'Alamat', 'Deskripsi', 'Gambar', 'Aksi']"> {{-- Removed 'Staf' header --}}
         <x-managers.table.body>
             @forelse ($unitClusters as $unitCluster)
                 <x-managers.table.row wire:key="{{ $unitCluster->id }}">
-                    <!-- Nama -->
                     <x-managers.table.cell>
                         <span class="font-bold">{{ $unitCluster->name }}</span>
                     </x-managers.table.cell>
 
-                    {{-- Staff (PIC) --}}
-                    <x-managers.table.cell>
+                    {{-- Staff (PIC) - REMOVED --}}
+                    {{-- <x-managers.table.cell>
                         @if ($unitCluster->staff)
                             <span class="font-semibold">{{ $unitCluster->staff->name }}</span>
                         @else
                             <span class="text-gray-500">Tidak ada PIC</span>
                         @endif
-                    </x-managers.table.cell>
+                    </x-managers.table.cell> --}}
 
                     {{-- Address --}}
                     <x-managers.table.cell class="whitespace-normal max-w-xs break-words">
                         {{ $unitCluster->address }}
                     </x-managers.table.cell>
 
-                    <!-- Description -->
                     <x-managers.table.cell class="whitespace-normal max-w-xs break-words">
                         {{ $unitCluster->description }}
                     </x-managers.table.cell>
@@ -38,7 +35,6 @@
                         @endif
                     </x-managers.table.cell>
 
-                    <!-- Aksi -->
                     <x-managers.table.cell class="text-right">
                         <div class="flex gap-2">
                             {{-- Detail Button --}}
@@ -63,7 +59,7 @@
                 </x-managers.table.row>
             @empty
                 <x-managers.table.row>
-                    <x-managers.table.cell colspan="5" class="text-center text-gray-500">
+                    <x-managers.table.cell colspan="5" class="text-center text-gray-500"> {{-- Adjusted colspan --}}
                         Tidak ada data cluster unit ditemukan.
                     </x-managers.table.cell>
                 </x-managers.table.row>

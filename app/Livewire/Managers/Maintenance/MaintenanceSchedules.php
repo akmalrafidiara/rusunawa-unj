@@ -161,6 +161,17 @@ class MaintenanceSchedules extends Component
 
         $schedules = $schedulesQuery->paginate($this->perPage, pageName: 'schedulePage');
 
+        // Jika halaman saat ini kosong dan ini bukan halaman pertama, coba reset ke halaman pertama.
+    if ($schedules->isEmpty() && $schedules->currentPage() > 1) {
+        $this->resetPage('schedulePage');
+        $schedules = $schedulesQuery->paginate($this->perPage, pageName: 'schedulePage');
+    }
+
+    // Jika setelah itu masih kosong, maka benar-benar tidak ada data.
+    if ($schedules->isEmpty()) {
+        $this->selectedScheduleId = null;
+    }
+
         // Dispatch event to MaintenanceRecords component when selectedScheduleId changes
         $this->dispatch('scheduleSelected', scheduleId: $this->selectedScheduleId);
 

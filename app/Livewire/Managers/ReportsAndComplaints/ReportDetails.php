@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Storage;
 use Throwable;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\On;
-
+use App\Models\UnitCluster; // Import UnitCluster model
 
 class ReportDetails extends Component
 {
@@ -86,8 +86,9 @@ class ReportDetails extends Component
         $this->is_head_of_rusunawa_user = Auth::user()->hasRole(RoleUser::HEAD_OF_RUSUNAWA->value);
         $this->is_staff_of_rusunawa_user = Auth::user()->hasRole(RoleUser::STAFF_OF_RUSUNAWA->value);
 
+        // MODIFIED: Populate user_cluster_ids from the new many-to-many relationship
         if ($this->is_staff_of_rusunawa_user || $this->is_head_of_rusunawa_user) {
-            $this->user_cluster_ids = \App\Models\UnitCluster::where('staff_id', Auth::id())->pluck('id')->toArray();
+            $this->user_cluster_ids = Auth::user()->unitClusters->pluck('id')->toArray();
         }
     }
 
@@ -112,8 +113,8 @@ class ReportDetails extends Component
             $this->reportUniqueId = $report->unique_id;
             $this->reportSubject = $report->subject;
             $this->reportDescription = $report->description;
-            $this->reportReporterName = $report->reporter->name ?? 'N/A';
-            $this->reportReporterPhone = $report->reporter->phone ?? 'N/A';
+            $this->reportReporterName = $report->reporter->full_name ?? 'N/A';
+            $this->reportReporterPhone = $report->reporter->whatsapp_number ?? 'N/A';
             $this->reportReporterEmail = $report->reporter->email ?? 'N/A';
             $this->reportReporterType = $report->reporter_type->label();
             $this->reportRoomNumber = $report->contract->unit->room_number ?? 'N/A';
@@ -237,7 +238,8 @@ class ReportDetails extends Component
             ]);
         }
 
-        LivewireAlert::success('Status laporan berhasil diperbarui!')
+        LivewireAlert::title('Status laporan berhasil diperbarui!')
+            ->success()
             ->toast()
             ->position('top-end')
             ->show();

@@ -1,9 +1,7 @@
 @if ($unitClusterIdBeingEdited)
     <x-managers.ui.modal title="Detail Cluster Unit" :show="$showModal && $modalType === 'detail'" class="max-w-2xl">Add commentMore actions
         <div class="space-y-6">
-            <!-- Header dengan Gambar dan Info Utama -->
             <div class="flex flex-col lg:flex-row gap-6">
-                <!-- Gambar Cluster -->
                 <div class="flex-shrink-0">
                     @if ($image)
                         <div class="relative group">
@@ -19,7 +17,6 @@
                     @endif
                 </div>
 
-                <!-- Info Utama -->
                 <div class="flex-1 space-y-4">
                     <div class="border-b border-gray-200 pb-4">
                         <h3 class="text-2xl font-bold text-gray-900 mb-2">{{ $name }}</h3>
@@ -29,8 +26,8 @@
                         </div>
                     </div>
 
-                    <!-- Staff Info Card -->
-                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    {{-- Staff Info Card - REMOVED --}}
+                    {{-- <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
                                 <flux:icon.user class="w-5 h-5 text-white" />
@@ -42,13 +39,11 @@
                                 </p>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
 
-            <!-- Detail Information Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Deskripsi Card -->
                 <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 md:col-span-2">
                     <div class="flex items-start gap-3">
                         <div
@@ -63,7 +58,6 @@
                     </div>
                 </div>
 
-                <!-- Tanggal Dibuat Card -->
                 <div class="bg-green-50 border border-green-200 rounded-lg p-4">
                     <div class="flex items-center gap-3">
                         <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
@@ -84,7 +78,6 @@
                     </div>
                 </div>
 
-                <!-- Tanggal Diperbarui Card -->
                 <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
                     <div class="flex items-center gap-3">
                         <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">

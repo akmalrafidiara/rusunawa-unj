@@ -37,6 +37,8 @@ class DatabaseSeeder extends Seeder
             GuestQuestionSeeder::class,
             MaintenanceScheduleSeeder::class,
             MaintenanceRecordSeeder::class,
+            ContractSeeder::class,
+            OccupantSeeder::class,
             ReportSeeder::class,
             ReportLogSeeder::class,
         ]);

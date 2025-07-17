@@ -19,14 +19,14 @@ class UnitClusterSeeder extends Seeder
                 'address' => 'Jl. Pemuda No.10, RT.8/RW.5, Rawamangun, Kec. Pulo Gadung, Kota Jakarta Timur, Daerah Khusus Ibukota Jakarta 13220',
                 'image' => null,
                 'description' => 'Gedung A adalah salah satu gedung utama di Rusunawa UNJ yang diperuntukan bagi para Mahasiswa.',
-                'staff_id' => 3,
+                // 'staff_id' => 3, // Removed staff_id
             ],
             [
                 'name' => 'Gedung B',
                 'address' => 'Jl. Pemuda No.10, RT.8/RW.5, Rawamangun, Kec. Pulo Gadung, Kota Jakarta Timur, Daerah Khusus Ibukota Jakarta 13220',
                 'image' => null,
                 'description' => 'Gedung B adalah gedung kedua di Rusunawa UNJ yang bisa ditempati oleh siapa-saja.',
-                'staff_id' => 4,
+                // 'staff_id' => 4, // Removed staff_id
             ]
         ];
 
@@ -37,7 +37,7 @@ class UnitClusterSeeder extends Seeder
                     'address' => $unit['address'],
                     'image' => $unit['image'],
                     'description' => $unit['description'],
-                    'staff_id' => $unit['staff_id'],
+                    // 'staff_id' => $unit['staff_id'], // Removed staff_id
                 ]
             );
         }

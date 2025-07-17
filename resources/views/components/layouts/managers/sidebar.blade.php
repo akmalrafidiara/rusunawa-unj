@@ -1,4 +1,9 @@
 <?php
+use App\Enums\RoleUser; // Import the RoleUser enum
+use Illuminate\Support\Facades\Auth; // Import Auth facade
+
+// Check if the authenticated user has the 'staff_of_rusunawa' role
+$isStaffUser = Auth::check() && Auth::user()->hasRole(RoleUser::STAFF_OF_RUSUNAWA->value);
 
 $adminSidebarMenu = [
     [
@@ -22,6 +27,7 @@ $adminSidebarMenu = [
                 'route' => route('occupant.verification'),
                 'current' => request()->routeIs('occupant.verification'),
                 'badge' => 3,
+                'roles' => [RoleUser::ADMIN->value, RoleUser::HEAD_OF_RUSUNAWA->value], // Add roles
             ],
             [
                 'icon' => 'credit-card',
@@ -29,6 +35,7 @@ $adminSidebarMenu = [
                 'route' => route('payment.confirmation'),
                 'current' => request()->routeIs('payment.confirmation'),
                 'badge' => 5,
+                'roles' => [RoleUser::ADMIN->value, RoleUser::HEAD_OF_RUSUNAWA->value], // Add roles
             ],
         ],
     ],
@@ -41,6 +48,7 @@ $adminSidebarMenu = [
                 'route' => route('contracts'),
                 'current' => request()->routeIs('contracts'),
                 'badge' => null,
+                'roles' => [RoleUser::ADMIN->value, RoleUser::HEAD_OF_RUSUNAWA->value], // Add roles
             ],
             [
                 'icon' => 'banknotes',
@@ -48,6 +56,7 @@ $adminSidebarMenu = [
                 'route' => route('invoices'),
                 'current' => request()->routeIs('invoices'),
                 'badge' => null,
+                'roles' => [RoleUser::ADMIN->value, RoleUser::HEAD_OF_RUSUNAWA->value, RoleUser::STAFF_OF_RUSUNAWA->value], // Add roles
             ],
             [
                 'icon' => 'user-circle',
@@ -55,6 +64,7 @@ $adminSidebarMenu = [
                 'route' => route('occupants'),
                 'current' => request()->routeIs('occupants'),
                 'badge' => null,
+                'roles' => [RoleUser::ADMIN->value, RoleUser::HEAD_OF_RUSUNAWA->value, RoleUser::STAFF_OF_RUSUNAWA->value], // Add roles
             ],
         ],
     ],
@@ -67,6 +77,7 @@ $adminSidebarMenu = [
                 'route' => route('income.reports'),
                 'current' => request()->routeIs('income.reports'),
                 'badge' => null,
+                'roles' => [RoleUser::ADMIN->value, RoleUser::HEAD_OF_RUSUNAWA->value], // Add roles
             ],
             [
                 'icon' => 'users',
@@ -74,6 +85,7 @@ $adminSidebarMenu = [
                 'route' => route('users'),
                 'current' => request()->routeIs('users'),
                 'badge' => null,
+                'roles' => [RoleUser::ADMIN->value, RoleUser::HEAD_OF_RUSUNAWA->value], // Add roles
             ],
             [
                 'expandable' => true,
@@ -84,24 +96,28 @@ $adminSidebarMenu = [
                         'label' => __('Unit'),
                         'route' => route('units'),
                         'current' => request()->routeIs('units'),
+                        'roles' => [RoleUser::ADMIN->value, RoleUser::HEAD_OF_RUSUNAWA->value], // Add roles
                     ],
                     [
                         'icon' => 'tag',
                         'label' => __('Tipe Unit'),
                         'route' => route('unit.types'),
                         'current' => request()->routeIs('unit.types'),
+                        'roles' => [RoleUser::ADMIN->value, RoleUser::HEAD_OF_RUSUNAWA->value], // Add roles
                     ],
                     [
                         'icon' => 'squares-2x2',
                         'label' => __('Cluster Unit'),
                         'route' => route('unit.clusters'),
                         'current' => request()->routeIs('unit.clusters'),
+                        'roles' => [RoleUser::ADMIN->value, RoleUser::HEAD_OF_RUSUNAWA->value], // Add roles
                     ],
                     [
                         'icon' => 'user-group',
                         'label' => __('Tipe Penghuni'),
                         'route' => route('occupant.types'),
                         'current' => request()->routeIs('occupant.types'),
+                        'roles' => [RoleUser::ADMIN->value, RoleUser::HEAD_OF_RUSUNAWA->value], // Add roles
                     ],
                 ],
             ],
@@ -111,6 +127,7 @@ $adminSidebarMenu = [
                 'route' => route('reports.and.complaints'),
                 'current' => request()->routeIs('reports.and.complaints'),
                 'badge' => 1,
+                'roles' => [RoleUser::ADMIN->value, RoleUser::HEAD_OF_RUSUNAWA->value, RoleUser::STAFF_OF_RUSUNAWA->value], // Add roles
             ],
             [
                 'icon' => 'wrench-screwdriver',
@@ -118,6 +135,7 @@ $adminSidebarMenu = [
                 'route' => route('maintenance'),
                 'current' => request()->routeIs('maintenance'),
                 'badge' => null,
+                'roles' => [RoleUser::ADMIN->value, RoleUser::HEAD_OF_RUSUNAWA->value], // Add roles
             ],
         ],
     ],
@@ -133,42 +151,49 @@ $adminSidebarMenu = [
                         'label' => __('Banner & Footer'),
                         'route' => route('page-contents.banner-footer'),
                         'current' => request()->routeIs('page-contents.banner-footer'),
+                        'roles' => [RoleUser::ADMIN->value, RoleUser::HEAD_OF_RUSUNAWA->value], // Add roles
                     ],
                     [
                         'icon' => 'building-office-2',
                         'label' => __('Tentang Rusunawa'),
                         'route' => route('page-contents.abouts'),
                         'current' => request()->routeIs('page-contents.abouts'),
+                        'roles' => [RoleUser::ADMIN->value, RoleUser::HEAD_OF_RUSUNAWA->value], // Add roles
                     ],
                     [
                         'icon' => 'map-pin',
                         'label' => __('Lokasi Rusunawa'),
                         'route' => route('page-contents.locations'),
                         'current' => request()->routeIs('page-contents.locations'),
+                        'roles' => [RoleUser::ADMIN->value, RoleUser::HEAD_OF_RUSUNAWA->value], // Add roles
                     ],
                     [
                         'icon' => 'photo',
                         'label' => __('Galeri'),
                         'route' => route('page-contents.galleries'),
                         'current' => request()->routeIs('page-contents.galleries'),
+                        'roles' => [RoleUser::ADMIN->value, RoleUser::HEAD_OF_RUSUNAWA->value], // Add roles
                     ],
                     [
                         'icon' => 'chat-bubble-left',
                         'label' => __('Layanan Pengaduan'),
                         'route' => route('page-contents.complaint-content'),
                         'current' => request()->routeIs('page-contents.complaint-content'),
+                        'roles' => [RoleUser::ADMIN->value, RoleUser::HEAD_OF_RUSUNAWA->value], // Add roles
                     ],
                     [
                         'icon' => 'question-mark-circle',
                         'label' => __('FAQ'),
                         'route' => route('page-contents.faq'),
                         'current' => request()->routeIs('page-contents.faq'),
+                        'roles' => [RoleUser::ADMIN->value, RoleUser::HEAD_OF_RUSUNAWA->value], // Add roles
                     ],
                     [
                         'icon' => 'phone-arrow-up-right',
                         'label' => __('Kontak Kami'),
                         'route' => route('page-contents.contacts'),
                         'current' => request()->routeIs('page-contents.contacts'),
+                        'roles' => [RoleUser::ADMIN->value, RoleUser::HEAD_OF_RUSUNAWA->value], // Add roles
                     ],
                 ],
             ],
@@ -178,6 +203,7 @@ $adminSidebarMenu = [
                 'route' => route('guest.questions'),
                 'current' => request()->routeIs('guest.questions'),
                 'badge' => 4,
+                'roles' => [RoleUser::ADMIN->value, RoleUser::HEAD_OF_RUSUNAWA->value], // Add roles
             ],
             [
                 'icon' => 'megaphone',
@@ -185,6 +211,7 @@ $adminSidebarMenu = [
                 'route' => route('announcements'),
                 'current' => request()->routeIs('announcements'),
                 'badge' => null,
+                'roles' => [RoleUser::ADMIN->value, RoleUser::HEAD_OF_RUSUNAWA->value], // Add roles
             ],
             [
                 'icon' => 'document-text',
@@ -192,6 +219,7 @@ $adminSidebarMenu = [
                 'route' => route('regulations'),
                 'current' => request()->routeIs('regulations'),
                 'badge' => null,
+                'roles' => [RoleUser::ADMIN->value, RoleUser::HEAD_OF_RUSUNAWA->value], // Add roles
             ],
             [
                 'icon' => 'phone',
@@ -199,11 +227,67 @@ $adminSidebarMenu = [
                 'route' => route('emergency.contacts'),
                 'current' => request()->routeIs('emergency.contacts'),
                 'badge' => null,
+                'roles' => [RoleUser::ADMIN->value, RoleUser::HEAD_OF_RUSUNAWA->value], // Add roles
             ],
         ],
     ],
 ];
 
+// Filter the menu items based on the user's role
+$filteredAdminSidebarMenu = [];
+foreach ($adminSidebarMenu as $group) {
+    $filteredItems = [];
+    foreach ($group['items'] as $item) {
+        $allowed = false;
+        // If 'roles' key is not set, it means it's accessible to everyone (including staff by default)
+        // Or if it's set, check if the current user has any of the allowed roles for this item
+        if (!isset($item['roles'])) {
+            $allowed = true;
+        } elseif (Auth::check()) {
+            foreach ($item['roles'] as $role) {
+                if (Auth::user()->hasRole($role)) {
+                    $allowed = true;
+                    break;
+                }
+            }
+        }
+
+        if ($allowed) {
+            // For expandable items, recursively filter their sub-items
+            if (isset($item['expandable']) && $item['expandable'] && isset($item['items'])) {
+                $filteredSubItems = [];
+                foreach ($item['items'] as $subItem) {
+                    $subAllowed = false;
+                    if (!isset($subItem['roles'])) {
+                        $subAllowed = true;
+                    } elseif (Auth::check()) {
+                        foreach ($subItem['roles'] as $role) {
+                            if (Auth::user()->hasRole($role)) {
+                                $subAllowed = true;
+                                break;
+                            }
+                        }
+                    }
+                    if ($subAllowed) {
+                        $filteredSubItems[] = $subItem;
+                    }
+                }
+                // Only add expandable item if it has visible sub-items
+                if (!empty($filteredSubItems)) {
+                    $item['items'] = $filteredSubItems;
+                    $filteredItems[] = $item;
+                }
+            } else {
+                $filteredItems[] = $item;
+            }
+        }
+    }
+    // Only add a group if it has visible items
+    if (!empty($filteredItems)) {
+        $group['items'] = $filteredItems;
+        $filteredAdminSidebarMenu[] = $group;
+    }
+}
 ?>
 
 <flux:sidebar sticky stashable class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 w-full">
@@ -215,7 +299,7 @@ $adminSidebarMenu = [
 
     {{-- Dynamic Sidebar Menu --}}
     <flux:navlist variant="outline" class="space-y-4">
-        @foreach ($adminSidebarMenu as $menu)
+        @foreach ($filteredAdminSidebarMenu as $menu)
             <flux:navlist.group :heading="__($menu['group'])" class="grid">
                 @foreach ($menu['items'] as $item)
                     @if (isset($item['expandable']) && $item['expandable'])
@@ -229,8 +313,7 @@ $adminSidebarMenu = [
                                 }
                             }
                         @endphp
-                        <flux:navlist.group :heading="$item['label']" expandable :expanded="$isExpanded"
-                            :icon="isset($item['icon']) ? $item['icon'] : null">
+                        <flux:navlist.group :heading="$item['label']" expandable :expanded="$isExpanded" :icon="isset($item['icon']) ? $item['icon'] : null">
                             @foreach ($item['items'] as $subItem)
                                 <flux:navlist.item :href="$subItem['route']" :current="$subItem['current']"
                                     wire:navigate.hover :icon="isset($subItem['icon']) ? $subItem['icon'] : null">
@@ -251,7 +334,6 @@ $adminSidebarMenu = [
 
     <flux:spacer />
 
-    <!-- Desktop User Menu -->
     <flux:dropdown position="bottom" align="start">
         {{-- blade-formatter-disable --}}
         <flux:profile :name="auth()->user()->name" :initials="auth()->user()->initials()"

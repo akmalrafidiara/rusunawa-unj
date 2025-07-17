@@ -16,10 +16,6 @@ use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
-use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
-use Illuminate\Support\Str;
-use Throwable;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use App\Enums\RoleUser;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -391,19 +387,15 @@ class MaintenanceRecords extends Component
 
     public function deleteRecord($data)
     {
-        try {
-            $record = MaintenanceRecord::find($data['id']);
-            if ($record) {
-                foreach ($record->attachments as $attachment) {
-                    Storage::disk('public')->delete($attachment->path);
-                    $attachment->delete();
-                }
-                $record->delete();
-                LivewireAlert::success('Rekaman pemeliharaan berhasil dihapus.')->toast()->position('top-end');
+        
+        $record = MaintenanceRecord::find($data['id']);
+        if ($record) {
+            foreach ($record->attachments as $attachment) {
+                Storage::disk('public')->delete($attachment->path);
+                $attachment->delete();
             }
-        } catch (Throwable | ValidationException $e) {
-            Log::error('Error deleting maintenance record: ' . $e->getMessage(), ['exception' => $e]);
-            LivewireAlert::error('Gagal menghapus rekaman pemeliharaan.')->toast()->position('top-end')->show();
+            $record->delete();
+            LivewireAlert::success('Rekaman pemeliharaan berhasil dihapus.')->toast()->position('top-end');
         }
     }
 

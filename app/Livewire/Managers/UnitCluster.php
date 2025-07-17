@@ -17,13 +17,13 @@ class UnitCluster extends Component
     use WithFilePond;
 
     // Main data properties
-    public $name, $address, $image, $description, $staffId, $staffName, $createdAt, $updatedAt;
+    public $name, $address, $image, $description, $createdAt, $updatedAt; // Removed staffId, staffName
 
     // Temporary image for editing
     public $temporaryImage;
 
     // Options properties
-    public $staffOptions;
+    // public $staffOptions; // Removed staffOptions
 
     // Toolbar properties
     public $search = '';
@@ -47,14 +47,7 @@ class UnitCluster extends Component
      */
     public function mount()
     {
-        $this->staffOptions = \App\Models\User::whereHas('roles', function ($query) {
-            $query->where('name', 'staff_of_rusunawa');
-        })->get()->map(function ($user) {
-            return [
-                'value' => $user->id,
-                'label' => $user->name,
-            ];
-        })->toArray();
+        // Removed staffOptions population
     }
 
     /**
@@ -95,8 +88,7 @@ class UnitCluster extends Component
         $this->address = $unitCluster->address;
         $this->description = $unitCluster->description;
         $this->image = $unitCluster->image;
-        $this->staffId = $unitCluster->staff_id;
-        $this->staffName = $unitCluster->staff->name ?? '';
+        // Removed staffId and staffName filling
         $this->temporaryImage = $unitCluster->image;
         $this->createdAt = $unitCluster->created_at;
         $this->updatedAt = $unitCluster->updated_at;
@@ -136,19 +128,7 @@ class UnitCluster extends Component
         return [
             'name' => 'required|string|max:255',
             'address' => 'required|string|max:255',
-            'staffId' => [
-                'required',
-                'exists:users,id',
-                function ($attribute, $value, $fail) {
-                    $user = \App\Models\User::where('id', $value)
-                        ->whereHas('roles', function ($q) {
-                            $q->where('name', 'staff_of_rusunawa');
-                        })->first();
-                    if (!$user) {
-                        $fail('The selected staff is invalid or does not have the staff role.');
-                    }
-                }
-            ],
+            // Removed staffId validation
             'description' => 'nullable|string',
             'image' => $this->unitClusterIdBeingEdited && $this->image === $this->temporaryImage
                 ? 'nullable'
@@ -191,7 +171,7 @@ class UnitCluster extends Component
             'name' => $this->name,
             'address'=> $this->address,
             'description' => $this->description,
-            'staff_id' => $this->staffId,
+            // 'staff_id' => $this->staffId, // Removed staff_id
         ];
 
         // Jika tidak ada gambar lama di hapus
@@ -284,7 +264,7 @@ class UnitCluster extends Component
         $this->address = '';
         $this->description = '';
         $this->image = '';
-        $this->staffId = '';
+        // $this->staffId = ''; // Removed staffId
         $this->temporaryImage = '';
         $this->unitClusterIdBeingEdited = null;
     }

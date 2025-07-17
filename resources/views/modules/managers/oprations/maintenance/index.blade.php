@@ -4,7 +4,7 @@
             subtitle="Kelola Maintenance atau Pemeliharaan yang dilakukan pada unit hunian" />
 
         {{-- Main Layout: Daftar Kamar (Left - MaintenanceSchedules), Detail Schedule & History (Right - MaintenanceRecords) --}}
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:items-start">
             {{-- LEFT COLUMN: Daftar Kamar --}}
             <livewire:managers.maintenance.maintenance-schedules />
 
