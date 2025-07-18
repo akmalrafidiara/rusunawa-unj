@@ -8,8 +8,8 @@
     @endphp
 
     {{-- HEADER DENGAN BACKGROUND --}}
-    <div class="w-full bg-cover bg-center h-64"
-        style="background-image: url('{{ asset('images/banner-image-complaint.jpg') }}');">
+    <div class="w-full bg-cover bg-center h-64" {{-- style="background-image: url('{{ asset('images/banner-image-complaint.jpg') }}');"> --}}
+        style="background-image: url('https://w.wallhaven.cc/full/ly/wallhaven-lyq5or.jpg');">
         <div class="w-full h-full bg-gray-900/50 flex items-center">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                 {{-- Judul Halaman --}}
@@ -29,7 +29,8 @@
             {{-- Menggunakan order-first untuk memastikan ini selalu di atas di mobile --}}
             <div class="lg:hidden col-span-1 order-first grid grid-cols-3 gap-4 mb-4">
                 {{-- Card: Hai, (nama) (hanya untuk mobile di sini) --}}
-                <div class="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-4 border dark:border-zinc-700 col-span-2 flex flex-col justify-center h-full">
+                <div
+                    class="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-4 border dark:border-zinc-700 col-span-2 flex flex-col justify-center h-full">
                     <p class="font-semibold text-lg text-gray-900 dark:text-white">Hai, {{ $loggedInName }}</p>
                 </div>
 
@@ -46,20 +47,24 @@
                         x-transition:leave="transition ease-in duration-75"
                         x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
                         class="absolute right-0 mt-2 w-48 bg-white dark:bg-zinc-800 rounded-md shadow-lg py-1 z-20 border dark:border-zinc-700">
-                        <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-700">
+                        <a href="#"
+                            class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-700">
                             <flux:icon name="bell" class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400" />
                             Notifikasi
                             <span class="ml-auto flex-shrink-0 relative">
                                 <span class="absolute top-0 right-0 h-2 w-2 flex items-center justify-center">
-                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                    <span
+                                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                                     <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
                                 </span>
                             </span>
                         </a>
                         <form method="POST" action="{{ route('occupant.auth.logout') }}" class="w-full">
                             @csrf
-                            <button type="submit" class="flex items-center w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-zinc-700">
-                                <flux:icon name="arrow-right-start-on-rectangle" class="w-5 h-5 mr-3 text-red-500 dark:text-red-400" />
+                            <button type="submit"
+                                class="flex items-center w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-zinc-700">
+                                <flux:icon name="arrow-right-start-on-rectangle"
+                                    class="w-5 h-5 mr-3 text-red-500 dark:text-red-400" />
                                 Logout
                             </button>
                         </form>
@@ -70,6 +75,7 @@
             {{-- Kolom Kiri: Detail Pembayaran & Data Penghuni --}}
             <div class="lg:col-span-1 flex flex-col gap-6">
                 <livewire:occupants.dashboard.payment-details />
+                <livewire:occupants.dashboard.payment-history />
                 <livewire:occupants.dashboard.occupant-data />
             </div>
 
@@ -79,7 +85,8 @@
                 {{-- Terlihat di desktop (lg:flex), disembunyikan di mobile (hidden) --}}
                 <div class="hidden lg:grid lg:grid-cols-10 lg:items-stretch gap-4">
                     {{-- Card: Hai, (nama) --}}
-                    <div class="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-4 border dark:border-zinc-700 lg:col-span-8 flex flex-col justify-center h-full">
+                    <div
+                        class="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-4 border dark:border-zinc-700 lg:col-span-8 flex flex-col justify-center h-full">
                         <p class="font-semibold text-lg text-gray-900 dark:text-white">Hai, {{ $loggedInName }}</p>
                     </div>
 
@@ -90,7 +97,8 @@
                             <span class="sr-only">Lihat Notifikasi</span>
                             <flux:icon name="bell" class="w-6 h-6" />
                             <span class="absolute top-1 right-1 h-2 w-2 flex items-center justify-center">
-                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                <span
+                                    class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                                 <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
                             </span>
                         </a>
