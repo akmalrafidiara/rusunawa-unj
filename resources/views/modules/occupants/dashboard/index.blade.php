@@ -1,16 +1,13 @@
 <x-layouts.frontend title="Dashboard Penghuni">
 
     @php
-        // Mengambil data kontrak dan PIC dari penghuni yang sedang login
+        // Mengambil data penghuni yang sedang login
         $occupantUser = Auth::guard('occupant')->user();
-        $contract = $occupantUser?->contracts()->with('pic')->first();
-
-        // Jika PIC ditemukan, gunakan namanya. Jika tidak, gunakan nama penghuni sebagai fallback.
-        $picName = $contract && $contract->pic->isNotEmpty() ? $contract->pic->first()->full_name : $occupantUser->full_name;
+        // Nama yang ditampilkan adalah nama penghuni yang login
+        $loggedInName = $occupantUser->full_name ?? 'Penghuni'; // Fallback jika nama tidak ada
     @endphp
 
     {{-- HEADER DENGAN BACKGROUND --}}
-    {{-- UKURAN DIPERBESAR: Ditambahkan class 'h-64' untuk membuat banner lebih tinggi --}}
     <div class="w-full bg-cover bg-center h-64"
         style="background-image: url('{{ asset('images/banner-image-complaint.jpg') }}');">
         <div class="w-full h-full bg-gray-900/50 flex items-center">
@@ -24,47 +21,91 @@
     </div>
 
     {{-- KONTEN UTAMA --}}
-    {{-- Margin atas disesuaikan agar tumpukan terlihat bagus dengan header yang lebih tinggi --}}
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 -mt-20">
+        {{-- Grid utama untuk 2/3 kolom --}}
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-            {{-- Kolom Kiri --}}
+            {{-- Mobile: Top Cards (Hai, (nama) & Menu Cepat) - Ini akan diatur agar muncul pertama di mobile --}}
+            {{-- Menggunakan order-first untuk memastikan ini selalu di atas di mobile --}}
+            <div class="lg:hidden col-span-1 order-first grid grid-cols-3 gap-4 mb-4">
+                {{-- Card: Hai, (nama) (hanya untuk mobile di sini) --}}
+                <div class="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-4 border dark:border-zinc-700 col-span-2 flex flex-col justify-center h-full">
+                    <p class="font-semibold text-lg text-gray-900 dark:text-white">Hai, {{ $loggedInName }}</p>
+                </div>
+
+                {{-- Mobile : Icon-only dropdown for Notif & Logout --}}
+                <div x-data="{ open: false }" @click.away="open = false" class="relative col-span-1">
+                    <button @click="open = !open"
+                        class="w-full h-full bg-white dark:bg-zinc-800 rounded-lg shadow-md flex items-center justify-center text-gray-900 dark:text-white p-2">
+                        <span class="sr-only">Menu Cepat</span>
+                        <flux:icon name="chevron-double-down" class="w-7 h-7" />
+                    </button>
+
+                    <div x-show="open" x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+                        x-transition:leave="transition ease-in duration-75"
+                        x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+                        class="absolute right-0 mt-2 w-48 bg-white dark:bg-zinc-800 rounded-md shadow-lg py-1 z-20 border dark:border-zinc-700">
+                        <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-700">
+                            <flux:icon name="bell" class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400" />
+                            Notifikasi
+                            <span class="ml-auto flex-shrink-0 relative">
+                                <span class="absolute top-0 right-0 h-2 w-2 flex items-center justify-center">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                                </span>
+                            </span>
+                        </a>
+                        <form method="POST" action="{{ route('occupant.auth.logout') }}" class="w-full">
+                            @csrf
+                            <button type="submit" class="flex items-center w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-zinc-700">
+                                <flux:icon name="arrow-right-start-on-rectangle" class="w-5 h-5 mr-3 text-red-500 dark:text-red-400" />
+                                Logout
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Kolom Kiri: Detail Pembayaran & Data Penghuni --}}
             <div class="lg:col-span-1 flex flex-col gap-6">
                 <livewire:occupants.dashboard.payment-details />
                 <livewire:occupants.dashboard.occupant-data />
             </div>
 
-            {{-- Kolom Kanan --}}
+            {{-- Kolom Kanan: Desktop Top Cards & Livewire Components --}}
             <div class="lg:col-span-2 flex flex-col gap-6">
-                
-                {{-- CARD BARU: Informasi PIC dan Notifikasi dipindahkan ke sini --}}
-                <div class="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-4 border dark:border-zinc-700">
-                    <div class="flex justify-between items-center gap-4">
-                        {{-- Info PIC --}}
-                        <div>
-                             <p class="text-sm text-gray-500 dark:text-gray-400">Selamat Datang,</p>
-                             <p class="font-semibold text-lg text-gray-900 dark:text-white">{{ $picName }}</p>
-                        </div>
-                        
-                        {{-- Tombol Notifikasi --}}
+                {{-- Desktop Only: Separate small cards for Notif & Logout & Hai (nama) --}}
+                {{-- Terlihat di desktop (lg:flex), disembunyikan di mobile (hidden) --}}
+                <div class="hidden lg:grid lg:grid-cols-10 lg:items-stretch gap-4">
+                    {{-- Card: Hai, (nama) --}}
+                    <div class="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-4 border dark:border-zinc-700 lg:col-span-8 flex flex-col justify-center h-full">
+                        <p class="font-semibold text-lg text-gray-900 dark:text-white">Hai, {{ $loggedInName }}</p>
+                    </div>
+
+                    {{-- Notif & Logout di desktop --}}
+                    <div class="lg:col-span-2 flex gap-4 items-stretch">
                         <a href="#"
-                            class="relative p-2 text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white focus:outline-none bg-gray-100 hover:bg-gray-200 dark:bg-zinc-700 dark:hover:bg-zinc-600 rounded-full transition-colors">
+                            class="relative bg-white dark:bg-zinc-800 rounded-lg shadow-md p-3 border dark:border-zinc-700 flex flex-col items-center justify-center flex-1 h-full w-full text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white transition-colors">
                             <span class="sr-only">Lihat Notifikasi</span>
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
-                                </path>
-                            </svg>
-                            <span class="absolute top-1 right-1 h-3 w-3 flex items-center justify-center">
-                                <span
-                                    class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                            <flux:icon name="bell" class="w-6 h-6" />
+                            <span class="absolute top-1 right-1 h-2 w-2 flex items-center justify-center">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
                             </span>
                         </a>
+                        <form method="POST" action="{{ route('occupant.auth.logout') }}" class="flex-1">
+                            @csrf
+                            <button type="submit"
+                                class="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-3 border dark:border-zinc-700 flex flex-col items-center justify-center w-full h-full text-red-500 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 transition-colors">
+                                <span class="sr-only">Logout</span>
+                                <flux:icon name="arrow-right-start-on-rectangle" class="w-6 h-6" />
+                            </button>
+                        </form>
                     </div>
                 </div>
 
+                {{-- Livewire components --}}
                 <livewire:occupants.dashboard.announcements />
                 <livewire:occupants.dashboard.complaints />
                 <livewire:occupants.dashboard.emergency-contacts />
