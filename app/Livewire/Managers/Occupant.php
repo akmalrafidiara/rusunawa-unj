@@ -5,6 +5,7 @@ namespace App\Livewire\Managers;
 use App\Data\AcademicData;
 use App\Enums\GenderAllowed;
 use App\Enums\OccupantStatus;
+use App\Exports\OccupantsExport;
 use App\Models\Contract;
 use App\Models\Occupant as OccupantModel;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -15,6 +16,7 @@ use Livewire\Component;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
+use Maatwebsite\Excel\Facades\Excel;
 use Spatie\LivewireFilepond\WithFilePond;
 
 class Occupant extends Component
@@ -44,7 +46,7 @@ class Occupant extends Component
         $classYear;
 
     // Relational data properties
-    public 
+    public
         $contracts,
         $contractIds;
 
@@ -201,7 +203,7 @@ class Occupant extends Component
                 : 'nullable|file|mimes:jpeg,png,jpg,pdf|max:2048',
         ];
 
-        
+
 
         if ($this->isStudent) {
             $rules['studentId'] = 'required|string|max:20';
@@ -258,7 +260,7 @@ class Occupant extends Component
             'agree_to_regulation' => $this->agreeToRegulation,
             'notes' => $this->notes,
             'status' => $this->status,
-            
+
             'is_student'           => $this->isStudent,
             'student_id'           => $this->isStudent ? $this->studentId : null,
             'faculty'              => $this->isStudent ? $this->faculty : null,
@@ -282,7 +284,7 @@ class Occupant extends Component
                     Storage::disk('public')->delete($this->temporaryIdentityCardFile);
                 }
             }
-            
+
             $data['identity_card_file'] = $this->identityCardFile->store('occupant', 'public');
         }
 
@@ -292,7 +294,7 @@ class Occupant extends Component
                     Storage::disk('public')->delete($this->temporarycommunityCardFile);
                 }
             }
-            
+
             $data['community_card_file'] = $this->communityCardFile->store('occupant', 'public');
         }
 
@@ -393,5 +395,22 @@ class Occupant extends Component
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf->output();
         }, now()->format('Y-m-d') . '_occupants.pdf');
+    }
+
+    public function exportExcel()
+    {
+        $occupants = $this->buildUnitQuery()->get();
+
+        LivewireAlert::title('Excel Berhasil Diunduh')
+            ->text('Data penghuni berhasil diekspor ke Excel.')
+            ->success()
+            ->toast()
+            ->position('top-end')
+            ->show();
+
+        return Excel::download(
+            new OccupantsExport($occupants),
+            now()->format('Y-m-d') . '_occupants.xlsx'
+        );
     }
 }
