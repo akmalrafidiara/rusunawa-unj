@@ -2,14 +2,12 @@
 
 namespace App\Enums;
 
-enum InvoiceStatus: string
+enum PaymentStatus: string
 {
     // --- 1. Definisi Kasus ---
-    case UNPAID = 'unpaid';
-    case PAID = 'paid';
-    case PENDING_PAYMENT_VERIFICATION = 'pending_payment_verification';
-    case OVERDUE = 'overdue';
-    case CANCELLED = 'cancelled';
+    case PENDING_VERIFICATION = 'pending_verification';
+    case APPROVED = 'approved';
+    case REJECTED = 'rejected';
 
     /**
      * Mengembalikan semua nilai 'value' dari enum.
@@ -26,11 +24,9 @@ enum InvoiceStatus: string
     {
         // --- 2. Label untuk Setiap Status ---
         return match ($this) {
-            self::UNPAID    => 'Belum Dibayar',
-            self::PAID      => 'Lunas',
-            self::PENDING_PAYMENT_VERIFICATION => 'Menunggu Verifikasi Pembayaran',
-            self::OVERDUE   => 'Lewat Batas Waktu',
-            self::CANCELLED => 'Dibatalkan',
+            self::PENDING_VERIFICATION    => 'Menunggu Verifikasi',
+            self::APPROVED      => 'Diterima',
+            self::REJECTED   => 'Ditolak',
         };
     }
 
@@ -54,11 +50,9 @@ enum InvoiceStatus: string
     {
         // --- 3. Warna untuk Setiap Status ---
         return match ($this) {
-            self::UNPAID    => ['bg-yellow-100', 'text-yellow-800', 'dark:bg-yellow-900/30', 'dark:text-yellow-400'],
-            self::PAID      => ['bg-green-100', 'text-green-800', 'dark:bg-green-900/30', 'dark:text-green-400'],
-            self::PENDING_PAYMENT_VERIFICATION => ['bg-blue-100', 'text-blue-800', 'dark:bg-blue-900/30', 'dark:text-blue-400'],
-            self::OVERDUE   => ['bg-orange-100', 'text-orange-800', 'dark:bg-orange-900/30', 'dark:text-orange-400'],
-            self::CANCELLED => ['bg-red-100', 'text-red-800', 'dark:bg-red-900/30', 'dark:text-red-400'],
+            self::PENDING_VERIFICATION    => ['bg-yellow-100', 'text-yellow-800', 'dark:bg-yellow-900/30', 'dark:text-yellow-400'],
+            self::APPROVED      => ['bg-green-100', 'text-green-800', 'dark:bg-green-900/30', 'dark:text-green-400'],
+            self::REJECTED   => ['bg-orange-100', 'text-orange-800', 'dark:bg-orange-900/30', 'dark:text-orange-400'],
         };
     }
 

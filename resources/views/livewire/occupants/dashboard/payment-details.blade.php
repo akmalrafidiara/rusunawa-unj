@@ -12,15 +12,18 @@
             </div>
             <div class="flex justify-between">
                 <span class="font-semibold">Nomor Virtual Account:</span>
-                <span class="font-mono bg-gray-100 dark:bg-zinc-700 p-1 rounded">{{ $contract->unit->virtual_account_number }}</span>
+                <span
+                    class="font-mono bg-gray-100 dark:bg-zinc-700 p-1 rounded">{{ $contract->unit->virtual_account_number }}</span>
             </div>
             <div class="flex justify-between">
                 <span class="font-semibold">Durasi Sewa:</span>
-                <span>{{ $contract->start_date->translatedFormat('d M Y') }} - {{ $contract->end_date->translatedFormat('d M Y') }}</span>
+                <span>{{ $contract->start_date->translatedFormat('d M Y') }} -
+                    {{ $contract->end_date->translatedFormat('d M Y') }}</span>
             </div>
             <div class="flex justify-between">
                 <span class="font-semibold">Tanggal Jatuh Tempo:</span>
-                <span class="text-red-500 font-medium">{{ $latestInvoice->due_at->translatedFormat('d M Y') }}</span>
+                <span class="text-red-500 font-medium">{{ $latestInvoice->due_at->translatedFormat('d M Y H:i') }}
+                    WIB</span>
             </div>
             <div class="flex justify-between items-center">
                 <span class="font-semibold">Status Tagihan:</span>
@@ -28,12 +31,36 @@
                     {{ $latestInvoice->status->label() }}
                 </x-managers.ui.badge>
             </div>
-            <div class="border-t dark:border-zinc-600 pt-3 mt-3 text-right">
-                <p class="text-sm">Subtotal</p>
-                <p class="text-2xl font-bold">Rp{{ number_format($latestInvoice->amount, 0, ',', '.') }}</p>
+            <div class="flex justify-between items-center border-t dark:border-zinc-600 pt-3 mt-3 ">
+                <div>
+                    <p class="text-sm">Subtotal</p>
+                    <p class="text-2xl font-bold">Rp{{ number_format($latestInvoice->amount, 0, ',', '.') }}</p>
+                </div>
+                <button>
+                    <x-managers.ui.button
+                        class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-colors">
+                        Bayar
+                    </x-managers.ui.button>
+                </button>
             </div>
+            @if ($latestInvoice->status == \App\Enums\InvoiceStatus::UNPAID)
+                {{-- Asumsi ada Enum InvoiceStatus::Pending --}}
+                <div class="mt-6">
+                    <livewire:occupants.dashboard.upload-payment-proof :invoice="$latestInvoice" />
+                </div>
+            @elseif ($latestInvoice->status == \App\Enums\InvoiceStatus::PENDING_PAYMENT_VERIFICATION)
+                {{-- Jika ada status khusus setelah upload --}}
+                <p class="mt-4 text-center text-orange-500 dark:text-orange-400">Bukti pembayaran untuk invoice ini
+                    sedang dalam proses verifikasi.</p>
+            @else
+                <button
+                    class="mt-4 w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg transition-colors">
+                    Lihat Riwayat Pembayaran
+                </button>
+            @endif
         </div>
-        <button class="mt-4 w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg transition-colors">
+        <button
+            class="mt-4 w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg transition-colors">
             Lihat Riwayat Pembayaran
         </button>
     @else

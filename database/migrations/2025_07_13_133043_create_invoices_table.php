@@ -15,20 +15,21 @@ return new class extends Migration
             $table->id();
             $table->string('invoice_number')->unique();
             $table->foreignId('contract_id')->constrained('contracts')->onDelete('cascade');
-            
+
             $table->string('description');
             $table->unsignedInteger('amount');
 
             $table->timestamp('due_at');
             $table->timestamp('paid_at')->nullable();
-            
+
             $table->enum('status', [
                 'unpaid',
                 'paid',
+                'pending_payment_verification',
                 'overdue',
                 'cancelled',
             ])->default('unpaid');
-            
+
             $table->timestamps();
         });
     }
