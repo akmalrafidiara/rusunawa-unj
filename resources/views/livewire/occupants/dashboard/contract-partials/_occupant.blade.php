@@ -27,14 +27,13 @@
                         <div class="bg-gray-50 dark:bg-zinc-700 rounded-lg p-4 border dark:border-zinc-600">
                             <div class="flex items-center justify-between mb-3">
                                 <h4 class="font-bold text-lg">Penghuni {{ $loop->iteration }}</h4>
-                                <x-managers.ui.badge
-                                    class="{{ is_array($occupant->status->color()) ? implode(' ', $occupant->status->color()) : $occupant->status->color() }}">
-                                    {{ $occupant->status->label() }}
-                                </x-managers.ui.badge>
+                                <a href="">
+                                    <flux:icon name="pencil-square" class="w-5 h-5 text-gray-400 hover:text-gray-600" />
+                                </a>
                             </div>
-                            <div class="space-y-3">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Nama:</p>
+                                    <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Nama</p>
                                     <p class="text-sm text-gray-600 dark:text-gray-400">{{ $occupant->full_name }}
                                         @if ($occupant->pivot->is_pic)
                                             <x-managers.ui.badge
@@ -45,7 +44,14 @@
                                     </p>
                                 </div>
                                 <div>
-                                    <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Email:</p>
+                                    <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Status</p>
+                                    <x-managers.ui.badge
+                                        class="{{ is_array($occupant->status->color()) ? implode(' ', $occupant->status->color()) : $occupant->status->color() }}">
+                                        {{ $occupant->status->label() }}
+                                    </x-managers.ui.badge>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Email</p>
                                     <p class="text-sm text-gray-600 dark:text-gray-400">{{ $occupant->email }}</p>
                                 </div>
                                 <div>
@@ -56,19 +62,19 @@
                                 </div>
                                 @if ($occupant->is_student)
                                     <div>
-                                        <p class="text-sm font-medium text-gray-700 dark:text-gray-300">NIM:</p>
+                                        <p class="text-sm font-medium text-gray-700 dark:text-gray-300">NIM</p>
                                         <p class="text-sm text-gray-600 dark:text-gray-400">{{ $occupant->student_id }}
                                         </p>
                                     </div>
                                     <div>
-                                        <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Program Studi:
+                                        <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Program Studi
                                         </p>
                                         <p class="text-sm text-gray-600 dark:text-gray-400">
                                             {{ $occupant->study_program }}
                                         </p>
                                     </div>
                                     <div>
-                                        <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Fakultas:</p>
+                                        <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Fakultas</p>
                                         <p class="text-sm text-gray-600 dark:text-gray-400">{{ $occupant->faculty }}
                                         </p>
                                     </div>

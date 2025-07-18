@@ -73,12 +73,7 @@
             </div>
 
             {{-- Kolom Kiri: Detail Pembayaran & Data Penghuni --}}
-            <div class="lg:col-span-1 flex flex-col gap-6">
-                <livewire:occupants.dashboard.unit-details />
-                <livewire:occupants.dashboard.payment-details />
-                {{-- <livewire:occupants.dashboard.payment-history /> --}}
-                <livewire:occupants.dashboard.occupant-data />
-            </div>
+            <livewire:occupants.dashboard.contract />
 
             {{-- Kolom Kanan: Desktop Top Cards & Livewire Components --}}
             <div class="lg:col-span-2 flex flex-col gap-6">

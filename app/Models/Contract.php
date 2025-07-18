@@ -60,6 +60,11 @@ class Contract extends Model
         return $this->hasMany(Invoice::class);
     }
 
+    public function payments()
+    {
+        return $this->hasManyThrough(Payment::class, Invoice::class);
+    }
+
     public function reports()
     {
         return $this->hasMany(Report::class);
