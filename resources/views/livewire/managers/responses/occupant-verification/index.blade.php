@@ -3,4 +3,6 @@
     @include('livewire.managers.responses.occupant-verification.partials.list-panel')
 
     @include('livewire.managers.responses.occupant-verification.partials.detail-panel')
+
+    @include('livewire.managers.responses.occupant-verification.partials.modal-response')
 </div>

@@ -1,9 +1,8 @@
 {{-- Daftar laporan --}}
 <div class="flex flex-col gap-4 overflow-y-auto pr-2" style="max-height: 70vh;">
     @forelse ($reports as $report)
-        <div wire:key="list-report-{{ $report->id }}"
-             wire:click="selectReport({{ $report->id }})"
-             class="p-6 rounded-lg border cursor-pointer transition-colors duration-200
+        <div wire:key="list-report-{{ $report->id }}" wire:click="selectReport({{ $report->id }})"
+            class="p-6 rounded-lg border cursor-pointer transition-colors duration-200
                 {{ $selectedReportId === $report->id ? 'bg-green-100 border-green-500 dark:bg-green-900/30 dark:border-green-700' : 'bg-gray-50 border-gray-200 hover:bg-gray-100 dark:bg-zinc-700 dark:border-zinc-600 dark:hover:bg-zinc-600' }}">
 
             {{-- Status --}}
