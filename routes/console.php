@@ -13,3 +13,5 @@ Schedule::command('contracts:cancel-unpaid-initial')->everyFiveSeconds();
 Schedule::command('maintenance:check-schedule')->everyFiveSeconds();
 
 Schedule::command('renewals:check-monthly')->dailyAt('01:00');
+
+Schedule::command('invoices:send-reminders')->dailyAt('09:00');

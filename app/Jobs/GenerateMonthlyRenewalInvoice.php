@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Mail\NewInvoiceNotification;
 use App\Models\Contract;
 use App\Models\Invoice;
 use App\Enums\InvoiceStatus;
@@ -13,6 +14,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class GenerateMonthlyRenewalInvoice implements ShouldQueue
 {
@@ -74,6 +76,14 @@ class GenerateMonthlyRenewalInvoice implements ShouldQueue
             // Perbarui end_date kontrak jika ini adalah perpanjangan pertama untuk periode baru
             // Ini untuk memastikan kontrak selalu mencerminkan periode terpanjang yang sudah ditagihkan
             $this->contract->update(['end_date' => $nextDueDate]);
+
+            $occupantEmail = $this->contract->occupants->first()->email ?? null;
+            if ($occupantEmail) {
+                Mail::to($occupantEmail)->send(new NewInvoiceNotification($invoice));
+                Log::info("Email notifikasi invoice baru #{$invoice->invoice_number} berhasil dikirim ke {$occupantEmail}.");
+            } else {
+                Log::warning("Tidak dapat mengirim email notifikasi invoice baru #{$invoice->invoice_number}: Email penghuni tidak ditemukan.");
+            }
 
             Log::info("Berhasil membuat invoice perpanjangan bulanan untuk kontrak {$this->contract->contract_code}: Invoice #{$invoice->invoice_number} (Jumlah: Rp{$invoice->amount}, Jatuh Tempo: {$invoice->due_at->translatedFormat('d M Y')}).");
 
