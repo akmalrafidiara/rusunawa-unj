@@ -12,6 +12,17 @@ use Barryvdh\DomPDF\Facade\Pdf;
  * App\Models\Invoice
  *
  * @property-read Contract $contract
+ *
+ * @property int $id
+ * @property string $invoice_number
+ * @property int $contract_id
+ * @property string $description
+ * @property float $amount
+ * @property \Illuminate\Support\Carbon $due_at
+ * @property \Illuminate\Support\Carbon|null $paid_at
+ * @property \App\Enums\InvoiceStatus $status
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
  */
 class Invoice extends Model
 {
