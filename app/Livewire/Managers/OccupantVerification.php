@@ -12,9 +12,12 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\URL;
 use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 class OccupantVerification extends Component
 {
+    use WithPagination;
+
     public $occupant;
 
     public $responseMessage;
@@ -31,11 +34,11 @@ class OccupantVerification extends Component
         $occupants = Occupant::query()
             ->where('status', OccupantStatus::PENDING_VERIFICATION)
             ->when($this->search, function ($query) {
-            $query->where('full_name', 'like', '%' . $this->search . '%')
-                ->orWhere('whatsapp_number', 'like', '%' . $this->search . '%')
-                ->orWhereHas('contracts', function ($contractQuery) {
-                    $contractQuery->where('contract_code', 'like', '%' . $this->search . '%');
-                });
+                $query->where('full_name', 'like', "%{$this->search}%")
+                    ->orWhere('whatsapp_number', 'like', "%{$this->search}%")
+                    ->orWhereHas('contracts', function ($contractQuery) {
+                        $contractQuery->where('contract_code', 'like', "%{$this->search}%");
+                    });
             })
             ->orderBy('created_at', 'desc')
             ->paginate(10);

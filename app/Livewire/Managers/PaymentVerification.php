@@ -99,10 +99,16 @@ class PaymentVerification extends Component
             $this->payment->invoice->save();
         }
 
+        // Update contract status to active if it exists
+        if ($this->payment->invoice && $this->payment->invoice->contract) {
+            $this->payment->invoice->contract->status = \App\Enums\ContractStatus::ACTIVE;
+            $this->payment->invoice->contract->save();
+        }
+
         // Log the verification
         $this->payment->verificationLogs()->create([
             'processed_by' => auth('web')->id(),
-            'status' => 'approved',
+            'status' => PaymentStatus::APPROVED,
             'reason' => $this->responseMessage,
         ]);
 
@@ -140,10 +146,15 @@ class PaymentVerification extends Component
         $this->payment->verified_at = now();
         $this->payment->save();
 
+        if ($this->payment->invoice) {
+            $this->payment->invoice->status = InvoiceStatus::UNPAID;
+            $this->payment->invoice->save();
+        }
+
         // Log the verification
         $this->payment->verificationLogs()->create([
             'processed_by' => auth('web')->id(),
-            'status' => 'rejected',
+            'status' => PaymentStatus::REJECTED,
             'reason' => $this->responseMessage,
         ]);
         LivewireAlert::title('Verifikasi pembayaran berhasil ditolak.')

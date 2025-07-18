@@ -74,8 +74,9 @@
 
             {{-- Kolom Kiri: Detail Pembayaran & Data Penghuni --}}
             <div class="lg:col-span-1 flex flex-col gap-6">
+                <livewire:occupants.dashboard.unit-details />
                 <livewire:occupants.dashboard.payment-details />
-                <livewire:occupants.dashboard.payment-history />
+                {{-- <livewire:occupants.dashboard.payment-history /> --}}
                 <livewire:occupants.dashboard.occupant-data />
             </div>
 
