@@ -286,7 +286,7 @@ class Contract extends Component
     {
         if ($this->contractIdBeingSelected) {
             ContractModel::find($this->contractIdBeingSelected)->delete();
-            LivewireAlert::success('Kontrak berhasil dihapus.')->toast();
+            LivewireAlert::title('Kontrak berhasil dihapus.')->success()->toast();
             $this->reset(['contractIdBeingSelected']);
         }
     }

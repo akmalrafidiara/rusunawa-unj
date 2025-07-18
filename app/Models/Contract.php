@@ -26,8 +26,8 @@ class Contract extends Model
     ];
 
     protected $casts = [
-        'start_date' => 'date',
-        'end_date' => 'date',
+        'start_date' => 'datetime',
+        'end_date' => 'datetime',
         'expired_date' => 'datetime',
         'pricing_basis' => PricingBasis::class,
         'status' => ContractStatus::class,
