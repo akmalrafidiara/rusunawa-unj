@@ -14,13 +14,13 @@ return new class extends Migration
         Schema::create('contracts', function (Blueprint $table) {
             $table->id();
             $table->string('contract_code')->unique();
-            
+
             $table->foreignId('unit_id')->constrained('units')->onDelete('cascade');
             $table->foreignId('occupant_type_id')->constrained('occupant_types');
-            
+
             $table->date('start_date');
             $table->date('end_date')->nullable();
-            $table->string('pricing_basis');
+            $table->enum('pricing_basis', ['per_night', 'per_month']);
             $table->unsignedInteger('total_price');
 
             $table->timestamp('expired_date')->nullable();
@@ -31,7 +31,7 @@ return new class extends Migration
                 'expired',
                 'cancelled',
             ])->default('pending_payment');
-            
+
             $table->timestamps();
         });
     }
