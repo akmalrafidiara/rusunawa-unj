@@ -1,19 +1,13 @@
-<div
-    class="flex border rounded-md border-gray-500 dark:border-gray-400 text-black dark:text-white overflow-hidden self-stretch">
-    <!-- PDF Button -->
-    <button type="button" wire:click="exportPdf"
-        class="flex-1 flex gap-1 items-center justify-center border-none outline-none cursor-pointer text-xs px-4 hover:bg-red-600 hover:text-white dark:hover:bg-red-500 h-full">
-        <span>PDF</span>
-        <flux:icon name="inbox-arrow-down" variant="solid" class="w-4 h-4" />
+<div class="flex rounded-md shadow-sm self-stretch">
+    <button type-="button" wire:click="exportPdf"
+        class="relative cursor-pointer inline-flex items-center justify-center gap-2 w-full rounded-l-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-gray-600 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700">
+        <flux:icon name="inbox-arrow-down" variant="solid" class="w-4 h-4 text-red-500" />
+        <span class="font-semibold">PDF</span>
     </button>
 
-    <!-- Divider -->
-    <div class="self-stretch w-[1px] bg-black dark:bg-gray-400"></div>
-
-    <!-- Excel Button -->
     <button type="button" wire:click="exportExcel"
-        class="flex-1 flex gap-1 items-center justify-center border-none outline-none cursor-pointer text-xs px-4 hover:bg-green-600 hover:text-white dark:hover:bg-green-500 h-full">
-        <span>Excel</span>
-        <flux:icon name="document-arrow-down" variant="solid" class="w-4 h-4" />
+        class="relative cursor-pointer -ml-px inline-flex items-center justify-center gap-2 w-full rounded-r-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-gray-600 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700">
+        <flux:icon name="document-arrow-down" variant="solid" class="w-4 h-4 text-green-500" />
+        <span class="font-semibold">Excel</span>
     </button>
 </div>
