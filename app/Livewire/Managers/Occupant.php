@@ -331,6 +331,8 @@ class Occupant extends Component
             'classYear',
             'temporaryIdentityCardFile',
             'temporaryCommunityCardFile',
+            'contracts',
+            'contractIds',
         ]);
 
         $this->occupantIdBeingSelected = null;
