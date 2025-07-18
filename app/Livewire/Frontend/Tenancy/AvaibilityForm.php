@@ -48,7 +48,7 @@ class AvaibilityForm extends Component
 
         $this->pricingBasisOptions = PricingBasis::options();
 
-        $this->occupantTypeOptions = OccupantType::all(['id', 'name'])->toArray();
+        $this->occupantTypeOptions = OccupantType::all(['id', 'name', 'requires_verification'])->toArray();
     }
 
     public function render()

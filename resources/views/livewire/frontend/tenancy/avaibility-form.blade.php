@@ -25,7 +25,8 @@
                     class="{{ $inputBaseClass }} {{ $errors->has('occupantType') ? 'border-red-500' : 'border-gray-300 dark:border-gray-600' }}">
                     <option value="">Pilih Tipe Penghuni</option>
                     @foreach ($occupantTypeOptions as $option)
-                        <option value="{{ $option['id'] }}">{{ $option['name'] }}</option>
+                        <option value="{{ $option['id'] }}">{{ $option['name'] }}
+                            {{ $option['requires_verification'] ? '(Verifikasi)' : '' }}</option>
                     @endforeach
                 </select>
                 @error('occupantType')

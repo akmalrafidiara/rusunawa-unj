@@ -325,8 +325,8 @@ class TenancyForm extends Component
                 ]);
             }
 
-            // Update unit status to NOT_AVAILABLE
-            $this->unit->status = UnitStatus::NOT_AVAILABLE;
+            // Update unit status to OCCUPIED
+            $this->unit->status = UnitStatus::OCCUPIED;
             $this->unit->save();
 
             // Create a signed URL for occupant login
