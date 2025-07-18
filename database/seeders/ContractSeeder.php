@@ -25,7 +25,7 @@ class ContractSeeder extends Seeder
             return;
         }
 
-        for ($i = 0; $i < 10; $i++) {
+        for ($i = 0; $i < 0; $i++) {
             $unit = $units->random();
             $occupantType = $occupantTypes->random();
             $pricingBasis = fake()->randomElement(PricingBasis::values());
