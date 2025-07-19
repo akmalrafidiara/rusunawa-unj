@@ -30,7 +30,7 @@
 
     {{-- Content berdasarkan tab yang aktif --}}
     {{-- Menghapus wire:poll karena permintaan pengguna --}}
-    <div class="flex flex-col gap-4 overflow-y-auto pr-2" style="max-height: 70vh;">
+    <div wire:poll.10s class="flex flex-col gap-4 overflow-y-auto pr-2" style="max-height: 70vh;">
         @if ($tab === 'recent')
             @forelse ($recentOccupants as $occupant)
                 {{-- Menggunakan variabel yang dilewatkan dari render() --}}
