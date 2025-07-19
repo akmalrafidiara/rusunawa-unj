@@ -40,7 +40,7 @@ class OccupantSeeder extends Seeder
                 'study_program' => $isStudent ? $studyProgram : null,
                 'class_year' => $isStudent ? $classYear : null,
                 'agree_to_regulations' => true,
-                'status' => fake()->randomElement(OccupantStatus::values()),
+                'status' => 'pending_verification',
             ]);
 
             // Hubungkan occupant dengan kontrak

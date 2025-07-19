@@ -25,7 +25,7 @@ class ContractSeeder extends Seeder
             return;
         }
 
-        for ($i = 0; $i < 0; $i++) {
+        for ($i = 0; $i < 15; $i++) {
             $unit = $units->random();
             $occupantType = $occupantTypes->random();
             $pricingBasis = fake()->randomElement(PricingBasis::values());
@@ -45,7 +45,7 @@ class ContractSeeder extends Seeder
             ]);
 
             // Tandai unit sebagai tidak tersedia untuk mencegah duplikasi
-            $unit->status = 'not_available';
+            $unit->status = 'occupied';
             $unit->save();
         }
     }
