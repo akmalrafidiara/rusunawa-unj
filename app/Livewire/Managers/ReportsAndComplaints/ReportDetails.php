@@ -17,7 +17,10 @@ use Illuminate\Support\Facades\Storage;
 use Throwable;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\On;
-use App\Models\UnitCluster; // Import UnitCluster model
+use App\Models\UnitCluster;
+use App\Notifications\ReportNotification;
+use App\Models\User;
+
 
 class ReportDetails extends Component
 {
@@ -86,7 +89,6 @@ class ReportDetails extends Component
         $this->is_head_of_rusunawa_user = Auth::user()->hasRole(RoleUser::HEAD_OF_RUSUNAWA->value);
         $this->is_staff_of_rusunawa_user = Auth::user()->hasRole(RoleUser::STAFF_OF_RUSUNAWA->value);
 
-        // MODIFIED: Populate user_cluster_ids from the new many-to-many relationship
         if ($this->is_staff_of_rusunawa_user || $this->is_head_of_rusunawa_user) {
             $this->user_cluster_ids = Auth::user()->unitClusters->pluck('id')->toArray();
         }
@@ -135,14 +137,21 @@ class ReportDetails extends Component
                 $this->completionDeadlineDaysLeft = $now->diffInDays($deadline, false);
 
                 if ($now->isAfter($deadline) && !$this->isConfirmed) {
+                    $oldStatusForLog = $report->status;
                     $report->status = ReportStatus::CONFIRMED_COMPLETED;
                     $report->save();
+                    
                     $this->isConfirmed = true;
                     $this->canConfirm = false;
                     $this->completionDeadlineDaysLeft = 0;
+                    
                     $report->logs()->create([
-                        'user_id' => null, 'action_by_role' => 'Sistem', 'old_status' => ReportStatus::COMPLETED->value, 'new_status' => ReportStatus::CONFIRMED_COMPLETED->value, 'notes' => 'Laporan otomatis dikonfirmasi selesai karena melewati batas waktu konfirmasi.',
+                        'user_id' => null, 'action_by_role' => 'Sistem', 'old_status' => $oldStatusForLog, 'new_status' => ReportStatus::CONFIRMED_COMPLETED->value, 'notes' => 'Laporan otomatis dikonfirmasi selesai karena melewati batas waktu konfirmasi.',
                     ]);
+
+                    // Send notification for system-triggered confirmation
+                    $this->sendConfirmationNotification($report);
+                    
                     LivewireAlert::info('Laporan otomatis dikonfirmasi selesai.')->text('Karena melewati batas waktu 7 hari konfirmasi.')->toast()->position('top-end')->show();
                 }
             } else {
@@ -167,7 +176,6 @@ class ReportDetails extends Component
         if ($this->shouldDisableUpdateButton()) {
             return;
         }
-
         $this->generateAvailableStatusOptions();
         $this->showUpdateStatusModal = true;
     }
@@ -188,19 +196,11 @@ class ReportDetails extends Component
         $this->validate();
 
         if ($this->newStatus === ReportStatus::DISPOSED_TO_ADMIN->value && $userRole !== RoleUser::HEAD_OF_RUSUNAWA->value) {
-            LivewireAlert::error('Akses Ditolak!')
-                ->text('Hanya Kepala Rusunawa yang dapat mendisposisikan laporan ke Admin.')
-                ->toast()
-                ->position('top-end')
-                ->show();
+            LivewireAlert::error('Akses Ditolak!')->text('Hanya Kepala Rusunawa yang dapat mendisposisikan laporan ke Admin.')->toast()->position('top-end')->show();
             return;
         }
         if ($this->newStatus === ReportStatus::DISPOSED_TO_RUSUNAWA->value && $userRole !== RoleUser::ADMIN->value) {
-            LivewireAlert::error('Akses Ditolak!')
-                ->text('Hanya Admin yang dapat mengembalikan laporan ke Rusunawa.')
-                ->toast()
-                ->position('top-end')
-                ->show();
+            LivewireAlert::error('Akses Ditolak!')->text('Hanya Admin yang dapat mengembalikan laporan ke Rusunawa.')->toast()->position('top-end')->show();
             return;
         }
 
@@ -230,24 +230,123 @@ class ReportDetails extends Component
 
         foreach ($this->newAttachments as $file) {
             $path = $file->store('reports/updates_attachments', 'public');
-            $newLog->attachments()->create([
-                'name' => $file->getClientOriginalName(),
-                'file_name' => basename($path),
-                'mime_type' => $file->getMimeType(),
-                'path' => $path,
-            ]);
+            $newLog->attachments()->create(['name' => $file->getClientOriginalName(),'file_name' => basename($path),'mime_type' => $file->getMimeType(),'path' => $path]);
         }
 
-        LivewireAlert::title('Status laporan berhasil diperbarui!')
-            ->success()
-            ->toast()
-            ->position('top-end')
-            ->show();
+        $this->notifyUsers($report, $currentUser, $oldStatus, $this->newStatus);
+
+        LivewireAlert::title('Status laporan berhasil diperbarui!')->success()->toast()->position('top-end')->show();
 
         $this->closeModal();
         $this->dispatch('refreshReports')->to(ReportList::class);
         $this->loadReportDetails($report->id);
     }
+
+    public function notifyUsers(Report $report, User $currentUser, $oldStatusValue, $newStatusValue)
+    {
+        $newStatus = ReportStatus::from($newStatusValue);
+        $oldStatus = ReportStatus::from($oldStatusValue);
+
+        // Case 0: Confirmed Completed (by user)
+        if ($newStatus === ReportStatus::CONFIRMED_COMPLETED) {
+            $this->sendConfirmationNotification($report, $currentUser);
+            return;
+        }
+
+        // Case 1: Disposed to Admin by Head of Rusunawa
+        if ($newStatus === ReportStatus::DISPOSED_TO_ADMIN) {
+            $adminMessage = "Laporan #{$report->unique_id} ({$report->subject}) telah didisposisikan kepada Anda oleh {$currentUser->name}.";
+            $adminUsers = User::role(RoleUser::ADMIN->value)->get();
+            foreach ($adminUsers as $user) {
+                if ($user->id !== $currentUser->id) {
+                    $user->notify(new ReportNotification($report, $adminMessage));
+                }
+            }
+
+            $staffMessage = "Laporan #{$report->unique_id} ({$report->subject}) telah didisposisikan ke Admin oleh {$currentUser->name}.";
+            if ($report->contract->unit->unitCluster) {
+                $staffUsers = $report->contract->unit->unitCluster->staffUsers()->get();
+                foreach ($staffUsers as $staff) {
+                    if ($staff->id !== $currentUser->id) {
+                        $staff->notify(new ReportNotification($report, $staffMessage));
+                    }
+                }
+            }
+            return;
+        }
+
+        // Case 2: General Notifications for other status changes
+        $recipients = collect();
+        $message = "Status laporan #{$report->unique_id} ({$report->subject}) telah diperbarui menjadi '{$newStatus->label()}' oleh {$currentUser->name}.";
+
+        // Admin gets notified on COMPLETION only IF the report was ever disposed to them
+        if ($newStatus === ReportStatus::COMPLETED) {
+            $wasEverDisposedToAdmin = $report->logs()->where('new_status', ReportStatus::DISPOSED_TO_ADMIN->value)->exists();
+            if ($wasEverDisposedToAdmin) {
+                $adminUsers = User::role(RoleUser::ADMIN->value)->get();
+                $recipients = $recipients->merge($adminUsers);
+            }
+        }
+
+        // Rusunawa Team (Head & Staff) Notification Logic
+        $rusunawaTeamShouldBeNotified = false;
+        if ($newStatus === ReportStatus::DISPOSED_TO_RUSUNAWA) {
+            $rusunawaTeamShouldBeNotified = true;
+            $message = "Laporan #{$report->unique_id} ({$report->subject}) telah dikembalikan ke tim Rusunawa oleh {$currentUser->name}.";
+        } else {
+            $reportWasWithRusunawa = in_array($oldStatus, [ReportStatus::REPORT_RECEIVED, ReportStatus::DISPOSED_TO_RUSUNAWA]) ||
+                                     ($oldStatus === ReportStatus::IN_PROCESS && $report->currentHandler && !$report->currentHandler->hasRole(RoleUser::ADMIN->value));
+
+            if ($reportWasWithRusunawa && in_array($newStatus, [ReportStatus::IN_PROCESS, ReportStatus::COMPLETED])) {
+                $rusunawaTeamShouldBeNotified = true;
+            }
+        }
+
+        if ($rusunawaTeamShouldBeNotified) {
+            $heads = User::role(RoleUser::HEAD_OF_RUSUNAWA->value)->get();
+            $recipients = $recipients->merge($heads);
+            if ($report->contract->unit->unitCluster) {
+                $staffUsers = $report->contract->unit->unitCluster->staffUsers()->get();
+                $recipients = $recipients->merge($staffUsers);
+            }
+        }
+
+        // Final Filtering and Sending for general cases
+        $finalRecipients = $recipients->where('id', '!=', $currentUser->id)->unique('id');
+        foreach ($finalRecipients as $user) {
+            $user->notify(new ReportNotification($report, $message));
+        }
+    }
+
+    public function sendConfirmationNotification(Report $report, ?User $actor = null)
+    {
+        $actorName = $actor ? $actor->name : 'Sistem';
+        $message = "Laporan #{$report->unique_id} ({$report->subject}) telah dikonfirmasi selesai oleh {$actorName}.";
+        $recipients = collect();
+
+        // 1. Notify Admins IF they were ever involved.
+        $wasEverDisposedToAdmin = $report->logs()->where('new_status', ReportStatus::DISPOSED_TO_ADMIN->value)->exists();
+        if ($wasEverDisposedToAdmin) {
+            $recipients = $recipients->merge(User::role(RoleUser::ADMIN->value)->get());
+        }
+
+        // 2. Always notify Rusunawa Team.
+        $recipients = $recipients->merge(User::role(RoleUser::HEAD_OF_RUSUNAWA->value)->get());
+        if ($report->contract->unit->unitCluster) {
+            $recipients = $recipients->merge($report->contract->unit->unitCluster->staffUsers()->get());
+        }
+
+        // 3. Filter out the actor (if any) and send notifications.
+        $finalRecipients = $recipients->unique('id');
+        if ($actor) {
+            $finalRecipients = $finalRecipients->where('id', '!=', $actor->id);
+        }
+
+        foreach ($finalRecipients as $user) {
+            $user->notify(new ReportNotification($report, $message));
+        }
+    }
+
 
     public function updatedNewAttachments()
     {

@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Livewire\Frontend\Complaint;
+
 use Livewire\Volt\Component;
 use Livewire\Attributes\Layout;
 use Illuminate\Support\Facades\Auth;
@@ -15,6 +17,9 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Spatie\LivewireFilepond\WithFilePond;
 use Illuminate\Validation\Rule;
+use App\Notifications\ReportNotification;
+use App\Models\User;
+use App\Enums\RoleUser;
 
 new #[Layout('components.layouts.frontend'), Title('Rusunawa UNJ | Buat Pengaduan')] class extends Component
 {
@@ -24,8 +29,8 @@ new #[Layout('components.layouts.frontend'), Title('Rusunawa UNJ | Buat Pengadua
     public $isLoggedIn;
     public ?Occupant $occupant = null;
     public ?Contract $contract = null;
-    public $reporterType = ''; // 'kamar' or 'penghuni'
-    public $reporterId = ''; // ID dari occupant yang melapor
+    public $reporterType = '';
+    public $reporterId = '';
     public $subject = '';
     public $description = '';
     public $attachments = [];
@@ -53,18 +58,15 @@ new #[Layout('components.layouts.frontend'), Title('Rusunawa UNJ | Buat Pengadua
         $this->occupant = Auth::guard('occupant')->user();
 
         if ($this->occupant) {
-            // Correctly access the first contract if multiple exist, or handle logic for multiple contracts
             $this->contract = $this->occupant->contracts()->first();
             if ($this->contract) {
                 $this->reporterOptions = ReporterType::options();
                 $this->occupantOptions = $this->contract->occupants->map(function ($occupant) {
-                    // Use 'full_name' as per Occupant model
                     return ['value' => $occupant->id, 'label' => $occupant->full_name];
                 })->toArray();
 
-                // Set default reporterType and call updatedReporterType for initial reporterId setup
-                $this->reporterType = ReporterType::ROOM->value; // Default to PIC/Kamar
-                $this->updatedReporterType(); // Call this method to set initial reporterId
+                $this->reporterType = ReporterType::ROOM->value;
+                $this->updatedReporterType();
             }
         }
     }
@@ -73,7 +75,6 @@ new #[Layout('components.layouts.frontend'), Title('Rusunawa UNJ | Buat Pengadua
     {
         return [
             'reporterType' => ['required', Rule::in(ReporterType::values())],
-            // Simplified Rule::exists to prevent SQL error. Manual check will handle relationship.
             'reporterId' => ['required', 'exists:occupants,id'],
             'subject' => 'required|string|max:255',
             'description' => 'required|string|max:1000',
@@ -92,21 +93,17 @@ new #[Layout('components.layouts.frontend'), Title('Rusunawa UNJ | Buat Pengadua
         $this->validateOnly('attachments.*');
     }
 
-    // Method called whenever reporterType changes
     public function updatedReporterType(): void
     {
-        $this->resetErrorBag('reporterId'); // Reset error for reporterId
-        $this->resetValidation('reporterId'); // Reset validation for reporterId
+        $this->resetErrorBag('reporterId');
+        $this->resetValidation('reporterId');
 
         if ($this->reporterType === ReporterType::ROOM->value) {
-            // If reporting as 'Kamar', set reporterId to contract's PIC
-            // Ensure to call first() as pic() returns a collection
             $this->reporterId = $this->contract->pic->first()->id ?? null;
         } elseif ($this->reporterType === ReporterType::INDIVIDUAL->value) {
-            // If reporting as 'Penghuni Individual', set reporterId to the logged-in occupant
             $this->reporterId = $this->occupant->id ?? null;
         } else {
-            $this->reporterId = null; // Default null if no option selected
+            $this->reporterId = null;
         }
     }
 
@@ -114,7 +111,6 @@ new #[Layout('components.layouts.frontend'), Title('Rusunawa UNJ | Buat Pengadua
     {
         $this->validate();
 
-        // Manual check to ensure the selected reporterId belongs to the current contract
         $selectedOccupant = Occupant::find($this->reporterId);
         if (!$selectedOccupant || !$selectedOccupant->contracts->contains($this->contract->id)) {
             $this->addError('reporterId', 'Penghuni yang dipilih tidak terdaftar pada kontrak ini.');
@@ -151,7 +147,8 @@ new #[Layout('components.layouts.frontend'), Title('Rusunawa UNJ | Buat Pengadua
                 'notes' => 'Laporan pengaduan baru telah dibuat oleh penghuni.',
             ]);
 
-            // Changed redirect route to complaint.success
+            $this->notifyNewReport($report);
+
             $this->redirect(route('complaint.success', ['unique_id' => $report->unique_id]), navigate: true);
         } catch (\Exception $e) {
             LivewireAlert::error('Gagal mengajukan laporan.')
@@ -161,7 +158,32 @@ new #[Layout('components.layouts.frontend'), Title('Rusunawa UNJ | Buat Pengadua
                 ->show();
         }
     }
-}; ?>
+
+    /**
+     * Notifies ONLY the Head of Rusunawa and relevant Staff about a new report.
+     * Admins are NOT notified at this stage.
+     */
+    public function notifyNewReport(Report $report)
+    {
+        $recipients = collect();
+        $message = "Laporan keluhan baru #{$report->unique_id} telah diterima dan membutuhkan perhatian.";
+
+        // 1. Get Head of Rusunawa
+        $heads = User::role(RoleUser::HEAD_OF_RUSUNAWA->value)->get();
+        $recipients = $recipients->merge($heads);
+
+        // 2. Get Staff of the relevant building
+        if ($report->contract->unit->unitCluster) {
+            $staffUsers = $report->contract->unit->unitCluster->staffUsers()->get();
+            $recipients = $recipients->merge($staffUsers);
+        }
+
+        // Send notification to unique recipients
+        foreach ($recipients->unique('id') as $user) {
+            $user->notify(new ReportNotification($report, $message));
+        }
+    }
+};?>
 
 <section class="w-full">
     @include('modules.frontend.complaint.complaint-heading')
