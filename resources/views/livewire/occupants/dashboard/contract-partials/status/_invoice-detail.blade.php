@@ -43,7 +43,7 @@
             <flux:icon.tag class="w-5 h-5 text-blue-500" />
             <span class="font-semibold">Status Tagihan:</span>
         </div>
-        <x-managers.ui.badge :variant="$latestInvoice->status->badgeVariant()">
+        <x-managers.ui.badge class="{{ implode(' ', (array) $latestInvoice->status->color()) }}">
             {{ $latestInvoice->status->label() }}
         </x-managers.ui.badge>
     </div>
@@ -72,11 +72,11 @@
         $latestInvoice->status == \App\Enums\InvoiceStatus::UNPAID &&
             $latestInvoice->payments->last() &&
             $latestInvoice->payments->last()->status == \App\Enums\PaymentStatus::REJECTED)
-        @include('livewire.occupants.dashboard.contract-partials._status-payment-rejected-alert')
+        @include('livewire.occupants.dashboard.contract-partials.status._payment-rejected')
     @endif
 
     {{-- Conditional Alert: Include if the latest invoice status is PENDING_PAYMENT_VERIFICATION --}}
     @if ($latestInvoice->status == \App\Enums\InvoiceStatus::PENDING_PAYMENT_VERIFICATION)
-        @include('livewire.occupants.dashboard.contract-partials._status-payment-pending-alert')
+        @include('livewire.occupants.dashboard.contract-partials.status._payment-pending')
     @endif
 </div>
