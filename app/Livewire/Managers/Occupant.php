@@ -101,6 +101,7 @@ class Occupant extends Component
         );
 
         $this->contractOptions = Contract::query()
+            ->with(['unit.unitCluster'])
             ->get()
             ->map(function ($contract) {
                 return [
