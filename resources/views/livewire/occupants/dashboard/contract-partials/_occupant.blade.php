@@ -22,7 +22,9 @@
                         Tambah Penghuni
                     </a>
                 @else
-                    <p class="text-red-500">Kapasitas Penuh</p>
+                    <a class="cursor-pointer text-red-600 hover:text-red-800 underline font-normal">
+                        Kapasitas Tercapai
+                    </a>
                 @endif
             </div>
             <div>
