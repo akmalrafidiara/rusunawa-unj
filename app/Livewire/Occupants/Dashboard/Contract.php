@@ -6,6 +6,7 @@ use App\Data\AcademicData;
 use App\Enums\GenderAllowed;
 use App\Enums\InvoiceStatus;
 use App\Enums\OccupantStatus;
+use App\Enums\PaymentStatus;
 use App\Models\Invoice;
 use App\Models\Occupant;
 use App\Models\Payment;
@@ -215,15 +216,15 @@ class Contract extends Component
     {
         $this->showModal = true;
         $this->modalType = 'occupant';
-        
+
         $this->reset(['fullName', 'email', 'whatsappNumber', 'gender', 'identityCardFile', 'communityCardFile', 'isStudent', 'studentId', 'faculty', 'studyProgram', 'classYear']);
         $this->resetValidation(); // Clear validation errors when opening form
 
         if($occupantId){
             $this->occupantIdBeingSelected = $occupantId;
-    
+
             $occupantToEdit = Occupant::find($occupantId);
-    
+
             if ($occupantToEdit) {
                 $this->fullName = $occupantToEdit->full_name;
                 $this->email = $occupantToEdit->email;
@@ -234,7 +235,7 @@ class Contract extends Component
                 $this->isStudent = $occupantToEdit->is_student;
                 $this->studentId = $occupantToEdit->student_id;
                 $this->faculty = $occupantToEdit->faculty;
-                
+
                 // Ensure study program options are loaded if faculty is set
                 if ($this->faculty) {
                     $this->studyProgramOptions = collect(AcademicData::getFacultiesAndPrograms()[$this->faculty] ?? [])->map(fn($sp) => ['value' => $sp, 'label' => $sp])->toArray();
@@ -243,7 +244,7 @@ class Contract extends Component
                 }
                 $this->studyProgram = $occupantToEdit->study_program;
                 $this->classYear = $occupantToEdit->class_year;
-    
+
                 $this->existingIdentityCardFile = $occupantToEdit->identity_card_file;
                 $this->existingCommunityCardFile = $occupantToEdit->community_card_file;
             }
@@ -266,13 +267,13 @@ class Contract extends Component
             $fieldsToValidate = array_merge($fieldsToValidate, ['studentId', 'faculty', 'studyProgram', 'classYear']);
         }
         $this->validate(collect($this->rules())->only($fieldsToValidate)->toArray());
-        
+
         // Validate files based on their current state and whether it's an update or new creation
         $this->validateOnly('identityCardFile', $this->rules());
         $this->validateOnly('communityCardFile', $this->rules());
 
         $isAddingNewOccupant = is_null($this->occupantIdBeingSelected);
-        
+
         // Check if the current logged-in occupant is the PIC of this contract
         $isCurrentUserPic = $this->contract && $this->contract->pic->isNotEmpty() && $this->contract->pic->first()->id === Auth::guard('occupant')->user()->id;
 
@@ -304,7 +305,7 @@ class Contract extends Component
                 return;
             }
         }
-        
+
         // Prepare occupant data for update/create
         $data = [
             'full_name' => $this->fullName,
@@ -370,7 +371,7 @@ class Contract extends Component
         ->show();
 
         $this->showModal = false;
-        
+
         // Re-fetch all component data to update the UI with latest information
         $this->mount();
         $this->reset(['occupantIdBeingSelected']); // Reset selected ID to ensure 'add new' mode for next open

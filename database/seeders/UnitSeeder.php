@@ -24,7 +24,7 @@ class UnitSeeder extends Seeder
             $this->command->info('Tidak ada Unit Cluster ditemukan. Seeder Unit dihentikan.');
             return;
         }
-        
+
         // Konfigurasi struktur bangunan
         $totalFloors = 4;  // Setiap gedung memiliki 4 lantai
         $unitsPerFloor = 25; // Setiap lantai memiliki 25 kamar
@@ -33,10 +33,10 @@ class UnitSeeder extends Seeder
 
         // 1. Looping untuk setiap cluster (misal: Gedung A, lalu Gedung B, dst.)
         foreach ($clusters as $cluster) {
-            
+
             // 2. Di dalam setiap cluster, looping untuk setiap lantai
             for ($floor = 1; $floor <= $totalFloors; $floor++) {
-                
+
                 // 3. Di dalam setiap lantai, looping untuk setiap kamar
                 for ($unitNumber = 1; $unitNumber <= $unitsPerFloor; $unitNumber++) {
 
@@ -47,12 +47,12 @@ class UnitSeeder extends Seeder
                     $units[] = [
                         'room_number' => $roomNumber,
                         'unit_cluster_id' => $cluster->id, // PENTING: Gunakan ID dari cluster saat ini
-                        
+
                         // Data acak lainnya
                         'capacity' => rand(1, 3),
                         'virtual_account_number' => '888' . rand(1000000000000, 9999999999999),
                         'gender_allowed' => fake()->randomElement(['male', 'female', 'general']),
-                        'status' => fake()->randomElement(['available', 'not_available', 'occupied', 'under_maintenance']),
+                        'status' => fake()->randomElement(['available', 'not_available', 'under_maintenance']),
                         'unit_type_id' => fake()->randomElement($unitTypeIds),
                         'created_at' => now(),
                         'updated_at' => now(),

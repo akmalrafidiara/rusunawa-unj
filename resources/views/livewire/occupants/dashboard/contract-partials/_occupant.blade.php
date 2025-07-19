@@ -16,7 +16,10 @@
                 <p class="text-sm text-gray-500">Aksi</p>
                 <a class="cursor-pointer text-emerald-600 hover:text-emerald-800 underline"
                     wire:click="showHistory">Riwayat Transaksi</a> |
-                @if ($contract->occupants->count() < $contract->unit->capacity)
+                @if (
+                    $contract->occupants->count() < $contract->unit->capacity &&
+                        $contract->invoices()->count() > 0 &&
+                        $contract->invoices()->first()->is_paid)
                     <a class="cursor-pointer text-emerald-600 hover:text-emerald-800 underline font-normal"
                         wire:click="showOccupantForm">
                         Tambah Penghuni

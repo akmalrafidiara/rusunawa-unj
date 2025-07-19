@@ -39,7 +39,7 @@
     </div>
 
     {{-- Daftar laporan --}}
-    <div class="flex flex-col gap-4 overflow-y-auto pr-2" style="max-height: 70vh;">
+    <div wire:poll.1000ms class="flex flex-col gap-4 overflow-y-auto pr-2" style="max-height: 70vh;">
         @forelse ($occupants as $occupant)
             <div wire:click="selectOccupant({{ $occupant->id }})"
                 class="p-6 rounded-lg border cursor-pointer transition-colors duration-200

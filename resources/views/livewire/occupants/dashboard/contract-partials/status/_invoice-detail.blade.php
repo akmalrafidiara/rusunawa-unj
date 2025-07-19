@@ -1,9 +1,5 @@
-{{-- resources/views/livewire/occupants/dashboard/contract-partials/_status-invoice-details.blade.php --}}
-
-{{-- Container for detailed invoice and payment status --}}
 <div class="space-y-4 text-gray-700 dark:text-gray-300">
 
-    {{-- Display Virtual Account Number --}}
     <div class="flex items-center justify-between border-b border-gray-200 dark:border-zinc-700 pb-3">
         <div class="flex items-center gap-2">
             <flux:icon name="credit-card" class="w-5 h-5 text-indigo-500" />
@@ -14,7 +10,6 @@
         </span>
     </div>
 
-    {{-- Display Lease Duration (Start and End Dates) --}}
     <div class="flex items-center justify-between border-b border-gray-200 dark:border-zinc-700 pb-3">
         <div class="flex items-center gap-2">
             <flux:icon name="calendar" class="w-5 h-5 text-indigo-500" />
@@ -26,7 +21,6 @@
         </span>
     </div>
 
-    {{-- Display Invoice Due Date, highlighted in red --}}
     <div class="flex items-center justify-between border-b border-gray-200 dark:border-zinc-700 pb-3">
         <div class="flex items-center gap-2">
             <flux:icon name="calendar-days" class="w-5 h-5 text-red-500" />
@@ -37,7 +31,6 @@
         </span>
     </div>
 
-    {{-- Display Invoice Status with a colored badge --}}
     <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
             <flux:icon.tag class="w-5 h-5 text-blue-500" />
@@ -48,7 +41,6 @@
         </x-managers.ui.badge>
     </div>
 
-    {{-- Display Subtotal and Payment Confirmation Button --}}
     <div class="flex justify-between border-t border-gray-200 dark:border-zinc-600 pt-4 mt-4">
         <div>
             <p class="text-sm text-gray-600 dark:text-gray-400">Subtotal</p>
@@ -57,7 +49,6 @@
             </p>
         </div>
 
-        {{-- Button to confirm payment, visible only if invoice is UNPAID --}}
         @if ($latestInvoice->status == \App\Enums\InvoiceStatus::UNPAID)
             <x-managers.ui.button
                 class="bg-emerald-600 hover:bg-emerald-700 text-sm text-white font-bold rounded-lg transition-colors shadow-md"
@@ -66,17 +57,4 @@
             </x-managers.ui.button>
         @endif
     </div>
-
-    {{-- Conditional Alert: Include if the latest payment for this invoice was REJECTED --}}
-    @if (
-        $latestInvoice->status == \App\Enums\InvoiceStatus::UNPAID &&
-            $latestInvoice->payments->last() &&
-            $latestInvoice->payments->last()->status == \App\Enums\PaymentStatus::REJECTED)
-        @include('livewire.occupants.dashboard.contract-partials.status._payment-rejected')
-    @endif
-
-    {{-- Conditional Alert: Include if the latest invoice status is PENDING_PAYMENT_VERIFICATION --}}
-    @if ($latestInvoice->status == \App\Enums\InvoiceStatus::PENDING_PAYMENT_VERIFICATION)
-        @include('livewire.occupants.dashboard.contract-partials.status._payment-pending')
-    @endif
 </div>

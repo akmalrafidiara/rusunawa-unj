@@ -1,6 +1,3 @@
-{{-- resources/views/livewire/occupants/dashboard/contract-partials/_status-no-info-default.blade.php --}}
-
-{{-- Default message when no specific status information is available --}}
 <div
     class="bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-lg p-6 text-center shadow-sm">
     <div class="flex flex-col items-center justify-center space-y-4">
