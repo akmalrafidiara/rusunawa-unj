@@ -53,10 +53,10 @@
             </div>
 
             {{-- Subtotal & Tombol Aksi --}}
-            <div class="flex justify-between items-center border-t border-gray-200 dark:border-zinc-600 pt-4 mt-4">
+            <div class="flex justify-between border-t border-gray-200 dark:border-zinc-600 pt-4 mt-4">
                 <div>
                     <p class="text-sm text-gray-600 dark:text-gray-400">Subtotal</p>
-                    <p class="text-3xl font-bold text-emerald-600 dark:text-emerald-400">
+                    <p class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
                         Rp{{ number_format($latestInvoice->amount, 0, ',', '.') }}
                     </p>
                 </div>
@@ -64,38 +64,42 @@
                 {{-- Tombol "Bayar" hanya jika status UNPAID --}}
                 @if ($latestInvoice->status == \App\Enums\InvoiceStatus::UNPAID)
                     <x-managers.ui.button
-                        class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition-colors shadow-md"
-                        wire:click="openPaymentModal" {{-- Asumsi ada metode ini di Livewire component --}}>
-                        <flux:icon name="banknotes" class="w-5 h-5 mr-2" /> Bayar Sekarang
+                        class="bg-emerald-600 hover:bg-emerald-700 text-sm text-white font-bold rounded-lg transition-colors shadow-md"
+                        wire:click="showPaymentForm">
+                        Konfirmasi Pembayaran
                     </x-managers.ui.button>
                 @endif
             </div>
+            @if (
+                $latestInvoice->status == \App\Enums\InvoiceStatus::UNPAID &&
+                    $latestInvoice->payments->last()->status == \App\Enums\PaymentStatus::REJECTED->value)
+                <div
+                    class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6 text-center shadow-sm">
+                    <div class="flex flex-col items-center justify-center space-y-4">
+                        <flux:icon name="x-circle" class="w-12 h-12 text-red-600 dark:text-red-400" />
+                        <h4 class="text-xl font-semibold text-gray-900 dark:text-gray-100">Pembayaran Ditolak
+                        </h4>
+                        <p class="text-gray-700 dark:text-gray-300">
+                            {{ $latestInvoice->payments->last()->verificationLogs->last()->reason }}
+                        </p>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                            Anda dapat mengajukan konfirmasi pembayaran ulang.
+                        </p>
+                    </div>
+                </div>
+            @endif
 
             {{-- Notifikasi Status Pembayaran --}}
-            @if ($latestInvoice->status == \App\Enums\InvoiceStatus::UNPAID)
-                {{-- Livewire component untuk upload bukti pembayaran --}}
-                <div class="mt-6">
-                    <livewire:occupants.dashboard.upload-payment-proof :invoice="$latestInvoice" />
-                </div>
-            @elseif ($latestInvoice->status == \App\Enums\InvoiceStatus::PENDING_PAYMENT_VERIFICATION)
+            @if ($latestInvoice->status == \App\Enums\InvoiceStatus::PENDING_PAYMENT_VERIFICATION)
                 {{-- Pesan jika sedang diverifikasi --}}
                 <div
-                    class="mt-4 p-4 rounded-md bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300 flex items-center gap-3">
+                    class="mt-4 p-4 rounded-md bg-orange-100 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300 flex items-center gap-3">
                     <flux:icon.exclamation-circle class="w-6 h-6 flex-shrink-0" />
                     <p>Bukti pembayaran untuk invoice ini sedang dalam proses verifikasi. Mohon tunggu konfirmasi
                         dari
-                        manajer.</p>
+                        pengelola.</p>
                 </div>
             @endif
-        </div>
-
-        {{-- Tombol "Lihat Riwayat Pembayaran" --}}
-        {{-- Tombol ini dipindahkan ke luar kondisi if/elseif agar konsisten muncul di bawah --}}
-        <div class="mt-6">
-            <x-managers.ui.button
-                class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg transition-colors shadow-md">
-                <flux:icon name="folder" class="w-5 h-5 mr-2" /> Lihat Riwayat Pembayaran
-            </x-managers.ui.button>
         </div>
     @else
         @if (isset($occupant) && $occupant->status === \App\Enums\OccupantStatus::PENDING_VERIFICATION)
@@ -127,7 +131,7 @@
                     <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">
                         Anda dapat mengajukan permohonan ulang setelah memperbaiki data yang diperlukan.
                     </p>
-                    <x-managers.ui.button
+                    <x-managers.ui.button wire:click="showOccupantForm({{ $occupant->id }})"
                         class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg transition-colors shadow-md mt-4">
                         <flux:icon name="pencil" class="w-5 h-5 mr-2" /> Edit Data
                     </x-managers.ui.button>
@@ -138,11 +142,10 @@
             <div
                 class="bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-lg p-6 text-center shadow-sm">
                 <div class="flex flex-col items-center justify-center space-y-4">
-                    <flux:icon name="check-circle" class="w-12 h-12 text-gray-400 dark:text-gray-500" />
-                    <h4 class="text-xl font-semibold text-gray-900 dark:text-gray-100">Informasi Pembayaran Tidak
-                        Tersedia</h4>
-                    <p class="text-gray-700 dark:text-gray-300">
-                        Untuk saat ini, tidak ada informasi pembayaran yang dapat ditampilkan.
+                    <flux:icon name="check-circle" class="w-12 h-12 text-green-400 dark:text-green-500" />
+                    <h4 class="text-xl font-semibold text-gray-900 dark:text-gray-100">Tidak ada informasi terbaru</h4>
+                    <p class="text-gray-700 dark:text-gray-300 text-xs">
+                        Untuk saat ini, tidak ada informasi yang dapat ditampilkan.
                         Silakan hubungi admin jika Anda merasa ini adalah kesalahan.
                     </p>
                 </div>

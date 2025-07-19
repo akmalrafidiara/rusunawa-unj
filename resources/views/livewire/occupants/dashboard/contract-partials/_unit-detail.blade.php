@@ -2,7 +2,7 @@
     <img src="{{ $unit->unitType->attachments()->first() ? asset('storage/' . $unit->unitType->attachments()->first()->path) : asset('images/placeholder.png') }}"
         alt="Unit Image" class="w-1/3 h-24 object-cover rounded-l-lg">
     <div class="p-4">
-        <h2 class="text-xl font-semibold">Unit {{ $unit->room_number }}</h2>
+        <h2 class="text-xl font-semibold">Unit {{ $unit->room_number }} | {{ $unit->unitCluster->name }}</h2>
         <p class="text-gray-600 dark:text-gray-400">{{ $contract->unit->unitType->name }} |
             {{ $contract->occupantType->name }}
         </p>

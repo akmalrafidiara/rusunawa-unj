@@ -13,13 +13,34 @@
                 <p class="font-semibold">{{ $contract->contract_code }}</p>
             </div>
             <div>
+                <p class="text-sm text-gray-500">Transaksi</p>
+                <a class="cursor-pointer text-emerald-600 hover:text-emerald-800 underline"
+                    wire:click="showHistory">Riwayat Transaksi</a>
+            </div>
+            <div>
+                <p class="text-sm text-gray-500">Kapasitas</p>
+                <div class="flex items-center gap-2">
+                    <p class="font-semibold">{{ $contract->occupants->count() }}/{{ $contract->unit->capacity }}</p>
+                    @if ($contract->occupants->count() < $contract->unit->capacity)
+                        |
+                        <button class="cursor-pointer text-emerald-600 hover:text-emerald-800"
+                            wire:click="showOccupantForm">
+                            <flux:icon name="plus" class="w-4 h-4 inline-block" />
+                            Penghuni
+                        </button>
+                    @else
+                        <p class="text-red-500">Kapasitas Penuh</p>
+                    @endif
+                </div>
+            </div>
+            <div>
                 <p class="text-sm text-gray-500">Nama Pic</p>
                 <p class="font-semibold">{{ $contract->pic->first()->full_name }}</p>
             </div>
             <div>
                 <p class="text-sm text-gray-500">Durasi Penginapan</p>
-                <p class="font-semibold">{{ $contract->start_date->translatedFormat('d M Y') }} -
-                    {{ $contract->end_date->translatedFormat('d M Y') }}</p>
+                <p class="font-semibold">{{ $contract->start_date->format('d M Y') }} -
+                    {{ $contract->end_date->format('d M Y') }}</p>
             </div>
             <div class="border-t dark:border-zinc-600 pt-4">
                 <div class="grid gap-4">
@@ -27,7 +48,7 @@
                         <div class="bg-gray-50 dark:bg-zinc-700 rounded-lg p-4 border dark:border-zinc-600">
                             <div class="flex items-center justify-between mb-3">
                                 <h4 class="font-bold text-lg">Penghuni {{ $loop->iteration }}</h4>
-                                <a href="">
+                                <a wire:click="showOccupantForm({{ $occupant->id }})" class="cursor-pointer">
                                     <flux:icon name="pencil-square" class="w-5 h-5 text-gray-400 hover:text-gray-600" />
                                 </a>
                             </div>
