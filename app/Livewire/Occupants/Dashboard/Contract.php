@@ -447,4 +447,19 @@ class Contract extends Component
         $this->studyProgram = '';
         $this->classYear = '';
     }
+
+    public function getPendingOtherOccupantsProperty()
+    {
+        return $this->contract?->occupants
+            ->where('status', OccupantStatus::PENDING_VERIFICATION)
+            ->reject(fn($o) => $o->id === $this->occupant->id);
+    }
+
+    // NEW: Computed property for rejected other occupants
+    public function getRejectedOtherOccupantsProperty()
+    {
+        return $this->contract?->occupants
+            ->where('status', OccupantStatus::REJECTED)
+            ->reject(fn($o) => $o->id === $this->occupant->id);
+    }
 }

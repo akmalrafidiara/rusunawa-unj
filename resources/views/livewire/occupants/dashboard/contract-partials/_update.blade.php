@@ -4,23 +4,22 @@
         ($latestInvoice && $latestInvoice->status == \App\Enums\InvoiceStatus::PENDING_PAYMENT_VERIFICATION);
 
     $isCurrentOccupantPending =
-        isset($occupant) && $occupant->status === \App\Enums\OccupantStatus::PENDING_VERIFICATION && !isset($invoices);
-
-    $hasOtherOccupantPending =
-        $contract &&
-        $contract->occupants->contains(fn($o) => $o->status === \App\Enums\OccupantStatus::PENDING_VERIFICATION);
-
+        isset($occupant) && $occupant->status === \App\Enums\OccupantStatus::PENDING_VERIFICATION;
     $isCurrentOccupantRejected = isset($occupant) && $occupant->status === \App\Enums\OccupantStatus::REJECTED;
 
+    // Use the computed properties from the Livewire component
+    $hasOtherOccupantPending = $this->pendingOtherOccupants->isNotEmpty();
+    $hasOtherOccupantRejected = $this->rejectedOtherOccupants->isNotEmpty();
+
     $isPaymentRejected =
-        $this->latestInvoice->status == \App\Enums\InvoiceStatus::UNPAID &&
-        $this->latestInvoice->payments->last() &&
+        $this->latestInvoice?->status == \App\Enums\InvoiceStatus::UNPAID &&
+        $this->latestInvoice->payments->isNotEmpty() &&
         $this->latestInvoice->payments->last()->status == \App\Enums\PaymentStatus::REJECTED;
 
     $isPaymentPendingVerification =
         $this->latestInvoice &&
         $this->latestInvoice->status === \App\Enums\InvoiceStatus::PENDING_PAYMENT_VERIFICATION &&
-        $this->latestInvoice->payments->last() &&
+        $this->latestInvoice->payments->isNotEmpty() &&
         $this->latestInvoice->payments->last()->status === \App\Enums\PaymentStatus::PENDING_VERIFICATION;
 @endphp
 
@@ -31,16 +30,20 @@
         @include('livewire.occupants.dashboard.contract-partials.status._invoice-detail')
     @endif
 
-    @if ($isCurrentOccupantPending)
-        @include('livewire.occupants.dashboard.contract-partials.status._occupant-pending')
+    {{-- Consolidated pending status check --}}
+    @if ($isCurrentOccupantPending || $hasOtherOccupantPending)
+        @include('livewire.occupants.dashboard.contract-partials.status._occupant-pending', [
+            'contract' => $contract, // Pass contract to the partial
+            'occupant' => $occupant, // Pass occupant to the partial
+        ])
     @endif
 
-    @if ($hasOtherOccupantPending)
-        @include('livewire.occupants.dashboard.contract-partials.status._other-occupant-pending')
-    @endif
-
-    @if ($isCurrentOccupantRejected)
-        @include('livewire.occupants.dashboard.contract-partials.status._occupant-rejected')
+    {{-- Consolidated rejected status check --}}
+    @if ($isCurrentOccupantRejected || $hasOtherOccupantRejected)
+        @include('livewire.occupants.dashboard.contract-partials.status._occupant-rejected', [
+            'contract' => $contract, // Pass contract to the partial
+            'occupant' => $occupant, // Pass occupant to the partial
+        ])
     @endif
 
     @if ($isPaymentRejected)
@@ -51,7 +54,14 @@
         @include('livewire.occupants.dashboard.contract-partials.status._payment-pending')
     @endif
 
-    @if (!$hasInvoiceIssue && !$isCurrentOccupantPending && !$hasOtherOccupantPending && !$isCurrentOccupantRejected)
+    @if (
+        !$hasInvoiceIssue &&
+            !$isCurrentOccupantPending &&
+            !$hasOtherOccupantPending &&
+            !$isCurrentOccupantRejected &&
+            !$hasOtherOccupantRejected &&
+            !$isPaymentRejected &&
+            !$isPaymentPendingVerification)
         @include('livewire.occupants.dashboard.contract-partials.status._default')
     @endif
 </div>
