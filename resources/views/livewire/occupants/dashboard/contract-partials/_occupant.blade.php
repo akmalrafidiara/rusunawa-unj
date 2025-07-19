@@ -19,7 +19,7 @@
                 @if (
                     $contract->occupants->count() < $contract->unit->capacity &&
                         $contract->invoices()->count() > 0 &&
-                        $contract->invoices()->first()->is_paid)
+                        $contract->invoices()->first()->status === \App\Enums\InvoiceStatus::PAID)
                     <a class="cursor-pointer text-emerald-600 hover:text-emerald-800 underline font-normal"
                         wire:click="showOccupantForm">
                         Tambah Penghuni

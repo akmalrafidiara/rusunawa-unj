@@ -28,22 +28,17 @@
         </div>
     @endif
 
-    {{-- Content berdasarkan tab yang aktif --}}
-    {{-- Menghapus wire:poll karena permintaan pengguna --}}
     <div wire:poll.10s class="flex flex-col gap-4 overflow-y-auto pr-2" style="max-height: 70vh;">
         @if ($tab === 'recent')
             @forelse ($recentOccupants as $occupant)
-                {{-- Menggunakan variabel yang dilewatkan dari render() --}}
                 <div wire:click="selectOccupant({{ $occupant->id }})"
                     class="p-6 rounded-lg border cursor-pointer transition-colors duration-200
                     {{ $occupantIdBeingSelected === $occupant->id ? 'bg-green-100 border-green-500 dark:bg-green-900/30 dark:border-green-700' : 'bg-gray-50 border-gray-200 hover:bg-gray-100 dark:bg-zinc-700 dark:border-zinc-600 dark:hover:bg-zinc-600' }}">
 
-                    {{-- Occupant Name --}}
                     <div class="font-medium text-gray-800 dark:text-gray-200">
                         {{ $occupant->full_name }}
                     </div>
 
-                    {{-- Created At --}}
                     <div class="text-sm text-gray-600 dark:text-gray-400">
                         {{ $occupant->updated_at->format('d F Y, H:i') }} WIB
                         <span class="text-xs text-gray-500 dark:text-gray-500 ml-2">
