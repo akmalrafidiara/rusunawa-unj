@@ -6,7 +6,6 @@ use App\Data\AcademicData;
 use App\Enums\GenderAllowed;
 use App\Enums\InvoiceStatus;
 use App\Enums\OccupantStatus;
-use App\Enums\PaymentStatus;
 use App\Models\Invoice;
 use App\Models\Occupant;
 use App\Models\Payment;
@@ -25,18 +24,21 @@ class Contract extends Component
     use WithFileUploads;
     use WithFilePond;
 
-    public $invoice;
-    public $amount_paid;
-    public $proofOfPayment;
-    public $notes;
+    // Main properties
+    public
+        $contract,
+        $occupant,
+        $unit,
+        $latestInvoice,
+        $invoices,
+        $payments;
 
-    // Tambahkan properti untuk kontrak, unit, dan pembayaran jika belum ada
-    public $contract;
-    public $occupant; // Refers to the currently logged-in occupant (PIC)
-    public $unit;
-    public $latestInvoice;
-    public $invoices;
-    public $payments;
+    // Properties for payment form
+    public
+        $invoice,
+        $amount_paid,
+        $proofOfPayment,
+        $notes;
 
     // Occupant Form Properties
     public $occupantIdBeingSelected; // ID of the occupant currently being edited (can be null for new)
@@ -45,20 +47,26 @@ class Contract extends Component
         $fullName,
         $email,
         $whatsappNumber,
-        $gender = 'male',
+        $gender,
         $identityCardFile,
         $communityCardFile;
 
-    public $existingIdentityCardFile; // Stores the path to the current identity card file
-    public $existingCommunityCardFile; // Stores the path to the current community card file
+    public
+        $existingIdentityCardFile,
+        $existingCommunityCardFile;
 
     public bool $isStudent = false;
-    public $studentId, $faculty, $studyProgram, $classYear;
+    public
+        $studentId,
+        $faculty,
+        $studyProgram,
+        $classYear;
 
-    public $genderOptions = [];
-    public $facultyOptions = [];
-    public $studyProgramOptions = [];
-    public $classYearOptions = [];
+    public
+        $genderOptions = [],
+        $facultyOptions = [],
+        $studyProgramOptions = [],
+        $classYearOptions = [];
 
     public bool $showModal = false;
     public string $modalType = '';
@@ -68,36 +76,19 @@ class Contract extends Component
         $this->invoice = $invoice;
 
         $occupantId = Auth::guard('occupant')->user()->id;
-        $this->occupant = Occupant::find($occupantId); // This is the logged-in occupant (PIC)
+        $this->occupant = Occupant::find($occupantId);
 
-        if ($this->occupant) {
-            $this->contract = $this->occupant->contracts()->with('unit', 'invoices', 'payments', 'occupants', 'pic')->first();
+        $this->contract = $this->occupant->contracts()->with('unit', 'invoices', 'payments', 'occupants', 'pic')->first();
 
-            if ($this->contract) {
-                $this->unit = $this->contract->unit ?? new Unit();
-                $this->latestInvoice = $this->contract->invoices()->latest()->first();
-                $this->invoices = $this->contract->invoices()->get();
-                $this->payments = $this->contract->payments()->get();
-            } else {
-                // Jika tidak ada kontrak, inisialisasi properti terkait dengan nilai default atau kosong
-                $this->unit = new Unit(); // Inisialisasi unit kosong
-                $this->latestInvoice = null;
-                $this->invoices = collect(); // Koleksi kosong
-                $this->payments = collect(); // Koleksi kosong
-            }
-        } else {
-            $this->contract = null;
-            $this->unit = new Unit();
-            $this->latestInvoice = null;
-            $this->invoices = collect();
-            $this->payments = collect();
-        }
+        $this->unit = $this->contract->unit ?? new Unit();
+        $this->latestInvoice = $this->contract->invoices()->latest()->first();
+        $this->invoices = $this->contract->invoices()->get();
+        $this->payments = $this->contract->payments()->get();
 
         $this->genderOptions = GenderAllowed::optionsWithoutGeneral();
         $this->facultyOptions = collect(AcademicData::getFacultiesAndPrograms())->keys()->map(fn($f) => ['value' => $f, 'label' => $f])->toArray();
         $this->classYearOptions = collect(range(date('Y'), date('Y') - 7))->map(fn($y) => ['value' => $y, 'label' => (string)$y])->toArray();
 
-        // Populate study program options initially if a faculty is already selected
         if ($this->faculty) {
             $this->updatedFaculty($this->faculty);
         }
@@ -126,21 +117,17 @@ class Contract extends Component
                 Rule::unique('occupants', 'email')->ignore($this->occupantIdBeingSelected)
             ],
             'whatsappNumber' => 'nullable|string|max:20',
-            'gender' => 'required|in:male,female',
+            'gender' => [
+                'required',
+                Rule::in(GenderAllowed::values())],
 
-            // File rules adjusted for update/create scenarios
-            'identityCardFile' => [
-                $this->occupantIdBeingSelected && ($this->identityCardFile === $this->existingIdentityCardFile) ? 'nullable' : 'required',
-                'file',
-                'mimes:jpeg,png,jpg,pdf',
-                'max:2048'
-            ],
-            'communityCardFile' => [
-                $this->occupantIdBeingSelected && ($this->communityCardFile === $this->existingCommunityCardFile) ? 'nullable' : 'nullable',
-                'file',
-                'mimes:jpeg,png,jpg,pdf',
-                'max:2048'
-            ],
+            'identityCardFile' => $this->occupantIdBeingSelected && $this->identityCardFile === $this->existingIdentityCardFile
+                ? 'nullable'
+                : 'required|file|mimes:jpeg,png,jpg,pdf|max:2048',
+
+            'communityCardFile' => $this->occupantIdBeingSelected && $this->communityCardFile === $this->existingCommunityCardFile
+                ? 'nullable'
+                : 'nullable|file|mimes:jpeg,png,jpg,pdf|max:2048',
         ];
 
         if ($this->isStudent) {

@@ -35,50 +35,88 @@
                 {{-- File KTP --}}
                 <div>
                     <x-managers.form.label>File KTP</x-managers.form.label>
-                    @if ($identityCardFile && is_object($identityCardFile))
+                    @if ($identityCardFile)
                         <div class="inline-flex gap-2 border border-gray-300 rounded p-2 mb-2">
                             <x-managers.form.small>Preview</x-managers.form.small>
-                            <img src="{{ $identityCardFile->temporaryUrl() }}" alt="Preview Gambar"
-                                class="w-16 h-16 object-cover rounded border" />
-                        </div>
-                    @elseif ($existingIdentityCardFile)
-                        <div class="inline-flex gap-2 border border-gray-300 rounded p-2 mb-2">
-                            <x-managers.form.small>Current File</x-managers.form.small>
-                            <img src="{{ asset('storage/' . $existingIdentityCardFile) }}" alt="Existing Gambar"
-                                class="w-16 h-16 object-cover rounded border" />
-                            <button type="button" wire:click="removeIdentityCardFile"
-                                class="text-red-500 text-sm">Remove</button>
+                            @php
+                                $fileUrl =
+                                    $identityCardFile instanceof \Illuminate\Http\UploadedFile
+                                        ? $identityCardFile->temporaryUrl()
+                                        : asset('storage/' . $identityCardFile);
+                                $fileName =
+                                    $identityCardFile instanceof \Illuminate\Http\UploadedFile
+                                        ? $identityCardFile->getClientOriginalName()
+                                        : basename($identityCardFile);
+                                $isImage = in_array(strtolower(pathinfo($fileName, PATHINFO_EXTENSION)), [
+                                    'jpg',
+                                    'jpeg',
+                                    'png',
+                                    'gif',
+                                ]);
+                            @endphp
+                            @if ($isImage)
+                                <img src="{{ $fileUrl }}" alt="Preview Gambar"
+                                    class="w-16 h-16 object-cover rounded border" />
+                            @else
+                                <div class="w-16 h-16 flex items-center justify-center bg-gray-100 rounded border">
+                                    <span class="text-xs text-gray-600">PDF</span>
+                                </div>
+                            @endif
                         </div>
                     @endif
-                    <x-filepond::upload wire:model="identityCardFile" />
-                    @error('identityCardFile')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
-                    @enderror
-                    <x-managers.form.small>Max 2MB. JPG, PNG, GIF, PDF</x-managers.form.small>
+
+                    <div class="mb-2">
+                        @if ($errors->has('identityCardFile'))
+                            <span class="text-red-500 text-sm">{{ $errors->first('identityCardFile') }}</span>
+                        @else
+                            <x-managers.form.small>Max 2MB. JPG, PNG, PDF</x-managers.form.small>
+                        @endif
+                    </div>
+
+                    <x-filepond::upload wire:model.live="identityCardFile" />
                 </div>
                 {{-- File Kartu Komunitas/Keluarga --}}
                 <div>
                     <x-managers.form.label>Kartu Komunitas/KK (Opsional)</x-managers.form.label>
-                    @if ($communityCardFile && is_object($communityCardFile))
+                    @if ($communityCardFile)
                         <div class="inline-flex gap-2 border border-gray-300 rounded p-2 mb-2">
                             <x-managers.form.small>Preview</x-managers.form.small>
-                            <img src="{{ $communityCardFile->temporaryUrl() }}" alt="Preview Gambar"
-                                class="w-16 h-16 object-cover rounded border" />
-                        </div>
-                    @elseif ($existingCommunityCardFile)
-                        <div class="inline-flex gap-2 border border-gray-300 rounded p-2 mb-2">
-                            <x-managers.form.small>Current File</x-managers.form.small>
-                            <img src="{{ asset('storage/' . $existingCommunityCardFile) }}" alt="Existing Gambar"
-                                class="w-16 h-16 object-cover rounded border" />
-                            <button type="button" wire:click="removeCommunityCardFile"
-                                class="text-red-500 text-sm">Remove</button>
+                            @php
+                                $fileUrl =
+                                    $communityCardFile instanceof \Illuminate\Http\UploadedFile
+                                        ? $communityCardFile->temporaryUrl()
+                                        : asset('storage/' . $communityCardFile);
+                                $fileName =
+                                    $communityCardFile instanceof \Illuminate\Http\UploadedFile
+                                        ? $communityCardFile->getClientOriginalName()
+                                        : basename($communityCardFile);
+                                $isImage = in_array(strtolower(pathinfo($fileName, PATHINFO_EXTENSION)), [
+                                    'jpg',
+                                    'jpeg',
+                                    'png',
+                                    'gif',
+                                ]);
+                            @endphp
+                            @if ($isImage)
+                                <img src="{{ $fileUrl }}" alt="Preview Gambar"
+                                    class="w-16 h-16 object-cover rounded border" />
+                            @else
+                                <div class="w-16 h-16 flex items-center justify-center bg-gray-100 rounded border">
+                                    <span class="text-xs text-gray-600">PDF</span>
+                                </div>
+                            @endif
                         </div>
                     @endif
-                    <x-filepond::upload wire:model="communityCardFile" />
-                    @error('communityCardFile')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
-                    @enderror
-                    <x-managers.form.small>Max 2MB. JPG, PNG, GIF, PDF</x-managers.form.small>
+
+                    <div class="mb-2">
+                        @if ($errors->has('communityCardFile'))
+                            <span class="text-red-500 text-sm">{{ $errors->first('communityCardFile') }}</span>
+                        @else
+                            <x-managers.form.small>Max 2MB. JPG, PNG, PDF</x-managers.form.small>
+                        @endif
+                    </div>
+
+                    <x-filepond::upload wire:model.live="communityCardFile" />
                 </div>
             </div>
 

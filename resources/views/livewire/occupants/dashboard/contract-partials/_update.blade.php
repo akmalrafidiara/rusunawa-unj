@@ -24,7 +24,7 @@
         $this->latestInvoice->payments->last()->status === \App\Enums\PaymentStatus::PENDING_VERIFICATION;
 @endphp
 
-<div class="bg-white dark:bg-zinc-800 rounded-lg shadow-md border dark:border-zinc-700 p-6">
+<div wire:poll.10s class="bg-white dark:bg-zinc-800 rounded-lg shadow-md border dark:border-zinc-700 p-6">
     <h3 class="text-xl font-bold mb-6 text-gray-900 dark:text-gray-100">Status</h3>
 
     @if ($hasInvoiceIssue)
