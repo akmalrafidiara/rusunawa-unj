@@ -214,35 +214,35 @@ class Invoice extends Component
         $this->showModal = false;
     }
 
-    public function confirmDelete(InvoiceModel $invoice)
-    {
-        $this->invoiceIdBeingSelected = $invoice->id;
-        LivewireAlert::confirm('Apakah Anda yakin ingin menghapus tagihan ini?', [
-            'confirmButtonText' => 'Ya, Hapus!',
-            'cancelButtonText' => 'Batal',
-            'onConfirmed' => 'delete',
-            'onDismissed' => 'cancelDelete',
-            'position' => 'center',
-            'showConfirmButton' => true,
-            'showCancelButton' => true,
-            'confirmButtonColor' => '#EF4444',
-            'cancelButtonColor' => '#6B7280',
-        ]);
-    }
+    // public function confirmDelete(InvoiceModel $invoice)
+    // {
+    //     $this->invoiceIdBeingSelected = $invoice->id;
+    //     LivewireAlert::confirm('Apakah Anda yakin ingin menghapus tagihan ini?', [
+    //         'confirmButtonText' => 'Ya, Hapus!',
+    //         'cancelButtonText' => 'Batal',
+    //         'onConfirmed' => 'delete',
+    //         'onDismissed' => 'cancelDelete',
+    //         'position' => 'center',
+    //         'showConfirmButton' => true,
+    //         'showCancelButton' => true,
+    //         'confirmButtonColor' => '#EF4444',
+    //         'cancelButtonColor' => '#6B7280',
+    //     ]);
+    // }
 
-    public function delete()
-    {
-        if ($this->invoiceIdBeingSelected) {
-            InvoiceModel::find($this->invoiceIdBeingSelected)->delete();
-            LivewireAlert::title('Tagihan berhasil dihapus.')->success()->toast();
-            $this->reset(['invoiceIdBeingSelected']);
-        }
-    }
+    // public function delete()
+    // {
+    //     if ($this->invoiceIdBeingSelected) {
+    //         InvoiceModel::find($this->invoiceIdBeingSelected)->delete();
+    //         LivewireAlert::title('Tagihan berhasil dihapus.')->success()->toast();
+    //         $this->reset(['invoiceIdBeingSelected']);
+    //     }
+    // }
 
-    public function cancelDelete()
-    {
-        $this->reset(['invoiceIdBeingSelected']);
-    }
+    // public function cancelDelete()
+    // {
+    //     $this->reset(['invoiceIdBeingSelected']);
+    // }
 
     public function exportPdf()
     {

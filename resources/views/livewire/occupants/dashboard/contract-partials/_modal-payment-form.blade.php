@@ -1,4 +1,4 @@
-<x-managers.ui.modal title="Unggah Bukti Pembayaran #{{ $latestInvoice->invoice_number }}" :show="$showModal && $modalType === 'payment'"
+<x-managers.ui.modal title="Unggah Bukti Pembayaran #{{ $latestInvoice?->invoice_number ?? 'N/A' }}" :show="$showModal && $modalType === 'payment'"
     class="max-w-xl">
     <form wire:submit.prevent="savePayment">
         <div class="mb-4">

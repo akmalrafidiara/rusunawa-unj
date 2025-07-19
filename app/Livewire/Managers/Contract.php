@@ -266,35 +266,35 @@ class Contract extends Component
         $this->showModal = false;
     }
 
-    public function confirmDelete(ContractModel $contract)
-    {
-        $this->contractIdBeingSelected = $contract->id;
-        LivewireAlert::confirm('Apakah Anda yakin ingin menghapus kontrak ini? Tindakan ini tidak dapat dibatalkan dan akan menghapus semua invoice terkait!', [
-            'confirmButtonText' => 'Ya, Hapus!',
-            'cancelButtonText' => 'Batal',
-            'onConfirmed' => 'delete',
-            'onDismissed' => 'cancelDelete',
-            'position' => 'center',
-            'showConfirmButton' => true,
-            'showCancelButton' => true,
-            'confirmButtonColor' => '#EF4444',
-            'cancelButtonColor' => '#6B7280',
-        ]);
-    }
+    // public function confirmDelete(ContractModel $contract)
+    // {
+    //     $this->contractIdBeingSelected = $contract->id;
+    //     LivewireAlert::confirm('Apakah Anda yakin ingin menghapus kontrak ini? Tindakan ini tidak dapat dibatalkan dan akan menghapus semua invoice terkait!', [
+    //         'confirmButtonText' => 'Ya, Hapus!',
+    //         'cancelButtonText' => 'Batal',
+    //         'onConfirmed' => 'delete',
+    //         'onDismissed' => 'cancelDelete',
+    //         'position' => 'center',
+    //         'showConfirmButton' => true,
+    //         'showCancelButton' => true,
+    //         'confirmButtonColor' => '#EF4444',
+    //         'cancelButtonColor' => '#6B7280',
+    //     ]);
+    // }
 
-    public function delete()
-    {
-        if ($this->contractIdBeingSelected) {
-            ContractModel::find($this->contractIdBeingSelected)->delete();
-            LivewireAlert::title('Kontrak berhasil dihapus.')->success()->toast();
-            $this->reset(['contractIdBeingSelected']);
-        }
-    }
+    // public function delete()
+    // {
+    //     if ($this->contractIdBeingSelected) {
+    //         ContractModel::find($this->contractIdBeingSelected)->delete();
+    //         LivewireAlert::title('Kontrak berhasil dihapus.')->success()->toast();
+    //         $this->reset(['contractIdBeingSelected']);
+    //     }
+    // }
 
-    public function cancelDelete()
-    {
-        $this->reset(['contractIdBeingSelected']);
-    }
+    // public function cancelDelete()
+    // {
+    //     $this->reset(['contractIdBeingSelected']);
+    // }
 
     public function exportPdf()
     {

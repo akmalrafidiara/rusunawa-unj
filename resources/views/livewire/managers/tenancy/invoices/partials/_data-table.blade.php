@@ -69,10 +69,10 @@
                             </x-managers.ui.button>
 
                             {{-- Delete Button --}}
-                            <x-managers.ui.button wire:click="confirmDelete({{ $invoice->id }})" id="delete-invoice"
+                            {{-- <x-managers.ui.button wire:click="confirmDelete({{ $invoice->id }})" id="delete-invoice"
                                 variant="danger" size="sm">
                                 <flux:icon.trash class="w-4" />
-                            </x-managers.ui.button>
+                            </x-managers.ui.button> --}}
                         </div>
                     </x-managers.table.cell>
                 </x-managers.table.row>

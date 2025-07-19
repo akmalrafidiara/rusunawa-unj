@@ -44,7 +44,7 @@ class Contract extends Component
         $fullName,
         $email,
         $whatsappNumber,
-        $gender,
+        $gender = 'male',
         $identityCardFile,
         $communityCardFile;
 
@@ -125,10 +125,7 @@ class Contract extends Component
                 Rule::unique('occupants', 'email')->ignore($this->occupantIdBeingSelected)
             ],
             'whatsappNumber' => 'nullable|string|max:20',
-            'gender' => [
-                'required',
-                Rule::in(GenderAllowed::values()),
-            ],
+            'gender' => 'required|in:male,female',
 
             // File rules adjusted for update/create scenarios
             'identityCardFile' => [
@@ -263,13 +260,13 @@ class Contract extends Component
     {
         // Validate basic fields first
         $fieldsToValidate = [
-            'fullName', 'email', 'whatsappNumber'
+            'fullName', 'email', 'whatsappNumber', 'gender'
         ];
         if ($this->isStudent) {
             $fieldsToValidate = array_merge($fieldsToValidate, ['studentId', 'faculty', 'studyProgram', 'classYear']);
         }
         $this->validate(collect($this->rules())->only($fieldsToValidate)->toArray());
-
+        
         // Validate files based on their current state and whether it's an update or new creation
         $this->validateOnly('identityCardFile', $this->rules());
         $this->validateOnly('communityCardFile', $this->rules());

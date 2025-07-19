@@ -70,10 +70,10 @@
                             </x-managers.ui.button>
 
                             {{-- Delete Button --}}
-                            <x-managers.ui.button wire:click="confirmDelete({{ $contract->id }})" id="delete-contract"
+                            {{-- <x-managers.ui.button wire:click="confirmDelete({{ $contract->id }})" id="delete-contract"
                                 variant="danger" size="sm">
                                 <flux:icon.trash class="w-4" />
-                            </x-managers.ui.button>
+                            </x-managers.ui.button> --}}
                         </div>
                     </x-managers.table.cell>
                 </x-managers.table.row>
