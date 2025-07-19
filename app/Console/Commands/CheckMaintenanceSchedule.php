@@ -43,7 +43,7 @@ class CheckMaintenanceSchedule extends Command
             $shouldNotify = false;
 
             // Check for upcoming maintenance reminders
-            $reminders = [7, 4, 3, 1, 0];
+            $reminders = [7, 5, 3, 1, 0];
             if (in_array($daysUntilDue, $reminders)) {
                 $shouldNotify = true;
                 $message = "Pemeliharaan rutin untuk kamar {$schedule->unit->room_number} ({$schedule->unit->unitCluster->name}) dijadwalkan dalam {$daysUntilDue} hari lagi.";
