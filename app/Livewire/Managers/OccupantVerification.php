@@ -2,55 +2,88 @@
 
 namespace App\Livewire\Managers;
 
-use App\Enums\ContractStatus;
+use App\Enums\ContractStatus; // Tambahkan ini jika belum ada
 use App\Enums\InvoiceStatus;
 use App\Enums\OccupantStatus;
 use App\Jobs\SendRejectionOccupantEmail;
 use App\Jobs\SendWelcomeEmail;
 use App\Models\Invoice;
 use App\Models\Occupant;
+use App\Models\VerificationLog; // Import model VerificationLog
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\URL;
 use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 use Livewire\Component;
 use Livewire\WithPagination;
+// Hapus 'use Livewire\Attributes\Computed;' jika sebelumnya ada
 
 class OccupantVerification extends Component
 {
     use WithPagination;
 
     public $occupant;
-
     public $responseMessage;
     public $contractPrice;
 
     public bool $showModal = false;
     public string $modalType = '';
     public $occupantIdBeingSelected;
+    public $tab = 'recent'; // Default tab
 
     public string $search = '';
-    public string $occupantVerificationType = ''; // New property to store the type of verification request
+    public string $occupantVerificationType = '';
 
     public function render()
     {
-        $occupants = Occupant::query()
-            ->where('status', OccupantStatus::PENDING_VERIFICATION)
-            ->whereHas('contracts', function ($contractQuery) {
-                $contractQuery
-                    ->where('status', '!=', ContractStatus::CANCELLED)
-                    ->where('status', '!=', ContractStatus::EXPIRED);
-            })
-            ->when($this->search, function ($query) {
-            $query->where('full_name', 'like', "%{$this->search}%")
-                ->orWhere('whatsapp_number', 'like', "%{$this->search}%")
-                ->orWhereHas('contracts', function ($contractQuery) {
-                $contractQuery->where('contract_code', 'like', "%{$this->search}%");
-                });
-            })
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+        $recentOccupants = collect(); // Inisialisasi koleksi kosong
+        $historyLogs = collect();     // Inisialisasi koleksi kosong
+        $paginator = null; // Inisialisasi paginator default
 
-        return view('livewire.managers.responses.occupant-verification.index', compact('occupants'));
+        if ($this->tab === 'recent') {
+            $recentOccupants = Occupant::query()
+                ->where('status', OccupantStatus::PENDING_VERIFICATION)
+                ->whereHas('contracts', function ($contractQuery) {
+                    $contractQuery
+                        ->where('status', '!=', ContractStatus::CANCELLED)
+                        ->where('status', '!=', ContractStatus::EXPIRED);
+                })
+                ->when($this->search, function ($query) {
+                    $query->where('full_name', 'like', "%{$this->search}%")
+                        ->orWhere('whatsapp_number', 'like', "%{$this->search}%")
+                        ->orWhereHas('contracts', function ($contractQuery) {
+                            $contractQuery->where('contract_code', 'like', "%{$this->search}%");
+                        });
+                })
+                ->orderBy('created_at', 'desc')
+                ->paginate(10, pageName: 'recentPage'); // Gunakan pageName berbeda untuk paginasi
+            $paginator = $recentOccupants;
+
+        } elseif ($this->tab === 'history') {
+            $historyLogs = VerificationLog::query()
+                ->where('loggable_type', Occupant::class)
+                ->with('loggable', 'processor')
+                ->orderBy('processed_at', 'desc')
+                ->paginate(10, pageName: 'historyPage'); // Gunakan pageName berbeda untuk paginasi
+            $paginator = $historyLogs;
+        }
+
+        return view('livewire.managers.responses.occupant-verification.index', [
+            'recentOccupants' => $recentOccupants,
+            'historyLogs' => $historyLogs,
+            'paginator' => $paginator, // Kirim paginator yang sesuai ke view
+        ]);
+    }
+
+    // Metode ini akan dipanggil saat search atau tab berubah untuk mereset paginasi
+    public function updatedSearch()
+    {
+        $this->resetPage(); // Reset pagination untuk tab yang aktif
+    }
+
+    public function updatedTab()
+    {
+        $this->resetPage(); // Reset pagination saat tab berubah
+        $this->reset(['occupant', 'occupantIdBeingSelected', 'responseMessage', 'contractPrice', 'occupantVerificationType']); // Hapus detail panel saat tab berubah
     }
 
     public function selectOccupant($occupantId)
@@ -233,6 +266,6 @@ class OccupantVerification extends Component
         $this->modalType = '';
         $this->occupantIdBeingSelected = null;
         $this->search = '';
-        $this->occupantVerificationType = ''; // Reset the type property as well
+        $this->occupantVerificationType = '';
     }
 }

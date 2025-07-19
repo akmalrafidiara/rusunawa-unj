@@ -13,16 +13,18 @@
                     </p>
                 </div>
 
-                <div class="flex gap-3 mb-6">
-                    <button wire:click="showResponseModal('accept')"
-                        class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-md transition-colors duration-200 cursor-pointer">
-                        Terima
-                    </button>
-                    <button wire:click="showResponseModal('reject')"
-                        class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md transition-colors duration-200 cursor-pointer">
-                        Tolak
-                    </button>
-                </div>
+                @if ($tab === 'recent')
+                    <div class="flex gap-3 mb-6">
+                        <button wire:click="showResponseModal('accept')"
+                            class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-md transition-colors duration-200 cursor-pointer">
+                            Terima
+                        </button>
+                        <button wire:click="showResponseModal('reject')"
+                            class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md transition-colors duration-200 cursor-pointer">
+                            Tolak
+                        </button>
+                    </div>
+                @endif
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>

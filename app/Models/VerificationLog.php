@@ -28,4 +28,9 @@ class VerificationLog extends Model
     {
         return $this->morphTo();
     }
+
+    public function processor() // Definisi relasi 'processor'
+    {
+        return $this->belongsTo(User::class, 'processed_by');
+    }
 }
