@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('invoice_id')->constrained('invoices')->onDelete('cascade');
             $table->foreignId('verified_by')->nullable()->constrained('users');
 
+            $table->unsignedInteger('amount_paid')->default(0);
             $table->string('proof_of_payment_path');
 
             $table->text('notes')->nullable();

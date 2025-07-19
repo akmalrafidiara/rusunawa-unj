@@ -25,6 +25,7 @@ class Contract extends Component
     use WithFilePond;
 
     public $invoice;
+    public $amount_paid;
     public $proofOfPayment;
     public $notes;
 
@@ -110,6 +111,7 @@ class Contract extends Component
     {
         $rules = [
             // Payment Proof Validation
+            'amount_paid' => 'required|numeric|min:0',
             'proofOfPayment' => 'required|image|max:2048',
             'notes' => 'nullable|string|max:255',
 
@@ -157,6 +159,7 @@ class Contract extends Component
     {
         return [
             // Payment Proof Validation
+            'amount_paid.required' => 'Jumlah yang dibayar wajib diisi.',
             'proofOfPayment.required' => 'Bukti pembayaran harus diunggah.',
             'proofOfPayment.image' => 'File yang diunggah harus berupa gambar.',
             'proofOfPayment.max' => 'Ukuran file tidak boleh lebih dari 2MB.',
@@ -399,7 +402,7 @@ class Contract extends Component
     public function savePayment()
     {
         $fieldsToValidate = [
-            'proofOfPayment', 'notes'
+            'amount_paid', 'proofOfPayment', 'notes'
         ];
 
         $this->validate(collect($this->rules())
@@ -412,7 +415,7 @@ class Contract extends Component
 
         Payment::create([
             'invoice_id' => $this->latestInvoice->id, // Pastikan latestInvoice tidak null di sini
-            'amount_paid' => $this->latestInvoice->amount, // Assuming full payment
+            'amount_paid' => $this->amount_paid,
             'payment_date' => now(),
             'proof_of_payment_path' => $path,
             'notes' => $this->notes,

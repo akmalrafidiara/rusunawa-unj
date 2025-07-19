@@ -5,7 +5,13 @@
             <x-frontend.form.file wire:model="proofOfPayment" name="proofOfPayment"
                 label="Pilih Bukti Pembayaran (Gambar)" />
         </div>
-
+        <div class="mb-4">
+            <x-managers.form.label>
+                Jumlah Dibayar
+            </x-managers.form.label>
+            <x-managers.form.input type="number" rupiah wire:model="amount_paid" name="amount_paid"
+                placeholder="Masukkan jumlah yang dibayar" min="0" />
+        </div>
         <div class="mb-6">
             <x-managers.form.label>
                 Catatan Tambahan (Opsional)

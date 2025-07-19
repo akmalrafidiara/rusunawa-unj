@@ -25,8 +25,8 @@
                     <span class="font-semibold">Durasi Sewa:</span>
                 </div>
                 <span>
-                    {{ $contract->start_date->translatedFormat('d M Y') }} -
-                    {{ $contract->end_date->translatedFormat('d M Y') }}
+                    {{ $contract->start_date->format('d M Y') }} -
+                    {{ $contract->end_date->format('d M Y') }}
                 </span>
             </div>
 
@@ -70,9 +70,11 @@
                     </x-managers.ui.button>
                 @endif
             </div>
+
             @if (
                 $latestInvoice->status == \App\Enums\InvoiceStatus::UNPAID &&
-                    $latestInvoice->payments->last()->status == \App\Enums\PaymentStatus::REJECTED->value)
+                    $latestInvoice->payments->last() &&
+                    $latestInvoice->payments->last()->status == \App\Enums\PaymentStatus::REJECTED)
                 <div
                     class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6 text-center shadow-sm">
                     <div class="flex flex-col items-center justify-center space-y-4">

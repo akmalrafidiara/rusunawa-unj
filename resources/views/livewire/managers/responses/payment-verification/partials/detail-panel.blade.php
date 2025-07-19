@@ -5,47 +5,109 @@
             <div class="text-left">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Detail Verifikasi Pembayaran</h3>
                 <div class="flex gap-3 mb-6">
-                    <x-managers.ui.button wire:click="showResponseModal('accept')" variant="success">
+                    <button wire:click="showResponseModal('accept')"
+                        class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-md transition-colors duration-200 cursor-pointer">
                         Terima
-                    </x-managers.ui.button>
-                    <x-managers.ui.button wire:click="showResponseModal('reject')" variant="danger">
+                    </button>
+                    <button wire:click="showResponseModal('reject')"
+                        class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md transition-colors duration-200 cursor-pointer">
                         Tolak
-                    </x-managers.ui.button>
+                    </button>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {{-- Occupant and Contract Details --}}
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nama Penghuni</label>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nama Penghuni
+                            (PIC)</label>
                         <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">
-                            {{ $payment->invoice->contract->occupants->first()->full_name ?? '-' }}</p>
+                            {{ $payment->invoice->contract->pic->first()->full_name ?? '-' }}
+                        </p>
                     </div>
-
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nomor Invoice</label>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nomor WhatsApp
+                            Penghuni</label>
                         <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">
-                            {{ $payment->invoice->invoice_number ?? '-' }}</p>
+                            {{ $payment->invoice->contract->pic->first()->whatsapp_number ?? '-' }}
+                        </p>
                     </div>
-
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Jumlah
-                            Pembayaran</label>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Kode Kontrak</label>
                         <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">
-                            {{ 'Rp ' . number_format($payment->invoice->amount ?? 0, 0, ',', '.') }}</p>
+                            {{ $payment->invoice->contract->contract_code ?? '-' }}
+                        </p>
                     </div>
-
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tanggal Jatuh
-                            Tempo</label>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nomor Unit</label>
                         <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">
-                            {{ $payment->invoice->due_at->translatedFormat('d F Y') ?? '-' }}</p>
+                            {{ $payment->invoice->contract->unit->room_number ?? '-' }}
+                        </p>
                     </div>
+                </div>
 
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Status
-                            Pembayaran</label>
-                        <x-managers.ui.badge :colors="$payment->invoice->status->color()" class="mt-1">
-                            {{ $payment->invoice->status->label() }}
-                        </x-managers.ui.badge>
+                <div class="mt-6">
+                    <h4 class="text-md font-medium text-gray-900 dark:text-gray-100 mb-3">Detail Invoice</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nomor
+                                Invoice</label>
+                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">
+                                {{ $payment->invoice->invoice_number ?? '-' }}
+                            </p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Deskripsi
+                                Invoice</label>
+                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">
+                                {{ $payment->invoice->description ?? '-' }}
+                            </p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Jumlah Tagihan
+                                Invoice</label>
+                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">
+                                {{ 'Rp ' . number_format($payment->invoice->amount ?? 0, 0, ',', '.') }}
+                            </p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tanggal Jatuh
+                                Tempo Invoice</label>
+                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">
+                                {{ $payment->invoice->due_at ? $payment->invoice->due_at->translatedFormat('d F Y H:i') : '-' }}
+                            </p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Status
+                                Invoice</label>
+                            <x-managers.ui.badge :variant="$payment->invoice->status->color()" class="mt-1">
+                                {{ $payment->invoice->status->label() }}
+                            </x-managers.ui.badge>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <h4 class="text-md font-medium text-gray-900 dark:text-gray-100 mb-3">Detail Pembayaran</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Jumlah Pembayaran
+                                yang Dilakukan</label>
+                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">
+                                {{ 'Rp ' . number_format($payment->amount_paid ?? 0, 0, ',', '.') }}
+                            </p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tanggal
+                                Pembayaran</label>
+                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">
+                                {{ $payment->payment_date ? $payment->payment_date->translatedFormat('d F Y H:i') : '-' }}
+                            </p>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Catatan
+                                Pembayaran</label>
+                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $payment->notes ?? '-' }}</p>
+                        </div>
                     </div>
                 </div>
 
@@ -65,10 +127,10 @@
                             <div
                                 class="border border-gray-300 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
                                 <div class="flex items-center justify-between mb-3">
-                                    <span class="text-sm text-gray-600 dark:text-gray-400">PDF Document</span>
+                                    <span class="text-sm text-gray-600 dark:text-gray-400">Dokumen PDF</span>
                                     <a href="{{ Storage::url($payment->proof_of_payment_path) }}" target="_blank"
                                         class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-md transition-colors">
-                                        Open in New Tab
+                                        Buka di Tab Baru
                                     </a>
                                 </div>
                                 <embed
