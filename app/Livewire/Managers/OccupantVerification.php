@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Managers;
 
+use App\Enums\ContractStatus;
 use App\Enums\InvoiceStatus;
 use App\Enums\OccupantStatus;
 use App\Jobs\SendRejectionOccupantEmail;
@@ -34,12 +35,17 @@ class OccupantVerification extends Component
     {
         $occupants = Occupant::query()
             ->where('status', OccupantStatus::PENDING_VERIFICATION)
+            ->whereHas('contracts', function ($contractQuery) {
+                $contractQuery
+                    ->where('status', '!=', ContractStatus::CANCELLED)
+                    ->where('status', '!=', ContractStatus::EXPIRED);
+            })
             ->when($this->search, function ($query) {
-                $query->where('full_name', 'like', "%{$this->search}%")
-                    ->orWhere('whatsapp_number', 'like', "%{$this->search}%")
-                    ->orWhereHas('contracts', function ($contractQuery) {
-                        $contractQuery->where('contract_code', 'like', "%{$this->search}%");
-                    });
+            $query->where('full_name', 'like', "%{$this->search}%")
+                ->orWhere('whatsapp_number', 'like', "%{$this->search}%")
+                ->orWhereHas('contracts', function ($contractQuery) {
+                $contractQuery->where('contract_code', 'like', "%{$this->search}%");
+                });
             })
             ->orderBy('created_at', 'desc')
             ->paginate(10);
