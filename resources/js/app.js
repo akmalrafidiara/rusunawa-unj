@@ -18,7 +18,7 @@ document.addEventListener('trix-change', function (event) {
 });
 
 // Event listener untuk inisialisasi Trix Editor (untuk memanipulasi input link)
-document.addEventListener("trix-initialize", function(event) {
+document.addEventListener("trix-initialize", function (event) {
     const toolbar = event.target.toolbarElement;
     const urlInput = toolbar.querySelector("[data-trix-input][name='href']");
 
@@ -28,7 +28,7 @@ document.addEventListener("trix-initialize", function(event) {
 
         // 2. Tambahkan event listener untuk menormalisasi URL saat kehilangan fokus atau tekan enter
         urlInput.addEventListener('blur', normalizeUrlInput);
-        urlInput.addEventListener('keydown', function(e) {
+        urlInput.addEventListener('keydown', function (e) {
             if (e.key === 'Enter') {
                 normalizeUrlInput.call(this);
                 e.preventDefault();
