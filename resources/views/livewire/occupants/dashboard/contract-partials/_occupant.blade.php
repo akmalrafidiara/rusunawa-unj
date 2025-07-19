@@ -13,25 +13,21 @@
                 <p class="font-semibold">{{ $contract->contract_code }}</p>
             </div>
             <div>
-                <p class="text-sm text-gray-500">Transaksi</p>
+                <p class="text-sm text-gray-500">Aksi</p>
                 <a class="cursor-pointer text-emerald-600 hover:text-emerald-800 underline"
-                    wire:click="showHistory">Riwayat Transaksi</a>
+                    wire:click="showHistory">Riwayat Transaksi</a> |
+                @if ($contract->occupants->count() < $contract->unit->capacity)
+                    <a class="cursor-pointer text-emerald-600 hover:text-emerald-800 underline font-normal"
+                        wire:click="showOccupantForm">
+                        Tambah Penghuni
+                    </a>
+                @else
+                    <p class="text-red-500">Kapasitas Penuh</p>
+                @endif
             </div>
             <div>
-                <p class="text-sm text-gray-500">Kapasitas</p>
-                <div class="flex items-center gap-2">
-                    <p class="font-semibold">{{ $contract->occupants->count() }}/{{ $contract->unit->capacity }}</p>
-                    @if ($contract->occupants->count() < $contract->unit->capacity)
-                        |
-                        <button class="cursor-pointer text-emerald-600 hover:text-emerald-800"
-                            wire:click="showOccupantForm">
-                            <flux:icon name="plus" class="w-4 h-4 inline-block" />
-                            Penghuni
-                        </button>
-                    @else
-                        <p class="text-red-500">Kapasitas Penuh</p>
-                    @endif
-                </div>
+                <p class="text-sm text-gray-500">Unit Terisi</p>
+                <p class="font-semibold">{{ $contract->occupants->count() }} dari {{ $contract->unit->capacity }}</p>
             </div>
             <div>
                 <p class="text-sm text-gray-500">Nama Pic</p>
