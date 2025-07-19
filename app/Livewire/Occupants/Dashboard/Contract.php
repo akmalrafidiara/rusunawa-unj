@@ -75,7 +75,7 @@ class Contract extends Component
     {
         $this->invoice = $invoice;
 
-        $occupantId = Auth::guard('occupant')->user()->id;
+        $occupantId = Auth::guard('occupant')->user()->id ?? null;
         $this->occupant = Occupant::find($occupantId);
 
         $this->contract = $this->occupant->contracts()->with('unit', 'invoices', 'payments', 'occupants', 'pic')->first();
@@ -213,15 +213,15 @@ class Contract extends Component
             $occupantToEdit = Occupant::find($occupantId);
 
             if ($occupantToEdit) {
-                $this->fullName = $occupantToEdit->full_name;
-                $this->email = $occupantToEdit->email;
-                $this->whatsappNumber = $occupantToEdit->whatsapp_number;
-                $this->gender = $occupantToEdit->gender->value;
-                $this->identityCardFile = $occupantToEdit->identity_card_file;
-                $this->communityCardFile = $occupantToEdit->community_card_file;
-                $this->isStudent = $occupantToEdit->is_student;
-                $this->studentId = $occupantToEdit->student_id;
-                $this->faculty = $occupantToEdit->faculty;
+                $this->fullName = $occupantToEdit->full_name ?? null;
+                $this->email = $occupantToEdit->email ?? null;
+                $this->whatsappNumber = $occupantToEdit->whatsapp_number ?? null;
+                $this->gender = $occupantToEdit->gender->value ?? null;
+                $this->identityCardFile = $occupantToEdit->identity_card_file ?? null;
+                $this->communityCardFile = $occupantToEdit->community_card_file ?? null;
+                $this->isStudent = $occupantToEdit->is_student ?? null;
+                $this->studentId = $occupantToEdit->student_id ?? null;
+                $this->faculty = $occupantToEdit->faculty ?? null;
 
                 // Ensure study program options are loaded if faculty is set
                 if ($this->faculty) {
@@ -229,11 +229,11 @@ class Contract extends Component
                 } else {
                     $this->studyProgramOptions = [];
                 }
-                $this->studyProgram = $occupantToEdit->study_program;
-                $this->classYear = $occupantToEdit->class_year;
+                $this->studyProgram = $occupantToEdit->study_program ?? null;
+                $this->classYear = $occupantToEdit->class_year ?? null;
 
-                $this->existingIdentityCardFile = $occupantToEdit->identity_card_file;
-                $this->existingCommunityCardFile = $occupantToEdit->community_card_file;
+                $this->existingIdentityCardFile = $occupantToEdit->identity_card_file ?? null;
+                $this->existingCommunityCardFile = $occupantToEdit->community_card_file ?? null;
             }
         } else {
             // When adding a new occupant, ensure occupantIdBeingSelected is null
@@ -262,7 +262,7 @@ class Contract extends Component
         $isAddingNewOccupant = is_null($this->occupantIdBeingSelected);
 
         // Check if the current logged-in occupant is the PIC of this contract
-        $isCurrentUserPic = $this->contract && $this->contract->pic->isNotEmpty() && $this->contract->pic->first()->id === Auth::guard('occupant')->user()->id;
+        $isCurrentUserPic = $this->contract && $this->contract->pic->isNotEmpty() && ($this->contract->pic->first()->id ?? null) === (Auth::guard('occupant')->user()->id ?? null);
 
         // Capacity and PIC Authorization Check (for adding new occupants)
         if ($isAddingNewOccupant) {
@@ -282,9 +282,9 @@ class Contract extends Component
                 $prospectiveNewOccupantCount++; // If email doesn't exist, this will be a truly new occupant
             }
 
-            if ($this->contract && $this->unit && $prospectiveNewOccupantCount > $this->unit->capacity) {
+            if ($this->contract && $this->unit && $prospectiveNewOccupantCount > ($this->unit->capacity ?? 0)) {
                 LivewireAlert::title('Kapasitas Unit Penuh!')
-                    ->text('Tidak dapat menambahkan penghuni baru. Jumlah penghuni sudah mencapai kapasitas maksimal unit ini (' . $this->unit->capacity . ' orang).')
+                    ->text('Tidak dapat menambahkan penghuni baru. Jumlah penghuni sudah mencapai kapasitas maksimal unit ini (' . ($this->unit->capacity ?? 0) . ' orang).')
                     ->error()
                     ->toast()
                     ->position('top-end')
@@ -309,7 +309,7 @@ class Contract extends Component
         ];
 
         // Handle Identity Card File upload/retention/deletion
-        $currentIdentityCardPath = $this->occupantIdBeingSelected ? Occupant::find($this->occupantIdBeingSelected)->identity_card_file : null;
+        $currentIdentityCardPath = $this->occupantIdBeingSelected ? Occupant::find($this->occupantIdBeingSelected)->identity_card_file ?? null : null;
         if ($this->identityCardFile instanceof TemporaryUploadedFile) {
             if ($currentIdentityCardPath) { Storage::disk('public')->delete($currentIdentityCardPath); }
             $data['identity_card_file'] = $this->identityCardFile->store('occupant', 'public');
@@ -323,7 +323,7 @@ class Contract extends Component
         }
 
         // Handle Community Card File upload/retention/deletion
-        $currentCommunityCardPath = $this->occupantIdBeingSelected ? Occupant::find($this->occupantIdBeingSelected)->community_card_file : null;
+        $currentCommunityCardPath = $this->occupantIdBeingSelected ? Occupant::find($this->occupantIdBeingSelected)->community_card_file ?? null : null;
         if ($this->communityCardFile instanceof TemporaryUploadedFile) {
             if ($currentCommunityCardPath) { Storage::disk('public')->delete($currentCommunityCardPath); }
             $data['community_card_file'] = $this->communityCardFile->store('occupant', 'public');
@@ -344,9 +344,9 @@ class Contract extends Component
 
         // Attach occupant to the current contract if not already attached
         if ($isAddingNewOccupant) { // This condition implies a new occupant record or a new association for an existing record
-            if (!$this->contract->occupants->contains($occupant->id)) {
+            if (!$this->contract->occupants->contains($occupant->id ?? null)) {
                 // Attach the occupant to the contract as a non-PIC member
-                $this->contract->occupants()->attach($occupant->id, ['is_pic' => false]);
+                $this->contract->occupants()->attach($occupant->id ?? null, ['is_pic' => false]);
             }
         }
         // If it's an update to an existing occupant who is already part of this contract, no re-attachment is needed.
@@ -452,7 +452,7 @@ class Contract extends Component
     {
         return $this->contract?->occupants
             ->where('status', OccupantStatus::PENDING_VERIFICATION)
-            ->reject(fn($o) => $o->id === $this->occupant->id);
+            ->reject(fn($o) => $o->id === ($this->occupant->id ?? null));
     }
 
     // NEW: Computed property for rejected other occupants
@@ -460,6 +460,6 @@ class Contract extends Component
     {
         return $this->contract?->occupants
             ->where('status', OccupantStatus::REJECTED)
-            ->reject(fn($o) => $o->id === $this->occupant->id);
+            ->reject(fn($o) => $o->id === ($this->occupant->id ?? null));
     }
 }
