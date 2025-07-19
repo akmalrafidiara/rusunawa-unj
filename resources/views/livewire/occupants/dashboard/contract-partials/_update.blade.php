@@ -102,7 +102,8 @@
             @endif
         </div>
     @else
-        @if (isset($occupant) && $occupant->status === \App\Enums\OccupantStatus::PENDING_VERIFICATION)
+        @if (isset($occupant) && $occupant->status === \App\Enums\OccupantStatus::PENDING_VERIFICATION && !isset($invoices))
+            {{-- Pesan jika occupant sedang dalam proses verifikasi --}}
             <div
                 class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6 text-center shadow-sm">
                 <div class="flex flex-col items-center justify-center space-y-4">
@@ -118,12 +119,35 @@
                     </p>
                 </div>
             </div>
+        @elseif(
+            $contract &&
+                $contract->occupants->contains(function ($occupant) {
+                    return $occupant->status === \App\Enums\OccupantStatus::PENDING_VERIFICATION;
+                }))
+            {{-- Pesan jika occupant sedang dalam proses verifikasi --}}
+            <div
+                class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6 text-center shadow-sm">
+                <div class="flex flex-col items-center justify-center space-y-4">
+                    <flux:icon name="information-circle" class="w-12 h-12 text-blue-600 dark:text-blue-400" />
+                    <h4 class="text-xl font-semibold text-gray-900 dark:text-gray-100">Verifikasi Data Sedang Diproses
+                    </h4>
+                    <p class="text-gray-700 dark:text-gray-300">
+                        Data
+                        {{ $contract->occupants->where('status', \App\Enums\OccupantStatus::PENDING_VERIFICATION)->pluck('full_name')->join(', ') }}
+                        sedang dalam proses verifikasi oleh admin.
+                        Mohon tunggu konfirmasi.
+                    </p>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                        Notifikasi akan didapatkan setelah proses verifikasi selesai.
+                    </p>
+                </div>
+            </div>
         @elseif (isset($occupant) && $occupant->status === \App\Enums\OccupantStatus::REJECTED)
             <div
                 class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6 text-center shadow-sm">
                 <div class="flex flex-col items-center justify-center space-y-4">
                     <flux:icon name="x-circle" class="w-12 h-12 text-red-600 dark:text-red-400" />
-                    <h4 class="text-xl font-semibold text-gray-900 dark:text-gray-100">Verifikasi Data Ditolak
+                    <h4 class="text-xl font-semibold text-gray-900  dark:text-gray-100">Verifikasi Data Ditolak
                     </h4>
                     <p class="text-gray-700 dark:text-gray-300">
                         {{ $occupant->verificationLogs->last()->reason }}

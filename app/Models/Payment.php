@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\PaymentStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -22,6 +23,7 @@ class Payment extends Model
     protected $casts = [
         'uploaded_at' => 'datetime',
         'verified_at' => 'datetime',
+        'status' => PaymentStatus::class,
     ];
 
     public function invoice()

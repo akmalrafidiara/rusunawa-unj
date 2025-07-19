@@ -38,6 +38,10 @@
                 <p class="font-semibold">{{ $contract->start_date->format('d M Y') }} -
                     {{ $contract->end_date->format('d M Y') }}</p>
             </div>
+            <div>
+                <p class="text-sm text-gray-500">Tipe Sewa</p>
+                <p class="font-semibold">{{ $contract->pricing_basis->label() }}</p>
+            </div>
             <div class="border-t dark:border-zinc-600 pt-4">
                 <div class="grid gap-4">
                     @foreach ($contract->occupants as $occupant)

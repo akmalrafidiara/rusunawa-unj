@@ -23,11 +23,12 @@ class OccupantVerification extends Component
     public $responseMessage;
     public $contractPrice;
 
-    public $showModal = false;
-    public $modalType = '';
+    public bool $showModal = false;
+    public string $modalType = '';
     public $occupantIdBeingSelected;
 
-    public $search = '';
+    public string $search = '';
+    public string $occupantVerificationType = ''; // New property to store the type of verification request
 
     public function render()
     {
@@ -49,8 +50,63 @@ class OccupantVerification extends Component
     public function selectOccupant($occupantId)
     {
         $this->occupantIdBeingSelected = $occupantId;
-        $this->occupant = Occupant::find($occupantId);
-        $this->contractPrice = $this->occupant->contracts()->first()->total_price ?? null;
+        // Load the occupant and its relevant relationships for detailed checks
+        $this->occupant = Occupant::with(['contracts.pic', 'contracts.invoices', 'verificationLogs'])
+                                  ->find($occupantId);
+
+        if (!$this->occupant) {
+            $this->occupantVerificationType = 'Occupant Not Found';
+            $this->contractPrice = null;
+            return;
+        }
+
+        $contract = $this->occupant->contracts->first(); // Get the first contract associated with this occupant
+
+        if (!$contract) {
+            $this->occupantVerificationType = 'No Contract Found for this Occupant';
+            $this->contractPrice = null;
+            return;
+        }
+
+        $this->contractPrice = $contract->total_price ?? null;
+
+        // Determine if this occupant is the Primary Contact (PIC) of this contract.
+        $isPic = false;
+        if ($contract->pic && $contract->pic->first()) { // Ensure pic relationship exists and is not empty
+            $isPic = ($contract->pic->first()->id === $this->occupant->id);
+        }
+
+        // Check if this contract already has any invoices.
+        $hasAnyInvoice = $contract->invoices->isNotEmpty();
+
+        // Check if this specific occupant was previously approved (has an 'approved' verification log).
+        $wasPreviouslyApproved = $this->occupant->verificationLogs
+                                                ->where('status', 'approved')
+                                                ->isNotEmpty();
+
+        // Logic to set $this->occupantVerificationType based on the scenarios
+        if ($isPic) {
+            if (!$hasAnyInvoice && !$wasPreviouslyApproved) {
+                // Scenario: This is the contract's PIC, and the contract has no prior invoices,
+                // and the PIC themselves were not previously approved.
+                // This indicates a completely new contract submission by the primary tenant.
+                $this->occupantVerificationType = 'Pengajuan Kontrak Baru (PIC)';
+            } else {
+                // Scenario: This is the contract's PIC, but the contract already has invoices
+                // or the PIC was previously approved (meaning they are editing their data).
+                $this->occupantVerificationType = 'Perubahan Data / Re-verifikasi (PIC)';
+            }
+        } else { // Not PIC
+            if (!$wasPreviouslyApproved) {
+                // Scenario: This is a non-PIC occupant, and they were not previously approved.
+                // This indicates a new additional occupant being added to an existing contract.
+                $this->occupantVerificationType = 'Penambahan Penghuni Baru (Non-PIC)';
+            } else {
+                // Scenario: This is a non-PIC occupant, but they were previously approved.
+                // This indicates an existing additional occupant is editing their data.
+                $this->occupantVerificationType = 'Perubahan Data / Re-verifikasi (Non-PIC)';
+            }
+        }
     }
 
     public function showResponseModal($responseType)
@@ -59,7 +115,7 @@ class OccupantVerification extends Component
         $this->modalType = $responseType;
 
         if($responseType === 'accept') {
-            $this->responseMessage = 'Data kamu berhasil diverifikasi. Silakan lanjutkan ke pembayaran sewa.';
+            $this->responseMessage = 'Data kamu berhasil diverifikasi.';
         } elseif ($responseType === 'reject') {
             $this->responseMessage = 'Data kamu tidak memenuhi syarat. Silakan perbaiki data dan ajukan kembali.';
         }
@@ -67,25 +123,59 @@ class OccupantVerification extends Component
 
     public function acceptOccupant()
     {
+        // Get the contract associated with the occupant being verified
+        $contract = $this->occupant->contracts()->first();
+
+        if (!$contract) {
+            LivewireAlert::error()->title('Kontrak tidak ditemukan untuk penghuni ini.')->toast()->position('top-end')->show();
+            return;
+        }
+
+        // Determine if the current occupant being verified is the Primary Contact (PIC) of this contract.
+        $isPic = false;
+        if ($contract->pic) {
+            $isPic = ($contract->pic->first()->id === $this->occupant->id);
+        }
+
+        // Check if the contract already has any invoices.
+        $hasAnyInvoice = $contract->invoices->isNotEmpty();
+
+        // Update occupant status to VERIFIED
         $this->occupant->status = OccupantStatus::VERIFIED;
         $this->occupant->save();
 
-        $this->occupant->contracts()->first()->update([
-            'total_price' => $this->contractPrice,
-        ]);
+        // Update the contract's total_price if provided.
+        if ($this->contractPrice !== null) {
+            $contract->update([
+                'total_price' => $this->contractPrice,
+            ]);
+        }
 
-        $invoice = Invoice::create([
-            'invoice_number' => Invoice::generateInvoiceNumber(),
-            'contract_id' => $this->occupant->contracts()->first()->id,
-            'description' => 'Pembayaran sewa pertama untuk unit ' . $this->occupant->contracts()->first()->unit->room_number,
-            'amount' => $this->occupant->contracts()->first()->total_price,
-            'due_at' => Carbon::now()->addHours(config('tenancy.initial_payment_due_hours')),
-                    'status' => InvoiceStatus::UNPAID,
-        ]);
+        $generatedInvoice = null; // Initialize generated invoice to null
+
+        // Generate invoice ONLY if this occupant is the PIC AND the contract does NOT have any existing invoices
+        if ($isPic && !$hasAnyInvoice) {
+            $generatedInvoice = Invoice::create([
+                'invoice_number' => Invoice::generateInvoiceNumber(),
+                'contract_id' => $contract->id,
+                'description' => 'Pembayaran sewa pertama untuk unit ' . $contract->unit->room_number,
+                'amount' => $contract->total_price, // Use contract's total_price (updated above)
+                'due_at' => Carbon::now()->addHours(config('tenancy.initial_payment_due_hours')),
+                'status' => InvoiceStatus::UNPAID,
+            ]);
+            LivewireAlert::info()->title('Penghuni utama berhasil diverifikasi. Invoice pertama berhasil dibuat.')->toast()->position('top-end')->show();
+        } else {
+            // Inform the user why no invoice was generated
+            if ($isPic && $hasAnyInvoice) {
+                LivewireAlert::info()->title('Penghuni utama berhasil diverifikasi. Invoice pertama telah dibuat sebelumnya.')->toast()->position('top-end')->show();
+            } else if (!$isPic) {
+                LivewireAlert::info()->title('Penghuni tambahan berhasil diverifikasi. Tidak ada invoice baru yang dibuat karena bukan PIC.')->toast()->position('top-end')->show();
+            }
+        }
 
         // Log the verification
         $this->occupant->verificationLogs()->create([
-            'processed_by' => auth('web')->id(),
+            'processed_by' => auth('web')->id(), // Manager's ID
             'status' => 'approved',
             'reason' => $this->responseMessage,
         ]);
@@ -94,18 +184,13 @@ class OccupantVerification extends Component
         $authUrl = URL::temporarySignedRoute(
             'occupant.auth.url',
             now()->addHours(value: 1),
-            ['data' => encrypt($this->occupant->contracts()->first()->id)]
+            ['data' => encrypt($contract->id)]
         );
 
-        LivewireAlert::title('Respon berhasil di kirim')
-        ->success()
-        ->toast()
-        ->position('top-end')
-        ->show();
+        // Send welcome email to the occupant (passing null if no invoice was generated)
+        SendWelcomeEmail::dispatch($this->occupant, $contract, $authUrl, $generatedInvoice);
 
-        // Send welcome email to the occupant
-        SendWelcomeEmail::dispatch($this->occupant, $this->occupant->contracts()->first(), $authUrl, $invoice);
-
+        // Reset properties to clear the modal and selection
         $this->resetProperties();
     }
 
@@ -121,7 +206,7 @@ class OccupantVerification extends Component
             'reason' => $this->responseMessage,
         ]);
 
-        LivewireAlert::title('Respon berhasil di kirim')
+        LivewireAlert::title('Respon berhasil dikirim')
         ->success()
         ->toast()
         ->position('top-end')
@@ -142,5 +227,6 @@ class OccupantVerification extends Component
         $this->modalType = '';
         $this->occupantIdBeingSelected = null;
         $this->search = '';
+        $this->occupantVerificationType = ''; // Reset the type property as well
     }
 }
