@@ -173,7 +173,7 @@ class OccupantVerification extends Component
         // Determine if the current occupant being verified is the Primary Contact (PIC) of this contract.
         $isPic = false;
         if ($contract->pic) {
-            $isPic = ($contract->pic->first()->id === $this->occupant->id);
+            $isPic = (($contract->pic->first()->id ?? null) === ($this->occupant->id ?? null));
         }
 
         // Check if the contract already has any invoices.
