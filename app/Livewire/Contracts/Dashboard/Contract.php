@@ -335,8 +335,7 @@ class Contract extends Component
         // Attach occupant to the current contract if not already attached
         if ($isAddingNewOccupant) { // This condition implies a new occupant record or a new association for an existing record
             if (!$this->contract->occupants->contains($occupant->id ?? null)) {
-                // Attach the occupant to the contract as a non-PIC member
-                $this->contract->occupants()->attach($occupant->id ?? null, ['is_pic' => false]);
+                $this->contract->occupants()->attach($occupant->id ?? null);
             }
         }
         // If it's an update to an existing occupant who is already part of this contract, no re-attachment is needed.

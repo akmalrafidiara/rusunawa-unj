@@ -50,7 +50,7 @@
 
                                 {{-- Nama Penghuni dan Status Verifikasi --}}
                                 <div class="flex justify-between items-center">
-                                    <h4 class="font-bold text-lg text-gray-800 dark:text-gray-200">
+                                    <h4 class="font-medium text-gray-800 dark:text-gray-200">
                                         {{ $occupant->full_name }}
                                     </h4>
                                     <span class="text-xs text-gray-500 dark:text-gray-500">

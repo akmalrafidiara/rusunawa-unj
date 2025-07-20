@@ -23,9 +23,11 @@
         {{-- Baris 3: Upload File --}}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <x-frontend.form.file name="identityCardFile" label="Kartu Identitas"
-                helpText="* Diisi dengan KTM khusus Mahasiswa dan KTP selain Mahasiswa" />
+                helpText="* Diisi dengan KTM khusus Mahasiswa dan KTP selain Mahasiswa"
+                accept="image/jpeg,image/png,image/jpg,application/pdf" />
             @if ($occupantType->requires_verification)
-                <x-frontend.form.file name="communityCardFile" label="Bukti Keanggotaan" :required="false">
+                <x-frontend.form.file name="communityCardFile" label="Bukti Keanggotaan" :required="false"
+                    accept="image/jpeg,image/png,image/jpg,application/pdf">
                     <x-slot:helpText>
                         <ul class="text-xs text-gray-400 mt-2 list-disc list-inside space-y-1">
                             <li>Diisi dengan Surat Tugas, atau Surat Kerjasama Resmi dengan UNJ</li>

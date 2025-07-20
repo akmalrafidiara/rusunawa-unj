@@ -32,7 +32,7 @@
             </div>
             <div>
                 <p class="text-sm text-gray-500">Nama Pic</p>
-                <p class="font-semibold">{{ $contract->pic->first()->full_name }}</p>
+                <p class="font-semibold">{{ $contract->pic->full_name }}</p>
             </div>
             <div>
                 <p class="text-sm text-gray-500">Durasi Penginapan</p>

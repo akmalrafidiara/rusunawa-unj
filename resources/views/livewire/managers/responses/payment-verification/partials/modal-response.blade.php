@@ -32,12 +32,12 @@
             </div>
         @endif
         <div class="flex gap-2 justify-end mt-6">
-            <x-managers.ui.button type="button" variant="danger" wire:click="$set('showModal', false)">
+            <x-managers.ui.button type="button" variant="secondary" wire:click="$set('showModal', false)">
                 Tutup
             </x-managers.ui.button>
-            <x-managers.ui.button type="button" variant="primary"
+            <x-managers.ui.button type="button" variant="{{ $modalType === 'accept' ? 'primary' : 'danger' }}"
                 wire:click="{{ $modalType === 'accept' ? 'acceptPayment' : 'rejectPayment' }}">
-                Simpan
+                {{ $modalType === 'accept' ? 'Setujui' : 'Tolak' }}
             </x-managers.ui.button>
         </div>
     </div>
