@@ -1,7 +1,7 @@
 <!-- Key Statistics Cards -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
     <!-- Units Overview -->
-    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg flex flex-col justify-between">
         <div class="p-5">
             <div class="flex items-center gap-4">
                 <div class="flex-shrink-0">
@@ -31,7 +31,7 @@
     </div>
 
     <!-- Occupancy Rate -->
-    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg flex flex-col justify-between">
         <div class="p-5">
             <div class="flex items-center gap-4">
                 <div class="flex-shrink-0">
@@ -51,7 +51,7 @@
                 </div>
             </div>
         </div>
-        <div class="bg-gray-50 dark:bg-gray-700 px-5 py-3">
+        <div class="bg-gray-50 dark:bg-gray-700 px-5 py-4">
             <div class="w-full bg-gray-200 rounded-full h-2">
                 <div class="bg-green-600 h-2 rounded-full" style="width: {{ $occupancyRate }}%"></div>
             </div>
@@ -59,7 +59,7 @@
     </div>
 
     <!-- Active Contracts -->
-    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg flex flex-col justify-between">
         <div class="p-5">
             <div class="flex items-center gap-4">
                 <div class="flex-shrink-0">
@@ -88,7 +88,7 @@
     </div>
 
     <!-- Monthly Revenue -->
-    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg flex flex-col justify-between">
         <div class="p-5">
             <div class="flex items-center gap-4">
                 <div class="flex-shrink-0">
