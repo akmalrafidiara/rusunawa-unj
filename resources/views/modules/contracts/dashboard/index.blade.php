@@ -2,7 +2,7 @@
 
     @php
         // Mengambil data penghuni yang sedang login
-        $pic = Auth::guard('contract')->user()->pic()->first();
+        $pic = Auth::guard('contract')->user()->pic;
         // Nama yang ditampilkan adalah nama penghuni yang login
         $picName = $pic->full_name ?? 'Penghuni';
     @endphp
@@ -48,7 +48,7 @@
                         x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
                         class="absolute right-0 mt-2 w-48 bg-white dark:bg-zinc-800 rounded-md shadow-lg py-1 z-20 border dark:border-zinc-700">
                         <div class="px-4 py-2">
-                             <livewire:contracts.dashboard.notifications />
+                            <livewire:contracts.dashboard.notifications />
                         </div>
                         <form method="POST" action="{{ route('contract.auth.logout') }}" class="w-full">
                             @csrf
@@ -81,7 +81,7 @@
                     {{-- Notif & Logout di desktop --}}
                     <div class="lg:col-span-2 flex gap-4 items-stretch">
                         <div class="flex-1">
-                             <livewire:contracts.dashboard.notifications />
+                            <livewire:contracts.dashboard.notifications />
                         </div>
                         <form method="POST" action="{{ route('contract.auth.logout') }}" class="flex-1">
                             @csrf
