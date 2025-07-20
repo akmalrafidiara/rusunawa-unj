@@ -2,8 +2,11 @@
 
 namespace App\Livewire\Managers;
 
+use App\Enums\ContractStatus;
 use App\Enums\InvoiceStatus;
 use App\Enums\PaymentStatus;
+use App\Enums\VerificationStatus;
+use App\Jobs\SendPaymentVerificationEmail;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\User; // Assuming 'User' model for 'verified_by' relationship
@@ -101,14 +104,14 @@ class PaymentVerification extends Component
 
         // Update contract status to active if it exists
         if ($this->payment->invoice && $this->payment->invoice->contract) {
-            $this->payment->invoice->contract->status = \App\Enums\ContractStatus::ACTIVE;
+            $this->payment->invoice->contract->status = ContractStatus::ACTIVE;
             $this->payment->invoice->contract->save();
         }
 
         // Log the verification
         $this->payment->verificationLogs()->create([
             'processed_by' => auth('web')->id(),
-            'status' => PaymentStatus::APPROVED,
+            'status' => VerificationStatus::APPROVED,
             'reason' => $this->responseMessage,
         ]);
 
@@ -118,8 +121,7 @@ class PaymentVerification extends Component
             ->position('top-end')
             ->show();
 
-        // Optionally send a notification/email to the occupant
-        // SendPaymentAcceptedEmail::dispatch($this->payment);
+        SendPaymentVerificationEmail::dispatch($this->payment, $this->payment->verificationLogs->last());
 
         $this->resetProperties();
         $this->dispatch('refreshPaymentVerification');
@@ -154,17 +156,17 @@ class PaymentVerification extends Component
         // Log the verification
         $this->payment->verificationLogs()->create([
             'processed_by' => auth('web')->id(),
-            'status' => PaymentStatus::REJECTED,
+            'status' => VerificationStatus::REJECTED,
             'reason' => $this->responseMessage,
         ]);
+        
         LivewireAlert::title('Verifikasi pembayaran berhasil ditolak.')
             ->success()
             ->toast()
             ->position('top-end')
             ->show();
 
-        // Optionally send a notification/email to the occupant explaining rejection
-        // SendPaymentRejectedEmail::dispatch($this->payment, $this->responseMessage);
+        SendPaymentVerificationEmail::dispatch($this->payment, $this->payment->verificationLogs->last());
 
         $this->resetProperties();
         $this->dispatch('refreshPaymentVerification');

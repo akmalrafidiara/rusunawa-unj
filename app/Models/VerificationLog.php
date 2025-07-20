@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\VerificationStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -22,6 +23,7 @@ class VerificationLog extends Model
 
     protected $casts = [
         'processed_at' => 'datetime',
+        'status' => VerificationStatus::class,
     ];
 
     public function loggable()

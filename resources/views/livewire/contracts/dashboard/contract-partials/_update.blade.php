@@ -25,10 +25,10 @@
     $doesntHasInvoice = !isset($latestInvoice) && !$isAnyOccupantPending && !$isAnyOccupantRejected;
 @endphp
 
-<div wire:poll.10s class="bg-white dark:bg-zinc-800 rounded-lg shadow-md border dark:border-zinc-700 p-6">
+<div class="bg-white dark:bg-zinc-800 rounded-lg shadow-md border dark:border-zinc-700 p-6">
     <h3 class="text-xl font-bold mb-6 text-gray-900 dark:text-gray-100">Status</h3>
 
-    <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-4" wire:poll.10s>
         @if ($doesntHasInvoice)
             @include('livewire.contracts.dashboard.contract-partials.status._invoice-creating')
         @endif

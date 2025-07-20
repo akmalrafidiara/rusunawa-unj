@@ -5,6 +5,8 @@ namespace App\Livewire\Managers;
 use App\Enums\ContractStatus; // Tambahkan ini jika belum ada
 use App\Enums\InvoiceStatus;
 use App\Enums\OccupantStatus;
+use App\Enums\VerificationStatus;
+use App\Jobs\SendOccupantVerificationEmail;
 use App\Jobs\SendRejectionOccupantEmail;
 use App\Jobs\SendWelcomeEmail;
 use App\Models\Invoice;
@@ -196,6 +198,14 @@ class OccupantVerification extends Component
                 'status' => InvoiceStatus::UNPAID,
             ]);
 
+            $authUrl = URL::temporarySignedRoute(
+                'contract.auth.url',
+                now()->addHours(value: 1),
+                ['data' => encrypt($this->contract->id)]
+            );
+
+            SendWelcomeEmail::dispatch($this->occupant, $this->contract, $authUrl, $generatedInvoice);
+
             LivewireAlert::info()
                 ->title('PIC berhasil diverifikasi. Invoice pertama berhasil dibuat.')
                 ->toast()
@@ -218,21 +228,15 @@ class OccupantVerification extends Component
         }
 
         $this->occupant->verificationLogs()->create([
-            'processed_by' => auth('web')->id(), // Manager's ID
-            'status' => 'approved',
+            'processed_by' => auth('web')->id(),
+            'status' => VerificationStatus::APPROVED,
             'reason' => $this->responseMessage,
         ]);
 
-        $authUrl = URL::temporarySignedRoute(
-            'contract.auth.url',
-            now()->addHours(value: 1),
-            ['data' => encrypt($this->contract->id)]
-        );
-
-        SendWelcomeEmail::dispatch($this->occupant, $this->contract, $authUrl, $generatedInvoice);
+        SendOccupantVerificationEmail::dispatch($this->occupant, $this->contract, $this->occupant->verificationLogs->last());
 
         // Reset properties to clear the modal and selection
-        $this->resetProperties();
+        $this->resetProperties();   
     }
 
     public function rejectOccupant()
@@ -243,7 +247,7 @@ class OccupantVerification extends Component
         // Log the verification
         $this->occupant->verificationLogs()->create([
             'processed_by' => auth('web')->id(),
-            'status' => 'rejected',
+            'status' => VerificationStatus::REJECTED,
             'reason' => $this->responseMessage,
         ]);
 
@@ -254,7 +258,7 @@ class OccupantVerification extends Component
         ->show();
 
         // Send rejection email to the occupant
-        SendRejectionOccupantEmail::dispatch($this->occupant, $this->responseMessage);
+        SendOccupantVerificationEmail::dispatch($this->occupant, $this->contract, $this->occupant->verificationLogs->last());
 
         $this->resetProperties();
     }
