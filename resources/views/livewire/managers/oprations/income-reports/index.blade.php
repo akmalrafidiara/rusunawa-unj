@@ -2,7 +2,7 @@
     {{-- 1. Toolbar Filter --}}
     @include('livewire.managers.oprations.income-reports.partials._filters')
 
-    <div class="flex flex-col lg:flex-row gap-4">
+    <div class="flex flex-col lg:flex-row gap-6">
         {{-- 2. Ringkasan Pendapatan --}}
         <div class="w-full lg:w-1/3">
             @include('livewire.managers.oprations.income-reports.partials._summary')

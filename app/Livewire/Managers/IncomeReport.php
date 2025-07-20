@@ -111,7 +111,10 @@ class IncomeReport extends Component
     public function prepareChartData(): void
     {
         $invoices = $this->getInvoicesQuery()->get();
-        $data = [];
+        $data = collect([
+            'labels' => [],
+            'datasets' => [['data' => []]],
+        ]);
 
         if ($invoices->isNotEmpty()) {
             $data = $invoices->groupBy(fn($inv) => Carbon::parse($inv->paid_at)->format('d M'))
