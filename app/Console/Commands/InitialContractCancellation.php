@@ -15,7 +15,7 @@ class InitialContractCancellation extends Command
      *
      * @var string
      */
-    protected $signature = 'contracts:cancel-unpaid-initial';
+    protected $signature = 'contracts:cancel-initial-invoice-unpaid';
 
     /**
      * The console command description.
@@ -32,7 +32,7 @@ class InitialContractCancellation extends Command
        $this->info('Memeriksa invoice pembayaran pertama yang kedaluwarsa...');
 
         $expiredFirstInvoices = Invoice::where('status', InvoiceStatus::UNPAID)
-            ->where('due_at', '<=', now()) 
+            ->where('due_at', '<=', now())
             ->whereHas('contract', function ($query) {
                 $query->where('status', ContractStatus::PENDING_PAYMENT);
             })

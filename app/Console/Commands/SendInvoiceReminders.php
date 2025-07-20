@@ -9,6 +9,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
+use App\Enums\ContractStatus; // Import ContractStatus
 
 class SendInvoiceReminders extends Command
 {
@@ -35,14 +36,13 @@ class SendInvoiceReminders extends Command
 
         $now = Carbon::now();
 
-        // --- Pengingat untuk invoice yang akan jatuh tempo (misal: 3 hari lagi) ---
+        // --- Pengingat untuk invoice yang akan jatuh tempo (1 hari sebelum) ---
         $dueSoonInvoices = Invoice::where('status', InvoiceStatus::UNPAID)
-            ->where('due_at', '>', $now)
-            ->where('due_at', '<=', $now->copy()->addDays(3)->endOfDay()) // Jatuh tempo dalam 3 hari
+            ->whereDate('due_at', $now->copy()->addDay()->toDateString()) // Exactly 1 day before due date
             ->get();
 
         foreach ($dueSoonInvoices as $invoice) {
-            $occupantEmail = $invoice->contract->occupants->first()->email ?? null;
+            $occupantEmail = $invoice->contract->pic->first()->email ?? null;
             if ($occupantEmail) {
                 try {
                     Mail::to($occupantEmail)->send(new InvoiceReminder($invoice, 'due_soon'));
@@ -55,23 +55,39 @@ class SendInvoiceReminders extends Command
             }
         }
 
-        // --- Pengingat untuk invoice yang sudah jatuh tempo (misal: 1 hari setelah jatuh tempo) ---
-        $overdueInvoices = Invoice::where('status', InvoiceStatus::UNPAID)
+        // --- Perbarui status invoice menjadi OVERDUE & kontrak menjadi PENDING_PAYMENT ---
+        // Ini dijalankan setelah tanggal jatuh tempo, dan hanya sekali untuk perubahan status
+        $invoicesToOverdue = Invoice::where('status', InvoiceStatus::UNPAID)
             ->where('due_at', '<', $now->startOfDay()) // Sudah lewat tanggal jatuh tempo
-            ->where('due_at', '>=', $now->copy()->subDay()->startOfDay()) // Baru lewat 1 hari
             ->get();
 
-        foreach ($overdueInvoices as $invoice) {
-            // Opsional: Ubah status invoice menjadi OVERDUE jika belum
-            if ($invoice->status !== InvoiceStatus::OVERDUE) {
+        foreach ($invoicesToOverdue as $invoice) {
+            if ($invoice->status !== InvoiceStatus::OVERDUE->value) {
                 $invoice->update(['status' => InvoiceStatus::OVERDUE]);
+                $invoice->contract->update(['status' => ContractStatus::PENDING_PAYMENT]);
+                $this->info("Invoice #{$invoice->invoice_number} diubah menjadi OVERDUE dan Kontrak #{$invoice->contract->contract_code} menjadi PENDING_PAYMENT.");
             }
+        }
 
-            $occupantEmail = $invoice->contract->occupants->first()->email ?? null;
+        // --- Pengingat harian untuk invoice yang sudah jatuh tempo (hingga H+7) ---
+        $overdueRemindersSent = 0;
+        $overdueInvoicesForReminders = Invoice::whereIn('status', [InvoiceStatus::OVERDUE, InvoiceStatus::UNPAID])
+            ->where('due_at', '<=', $now->startOfDay()) // Past due date
+            ->where('due_at', '>', $now->copy()->subDays(7)->startOfDay()) // Not more than 7 days overdue
+            ->get();
+
+        foreach ($overdueInvoicesForReminders as $invoice) {
+            $occupantEmail = $invoice->contract->pic->first()->email ?? null;
             if ($occupantEmail) {
                 try {
-                    Mail::to($occupantEmail)->send(new InvoiceReminder($invoice, 'overdue'));
-                    $this->info("Pengingat 'sudah jatuh tempo' untuk Invoice #{$invoice->invoice_number} dikirim ke {$occupantEmail}.");
+                    // Send reminder only if it hasn't been sent today for this invoice and type
+                    // Or if it's the first time it becomes overdue and we need to send the first reminder
+                    $daysOverdue = $now->diffInDays($invoice->due_at, false);
+                    if ($daysOverdue >= 0 && $daysOverdue < 7) { // Between 0 (due_at passed) and 6 days overdue
+                        Mail::to($occupantEmail)->send(new InvoiceReminder($invoice, 'overdue'));
+                        $this->info("Pengingat 'sudah jatuh tempo' untuk Invoice #{$invoice->invoice_number} (Hari ke {$daysOverdue}) dikirim ke {$occupantEmail}.");
+                        $overdueRemindersSent++;
+                    }
                 } catch (\Exception $e) {
                     Log::error("Gagal mengirim pengingat 'sudah jatuh tempo' untuk Invoice #{$invoice->invoice_number}: " . $e->getMessage());
                 }

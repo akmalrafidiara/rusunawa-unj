@@ -16,7 +16,7 @@ class CheckMonthlyRenewals extends Command
      *
      * @var string
      */
-    protected $signature = 'renewals:check-monthly';
+    protected $signature = 'contract:check-monthly-renewals';
 
     /**
      * The console command description.
