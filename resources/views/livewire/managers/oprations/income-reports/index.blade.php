@@ -8,12 +8,13 @@
 
         <!-- Export Actions -->
         <div class="flex items-center gap-3">
-            <flux:button wire:click="exportExcel" variant="outline" size="sm" icon="document-arrow-down">
+            {{-- <flux:button wire:click="exportExcel" variant="outline" size="sm" icon="document-arrow-down">
                 Export Excel
             </flux:button>
             <flux:button wire:click="exportPdf" variant="outline" size="sm" icon="document-arrow-down">
                 Export PDF
-            </flux:button>
+            </flux:button> --}}
+            <x-managers.ui.button-export />
         </div>
     </div>
 

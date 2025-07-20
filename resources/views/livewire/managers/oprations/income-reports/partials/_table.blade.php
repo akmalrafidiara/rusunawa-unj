@@ -14,10 +14,6 @@
                     <x-managers.ui.dropdown-picker wire:model.live="perPage" :options="[10, 15, 25, 50]" label="15"
                         class="w-20" />
                 </div>
-                <x-managers.ui.button variant="secondary" size="sm">
-                    <flux:icon.arrow-down-tray class="w-4 h-4 mr-1" />
-                    Export
-                </x-managers.ui.button>
             </div>
         </div>
     </div>
