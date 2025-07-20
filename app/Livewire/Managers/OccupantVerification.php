@@ -95,7 +95,7 @@ class OccupantVerification extends Component
     public function updatedTab()
     {
         $this->resetPage(); // Reset pagination saat tab berubah
-        $this->reset(['occupant', 'occupantIdBeingSelected', 'contractIdBeingSelected', 'responseMessage', 'contractPrice', 'occupantVerificationType']); // Hapus detail panel saat tab berubah
+        $this->reset(['occupant', 'occupantIdBeingSelected', 'responseMessage', 'contractPrice', 'occupantVerificationType']); // Hapus detail panel saat tab berubah
     }
 
     public function selectOccupant($occupantId, $contractId)
