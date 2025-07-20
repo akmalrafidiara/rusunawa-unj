@@ -8,7 +8,7 @@
             @php
                 $currentUnitLabel = collect($allAcUnitOptions)->firstWhere('value', $scheduleUnitId)['label'] ?? 'N/A';
             @endphp
-            <x-managers.form.input-maintenance type="text" value="{{ $currentUnitLabel }}" id="scheduleUnitId_display" disabled="true" />
+            <x-managers.form.input-disable-data type="text" value="{{ $currentUnitLabel }}" id="scheduleUnitId_display" disabled="true" />
             <input type="hidden" wire:model="scheduleUnitId">
         @endif
 

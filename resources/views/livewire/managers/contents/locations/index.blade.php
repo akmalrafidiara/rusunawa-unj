@@ -58,7 +58,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mb-2">
                     @foreach ($nearbyLocations as $index => $location)
                     <div class="flex items-center gap-2" wire:key="nearby-location-item-wrapper-{{ $index }}">
-                        <x-managers.form.input
+                        <x-managers.form.input-disable-data
                             wire:key="nearby-location-{{ $index }}"
                             class="flex-grow"
                             value="{{ $location }}"

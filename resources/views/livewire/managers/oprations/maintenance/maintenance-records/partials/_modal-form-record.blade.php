@@ -5,11 +5,11 @@
         @php
             $selectedUnitLabel = collect($allAcUnitOptions)->firstWhere('value', $recordUnitId)['label'] ?? 'N/A';
         @endphp
-        <x-managers.form.input-maintenance type="text" value="{{ $selectedUnitLabel }}" id="recordUnitId_display" disabled="true" />
+        <x-managers.form.input-disable-data type="text" value="{{ $selectedUnitLabel }}" id="recordUnitId_display" disabled="true" />
         <input type="hidden" wire:model="recordUnitId">
 
         <x-managers.form.label for="recordType_display">Tipe Pemeliharaan</x-managers.form.label>
-        <x-managers.form.input-maintenance value="{{ \App\Enums\MaintenanceRecordType::from($recordType)->label() }}" type="text" id="recordType_display" disabled="true" />
+        <x-managers.form.input-disable-data value="{{ \App\Enums\MaintenanceRecordType::from($recordType)->label() }}" type="text" id="recordType_display" disabled="true" />
         <input type="hidden" wire:model="recordType">
 
         @if ($recordType === \App\Enums\MaintenanceRecordType::ROUTINE->value)
@@ -17,14 +17,14 @@
             @php
                 $relatedScheduleLabel = \App\Models\MaintenanceSchedule::find($recordMaintenanceScheduleId)?->next_due_date?->format('d M Y') ?? 'N/A';
             @endphp
-            <x-managers.form.input-maintenance type="text" value="Jadwal: {{ $relatedScheduleLabel }}" id="recordMaintenanceScheduleId_display" disabled="true" />
+            <x-managers.form.input-disable-data type="text" value="Jadwal: {{ $relatedScheduleLabel }}" id="recordMaintenanceScheduleId_display" disabled="true" />
             <input type="hidden" wire:model="recordMaintenanceScheduleId">
         @endif
 
         <input type="hidden" wire:model="recordScheduledDate">
 
         <x-managers.form.label for="recordCompletionDate">Tanggal Penyelesaian Dilakukan <span class="text-red-500">*</span></x-managers.form.label>
-        <x-managers.form.input-maintenance wire:model.live="recordCompletionDate" type="date" id="recordCompletionDate" />
+        <x-managers.form.input-disable-data wire:model.live="recordCompletionDate" type="date" id="recordCompletionDate" />
 
         <x-managers.form.label for="recordNotes">Catatan Pemeliharaan</x-managers.form.label>
         <x-managers.form.textarea wire:model.live="recordNotes" placeholder="Detail pekerjaan pemeliharaan" rows="3" id="recordNotes" />
