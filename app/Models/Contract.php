@@ -7,15 +7,17 @@ use App\Enums\PricingBasis;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Auth\Authenticatable as AuthenticatableTrait;
 
-class Contract extends Model
+class Contract extends Model implements Authenticatable
 {
-    use HasFactory;
+    use HasFactory, AuthenticatableTrait;
 
     protected $fillable = [
         'contract_code',
+        'contract_pic',
         'unit_id',
-        'occupant_id',
         'occupant_type_id',
         'start_date',
         'end_date',
@@ -45,9 +47,7 @@ class Contract extends Model
 
     public function pic()
     {
-        return $this->belongsToMany(Occupant::class, 'contract_occupant')
-                ->wherePivot('is_pic', true)
-                ->withTimestamps();
+        return $this->belongsTo(Occupant::class, 'contract_pic');
     }
 
     public function occupantType()

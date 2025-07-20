@@ -6,12 +6,14 @@
                 {{-- Nama Lengkap --}}
                 <div>
                     <x-managers.form.label>Nama Lengkap</x-managers.form.label>
-                    <x-managers.form.input wire:model="fullName" placeholder="Masukkan nama lengkap" required />
+                    <x-managers.form.input wire:model.live="fullName" name="name" placeholder="Masukkan nama lengkap"
+                        required />
                 </div>
                 {{-- Email --}}
                 <div>
                     <x-managers.form.label>Alamat Email</x-managers.form.label>
-                    <x-managers.form.input wire:model="email" type="email" placeholder="contoh@email.com" required />
+                    <x-managers.form.input wire:model.live="email" type="email" name="email"
+                        placeholder="contoh@email.com" required />
                 </div>
             </div>
 
@@ -19,12 +21,14 @@
                 {{-- Nomor WhatsApp --}}
                 <div>
                     <x-managers.form.label>Nomor WhatsApp</x-managers.form.label>
-                    <x-managers.form.input wire:model="whatsappNumber" placeholder="WhatsApp Number" type="text" />
+                    <x-managers.form.input wire:model.live="whatsappNumber" name="whatsapp"
+                        placeholder="WhatsApp Number" type="text" />
                 </div>
                 {{-- Jenis Kelamin --}}
                 <div>
                     <x-managers.form.label>Jenis Kelamin</x-managers.form.label>
-                    <x-managers.form.select wire:model="gender" :options="$genderOptions" label="Pilih Jenis Kelamin" />
+                    <x-managers.form.select wire:model.live="gender" :options="$genderOptions" label="Pilih Jenis Kelamin"
+                        name="gender" />
                 </div>
             </div>
 

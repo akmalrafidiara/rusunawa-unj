@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Occupants\Auth;
+namespace App\Livewire\Contracts\Auth;
 
 use App\Enums\ContractStatus;
 use App\Models\Contract;
@@ -38,7 +38,7 @@ class Login extends Component
             $this->ensureIsNotRateLimited();
 
             $contract = Contract::where('contract_code', strtoupper($this->contractCode))
-                ->whereNot('status', ContractStatus::EXPIRED)
+                ->whereNotIn('status', [ContractStatus::EXPIRED, ContractStatus::CANCELLED])
                 ->first();
 
             $matchingOccupant = null;
@@ -59,13 +59,13 @@ class Login extends Component
                 return;
             }
 
-            Auth::guard('occupant')->login($matchingOccupant, $this->remember);
+            Auth::guard('contract')->login($contract, $this->remember);
 
             RateLimiter::clear($this->throttleKey());
             Session::regenerate();
 
             // Ubah baris ini untuk mengarahkan ke URL yang dituju
-            $this->redirectIntended(default: route('occupant.dashboard', absolute: false), navigate: true);
+            $this->redirectIntended(default: route('contract.dashboard', absolute: false), navigate: true);
 
         } catch (ValidationException $e) {
             LivewireAlert::error()
@@ -111,6 +111,6 @@ class Login extends Component
 
     public function render()
     {
-        return view('livewire.occupants.auth.index');
+        return view('livewire.contracts.auth.index');
     }
 }

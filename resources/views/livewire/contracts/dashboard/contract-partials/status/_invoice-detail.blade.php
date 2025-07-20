@@ -1,4 +1,4 @@
-<div class="space-y-4 text-gray-700 dark:text-gray-300">
+<div class="space-y-4 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-800 rounded-lg p-6">
 
     <div class="flex items-center justify-between border-b border-gray-200 dark:border-zinc-700 pb-3">
         <div class="flex items-center gap-2">
@@ -41,20 +41,17 @@
         </x-managers.ui.badge>
     </div>
 
-    <div class="flex justify-between border-t border-gray-200 dark:border-zinc-600 pt-4 mt-4">
-        <div>
-            <p class="text-sm text-gray-600 dark:text-gray-400">Subtotal</p>
-            <p class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
-                Rp{{ number_format($latestInvoice->amount, 0, ',', '.') }}
-            </p>
-        </div>
-
-        @if ($latestInvoice->status == \App\Enums\InvoiceStatus::UNPAID)
-            <x-managers.ui.button
-                class="bg-emerald-600 hover:bg-emerald-700 text-sm text-white font-bold rounded-lg transition-colors shadow-md"
-                wire:click="showPaymentForm">
-                Konfirmasi Pembayaran
-            </x-managers.ui.button>
-        @endif
+    <div class="border-t border-gray-200 dark:border-zinc-600 pt-4 mt-4">
+        <p class="text-sm text-gray-600 dark:text-gray-400">Subtotal</p>
+        <p class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+            Rp{{ number_format($latestInvoice->amount, 0, ',', '.') }}
+        </p>
     </div>
+    @if ($latestInvoice->status == \App\Enums\InvoiceStatus::UNPAID)
+        <x-managers.ui.button
+            class="bg-emerald-600 hover:bg-emerald-700 w-full text-sm text-white font-bold rounded-lg transition-colors shadow-md"
+            wire:click="showPaymentForm">
+            Konfirmasi Pembayaran
+        </x-managers.ui.button>
+    @endif
 </div>

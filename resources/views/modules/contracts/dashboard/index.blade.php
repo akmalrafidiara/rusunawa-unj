@@ -2,9 +2,9 @@
 
     @php
         // Mengambil data penghuni yang sedang login
-        $occupantUser = Auth::guard('occupant')->user();
+        $pic = Auth::guard('contract')->user()->pic()->first();
         // Nama yang ditampilkan adalah nama penghuni yang login
-        $loggedInName = $occupantUser->full_name ?? 'Penghuni'; // Fallback jika nama tidak ada
+        $picName = $pic->full_name ?? 'Penghuni';
     @endphp
 
     {{-- HEADER DENGAN BACKGROUND --}}
@@ -31,7 +31,7 @@
                 {{-- Card: Hai, (nama) (hanya untuk mobile di sini) --}}
                 <div
                     class="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-4 border dark:border-zinc-700 col-span-2 flex flex-col justify-center h-full">
-                    <p class="font-semibold text-lg text-gray-900 dark:text-white">Hai, {{ $loggedInName }}</p>
+                    <p class="font-semibold text-lg text-gray-900 dark:text-white">PIC, {{ $picName }}</p>
                 </div>
 
                 {{-- Mobile : Icon-only dropdown for Notif & Logout --}}
@@ -59,7 +59,7 @@
                                 </span>
                             </span>
                         </a>
-                        <form method="POST" action="{{ route('occupant.auth.logout') }}" class="w-full">
+                        <form method="POST" action="{{ route('contract.auth.logout') }}" class="w-full">
                             @csrf
                             <button type="submit"
                                 class="flex items-center w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-zinc-700">
@@ -73,7 +73,7 @@
             </div>
 
             {{-- Kolom Kiri: Detail Pembayaran & Data Penghuni --}}
-            <livewire:occupants.dashboard.contract />
+            <livewire:contracts.dashboard.contract />
 
             {{-- Kolom Kanan: Desktop Top Cards & Livewire Components --}}
             <div class="lg:col-span-2 flex flex-col gap-6">
@@ -83,7 +83,8 @@
                     {{-- Card: Hai, (nama) --}}
                     <div
                         class="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-4 border dark:border-zinc-700 lg:col-span-8 flex flex-col justify-center h-full">
-                        <p class="font-semibold text-lg text-gray-900 dark:text-white">Hai, {{ $loggedInName }}</p>
+                        <p class="font-semibold text-lg text-gray-900 dark:text-white">PIC, {{ $picName }}
+                        </p>
                     </div>
 
                     {{-- Notif & Logout di desktop --}}
@@ -98,7 +99,7 @@
                                 <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
                             </span>
                         </a>
-                        <form method="POST" action="{{ route('occupant.auth.logout') }}" class="flex-1">
+                        <form method="POST" action="{{ route('contract.auth.logout') }}" class="flex-1">
                             @csrf
                             <button type="submit"
                                 class="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-3 border dark:border-zinc-700 flex flex-col items-center justify-center w-full h-full text-red-500 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 transition-colors">
@@ -110,9 +111,9 @@
                 </div>
 
                 {{-- Livewire components --}}
-                <livewire:occupants.dashboard.announcements />
-                <livewire:occupants.dashboard.complaints />
-                <livewire:occupants.dashboard.emergency-contacts />
+                <livewire:contracts.dashboard.announcements />
+                <livewire:contracts.dashboard.complaints />
+                <livewire:contracts.dashboard.emergency-contacts />
             </div>
         </div>
     </div>

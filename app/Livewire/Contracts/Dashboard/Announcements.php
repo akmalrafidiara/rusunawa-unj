@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Occupants\Dashboard;
+namespace App\Livewire\Contracts\Dashboard;
 
 use App\Models\Announcement;
 use Livewire\Component;
@@ -19,6 +19,6 @@ class Announcements extends Component
 
     public function render()
     {
-        return view('livewire.occupants.dashboard.announcements');
+        return view('livewire.contracts.dashboard.announcements');
     }
 }

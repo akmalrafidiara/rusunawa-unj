@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Occupants\Dashboard;
+namespace App\Livewire\Contracts\Dashboard;
 
 use App\Models\Contract;
 use Illuminate\Support\Facades\Auth;
@@ -12,8 +12,10 @@ class Complaints extends Component
 
     public function mount()
     {
-        $occupant = Auth::guard('occupant')->user();
-        $contract = $occupant?->contracts()->first();
+        /**
+         * @var Contract $contract
+         */
+        $contract = Auth::guard('contract')->user();
         if ($contract) {
             $this->complaints = $contract->reports()->latest()->take(3)->get();
         } else {
@@ -23,6 +25,6 @@ class Complaints extends Component
 
     public function render()
     {
-        return view('livewire.occupants.dashboard.complaints');
+        return view('livewire.contracts.dashboard.complaints');
     }
 }

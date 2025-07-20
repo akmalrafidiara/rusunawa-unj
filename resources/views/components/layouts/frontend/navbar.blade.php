@@ -85,16 +85,16 @@ $navMenu = [
                 </div>
             </nav>
 
-            @if (Route::has('occupant.auth'))
+            @if (Route::has('contract.auth'))
                 <div class="hidden md:block">
-                    @auth('occupant')
-                        {{-- Authenticated Occupant Button --}}
-                        <a href="{{ route('occupant.dashboard') }}" wire:navigate
+                    @auth('contract')
+                        {{-- Authenticated Contract Button --}}
+                        <a href="{{ route('contract.dashboard') }}" wire:navigate
                             class="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2 rounded-lg transition">
                             Dashboard
                         </a>
                     @else
-                        <a href="{{ route('occupant.auth') }}" wire:navigate
+                        <a href="{{ route('contract.auth') }}" wire:navigate
                             class="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2 rounded-lg transition">
                             Masuk
                         </a>
@@ -195,7 +195,7 @@ $navMenu = [
                             Dashboard
                         </a>
                     @else
-                        <a href="{{ route('occupant.auth') }}"  wire:navigate @click="open = false"
+                        <a href="{{ route('contract.auth') }}" wire:navigate @click="open = false"
                             class="block w-full text-center bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2 rounded-lg transition text-base">
                             Masuk
                         </a>

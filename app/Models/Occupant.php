@@ -6,16 +6,12 @@ use App\Enums\GenderAllowed;
 use App\Enums\OccupantStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Auth\Authenticatable as AuthenticatableTrait;
 
-class Occupant extends Model implements Authenticatable
+class Occupant extends Model
 {
-    use HasFactory, AuthenticatableTrait;
+    use HasFactory;
 
     protected $fillable = [
-        'contract_id',
-        'is_pic',
         'full_name',
         'email',
         'whatsapp_number',
@@ -39,28 +35,21 @@ class Occupant extends Model implements Authenticatable
         'status' => OccupantStatus::class,
     ];
 
-    public function unit()
-    {
-        return $this->belongsTo(Unit::class);
-    }
-
     public function contracts()
     {
         return $this->belongsToMany(Contract::class, 'contract_occupant');
     }
 
-    public function pic()
+    public function picContracts()
     {
-        return $this->belongsToMany(Contract::class, 'contract_occupant')
-            ->wherePivot('is_pic', true)
-            ->withTimestamps();
+        return $this->hasMany(Contract::class, 'contract_pic');
     }
 
     public function reports()
     {
         return $this->hasMany(Report::class, 'reporter_id');
     }
-    
+
     /**
      * Mendapatkan semua log verifikasi untuk penghuni ini.
      */

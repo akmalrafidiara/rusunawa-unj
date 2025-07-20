@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Occupants\Dashboard;
+namespace App\Livewire\Contracts\Dashboard;
 
 use App\Models\Contact;
 use Livewire\Component;
@@ -16,6 +16,6 @@ class EmergencyContacts extends Component
 
     public function render()
     {
-        return view('livewire.occupants.dashboard.emergency-contacts');
+        return view('livewire.contracts.dashboard.emergency-contacts');
     }
 }
