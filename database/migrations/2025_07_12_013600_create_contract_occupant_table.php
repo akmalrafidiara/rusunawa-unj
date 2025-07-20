@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('contract_id')->constrained('contracts')->onDelete('cascade');
             $table->foreignId('occupant_id')->constrained('occupants')->onDelete('cascade');
-            $table->boolean('is_pic')->default(false);
             $table->timestamps();
         });
     }

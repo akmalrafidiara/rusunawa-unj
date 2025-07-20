@@ -11,8 +11,8 @@ require __DIR__.'/frontend.php';
 // === SCOPE MANAGERS ROUTES ===
 require __DIR__.'/managers.php';
 
-// === SCOPE OCCUPANT ROUTES ===
-require __DIR__.'/occupant.php';
+// === SCOPE CONTRACT ROUTES ===
+require __DIR__.'/contract.php';
 
 // === SCOPE AUTH ROUTES ===
 require __DIR__.'/auth.php';

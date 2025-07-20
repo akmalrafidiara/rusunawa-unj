@@ -230,7 +230,7 @@ class TenancyForm extends Component
     {
         $this->validateOnly('unitId');
         $this->validateOnly('genderSelected');
-        
+
         $this->unit = Unit::find($this->unitId);
         $this->unitCluster = UnitCluster::find($this->unitClusterSelectedId);
 
@@ -300,6 +300,7 @@ class TenancyForm extends Component
                     $this->occupantType,
                     $this->pricingBasis->value
                 ),
+                'contract_pic' => $occupant->id,
                 'unit_id' => $this->unit->id,
                 'occupant_type_id' => $this->occupantType->id,
                 'start_date' => $this->startDate,
@@ -309,8 +310,7 @@ class TenancyForm extends Component
                 'status' => ContractStatus::PENDING_PAYMENT,
             ]);
 
-            // Attach the occupant to the contract
-            $contract->occupants()->attach($occupant->id, ['is_pic' => true]);
+            $contract->occupants()->attach($occupant->id);
 
             $invoice = null;
             if ($occupant->status === OccupantStatus::VERIFIED) {
@@ -329,14 +329,14 @@ class TenancyForm extends Component
             $this->unit->status = UnitStatus::OCCUPIED;
             $this->unit->save();
 
-            // Create a signed URL for occupant login
+            // Create a signed URL for contract login
             $this->authUrl = URL::temporarySignedRoute(
-                'occupant.auth.url',
+                'contract.auth.url',
                 now()->addHours(value: 1),
                 ['data' => encrypt($contract->id)]
             );
 
-            // Send welcome email to the occupant
+            // Send welcome email to the contract pic
             SendWelcomeEmail::dispatch($occupant, $contract, $this->authUrl, $invoice);
             // Commit the transaction
             DB::commit();

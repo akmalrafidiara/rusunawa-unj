@@ -9,6 +9,7 @@ use App\Jobs\SendRejectionOccupantEmail;
 use App\Jobs\SendWelcomeEmail;
 use App\Models\Invoice;
 use App\Models\Occupant;
+use App\Models\Contract;
 use App\Models\VerificationLog; // Import model VerificationLog
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\URL;
@@ -22,41 +23,52 @@ class OccupantVerification extends Component
     use WithPagination;
 
     public $occupant;
-    public $responseMessage;
+    public $contract;
+    public $isPic;
     public $contractPrice;
+    public $latestInvoice;
+    public $responseMessage;
 
     public bool $showModal = false;
     public string $modalType = '';
-    public $occupantIdBeingSelected;
     public $tab = 'recent'; // Default tab
 
     public string $search = '';
     public string $occupantVerificationType = '';
 
+    public $occupantIdBeingSelected = null; // ID penghuni yang sedang dipilih
+
     public function render()
     {
-        $recentOccupants = collect(); // Inisialisasi koleksi kosong
+        $contracts = collect(); // Inisialisasi koleksi kosong
         $historyLogs = collect();     // Inisialisasi koleksi kosong
         $paginator = null; // Inisialisasi paginator default
 
         if ($this->tab === 'recent') {
-            $recentOccupants = Occupant::query()
-                ->where('status', OccupantStatus::PENDING_VERIFICATION)
-                ->whereHas('contracts', function ($contractQuery) {
-                    $contractQuery
-                        ->where('status', '!=', ContractStatus::CANCELLED)
-                        ->where('status', '!=', ContractStatus::EXPIRED);
+            $contracts = Contract::query()
+                ->whereNotIn('status', [ContractStatus::CANCELLED, ContractStatus::EXPIRED])
+                ->whereHas('occupants', function ($query) {
+                    $query->where('occupants.status', OccupantStatus::PENDING_VERIFICATION);
                 })
+                ->with(['occupants' => function ($query) {
+                    $query->where('occupants.status', OccupantStatus::PENDING_VERIFICATION)
+                        ->orderBy('occupants.updated_at', 'asc');
+                }])
                 ->when($this->search, function ($query) {
-                    $query->where('full_name', 'like', "%{$this->search}%")
-                        ->orWhere('whatsapp_number', 'like', "%{$this->search}%")
-                        ->orWhereHas('contracts', function ($contractQuery) {
-                            $contractQuery->where('contract_code', 'like', "%{$this->search}%");
+                    $query->where('contract_code', 'like', "%{$this->search}%")
+                        ->orWhereHas('occupants', function ($occupantQuery) {
+                            $occupantQuery->where('full_name', 'like', "%{$this->search}%")
+                                        ->orWhere('whatsapp_number', 'like', "%{$this->search}%");
                         });
                 })
+                ->withMin(['occupants as earliest_pending_occupant_update' => function ($query) {
+                    $query->where('occupants.status', OccupantStatus::PENDING_VERIFICATION);
+                }], 'updated_at')
+                ->orderBy('earliest_pending_occupant_update', 'asc')
                 ->orderBy('created_at', 'desc')
-                ->paginate(10, pageName: 'recentPage'); // Gunakan pageName berbeda untuk paginasi
-            $paginator = $recentOccupants;
+                ->paginate(10, pageName: 'recentPage');
+
+            $paginator = $contracts;
 
         } elseif ($this->tab === 'history') {
             $historyLogs = VerificationLog::query()
@@ -68,9 +80,9 @@ class OccupantVerification extends Component
         }
 
         return view('livewire.managers.responses.occupant-verification.index', [
-            'recentOccupants' => $recentOccupants,
+            'contracts' => $contracts,
             'historyLogs' => $historyLogs,
-            'paginator' => $paginator, // Kirim paginator yang sesuai ke view
+            'paginator' => $paginator,
         ]);
     }
 
@@ -83,66 +95,61 @@ class OccupantVerification extends Component
     public function updatedTab()
     {
         $this->resetPage(); // Reset pagination saat tab berubah
-        $this->reset(['occupant', 'occupantIdBeingSelected', 'responseMessage', 'contractPrice', 'occupantVerificationType']); // Hapus detail panel saat tab berubah
+        $this->reset(['occupant', 'occupantIdBeingSelected', 'contractIdBeingSelected', 'responseMessage', 'contractPrice', 'occupantVerificationType']); // Hapus detail panel saat tab berubah
     }
 
-    public function selectOccupant($occupantId)
+    public function selectOccupant($occupantId, $contractId)
     {
         $this->occupantIdBeingSelected = $occupantId;
-        // Load the occupant and its relevant relationships for detailed checks
-        $this->occupant = Occupant::with(['contracts.pic', 'contracts.invoices', 'verificationLogs'])
-                                  ->find($occupantId);
 
-        if (!$this->occupant) {
-            $this->occupantVerificationType = 'Occupant Not Found';
+        $occupant = Occupant::with('verificationLogs')->find($occupantId);
+
+        if (!$occupant) {
+            $this->occupantVerificationType = 'Penghuni tidak ditemukan.';
             $this->contractPrice = null;
+            $this->occupant = null;
             return;
         }
 
-        $contract = $this->occupant->contracts->first(); // Get the first contract associated with this occupant
+        $contract = Contract::where('id', $contractId)
+                            ->whereHas('occupants', function ($query) use ($occupantId) {
+                                $query->where('occupants.id', $occupantId);
+                            })
+                            ->with(['pic', 'invoices'])
+                            ->first();
 
         if (!$contract) {
-            $this->occupantVerificationType = 'No Contract Found for this Occupant';
+            $this->occupantVerificationType = 'Kontrak tidak ditemukan atau Penghuni tidak terkait dengan Kontrak ini.';
             $this->contractPrice = null;
+            $this->occupant = null;
             return;
         }
 
-        $this->contractPrice = $contract->total_price ?? null;
+        $this->occupant = $occupant;
 
-        // Determine if this occupant is the Primary Contact (PIC) of this contract.
-        $isPic = false;
-        if ($contract->pic && $contract->pic->first()) { // Ensure pic relationship exists and is not empty
-            $isPic = ($contract->pic->first()->id === $this->occupant->id);
-        }
+        $this->contract = $contract;
 
-        // Check if this contract already has any invoices.
-        $hasAnyInvoice = $contract->invoices->isNotEmpty();
+        $this->isPic = $contract->pic && $contract->pic->id === $this->occupant->id;
 
-        // Check if this specific occupant was previously approved (has an 'approved' verification log).
+        $this->latestInvoice = $contract->invoices->last();
+
+
         $wasPreviouslyApproved = $this->occupant->verificationLogs
-                                                ->where('status', 'approved')
-                                                ->isNotEmpty();
+        ->where('status', 'approved')
+        ->isNotEmpty();
 
-        // Logic to set $this->occupantVerificationType based on the scenarios
-        if ($isPic) {
-            if (!$hasAnyInvoice && !$wasPreviouslyApproved) {
-                // Scenario: This is the contract's PIC, and the contract has no prior invoices,
-                // and the PIC themselves were not previously approved.
-                // This indicates a completely new contract submission by the primary tenant.
+        if ($this->isPic) {
+            $this->contractPrice = $contract->total_price ?? null;
+
+            if (!$this->latestInvoice && !$wasPreviouslyApproved) {
                 $this->occupantVerificationType = 'Pengajuan Kontrak Baru (PIC)';
             } else {
-                // Scenario: This is the contract's PIC, but the contract already has invoices
-                // or the PIC was previously approved (meaning they are editing their data).
                 $this->occupantVerificationType = 'Perubahan Data / Re-verifikasi (PIC)';
             }
-        } else { // Not PIC
+        } else { // Bukan PIC
             if (!$wasPreviouslyApproved) {
-                // Scenario: This is a non-PIC occupant, and they were not previously approved.
-                // This indicates a new additional occupant being added to an existing contract.
                 $this->occupantVerificationType = 'Penambahan Penghuni Baru (Non-PIC)';
             } else {
-                // Scenario: This is a non-PIC occupant, but they were previously approved.
-                // This indicates an existing additional occupant is editing their data.
                 $this->occupantVerificationType = 'Perubahan Data / Re-verifikasi (Non-PIC)';
             }
         }
@@ -163,71 +170,66 @@ class OccupantVerification extends Component
     public function acceptOccupant()
     {
         // Get the contract associated with the occupant being verified
-        $contract = $this->occupant->contracts()->first();
-
-        if (!$contract) {
+        if (!$this->contract) {
             LivewireAlert::error()->title('Kontrak tidak ditemukan untuk penghuni ini.')->toast()->position('top-end')->show();
             return;
         }
 
-        // Determine if the current occupant being verified is the Primary Contact (PIC) of this contract.
-        $isPic = false;
-        if ($contract->pic) {
-            $isPic = (($contract->pic->first()->id ?? null) === ($this->occupant->id ?? null));
-        }
-
-        // Check if the contract already has any invoices.
-        $hasAnyInvoice = $contract->invoices->isNotEmpty();
-
-        // Update occupant status to VERIFIED
         $this->occupant->status = OccupantStatus::VERIFIED;
         $this->occupant->save();
 
-        // Update the contract's total_price if provided.
-        if ($this->contractPrice !== null) {
-            $contract->update([
-                'total_price' => $this->contractPrice,
-            ]);
-        }
+        $generatedInvoice = null;
+        if ($this->isPic && !$this->latestInvoice) {
 
-        $generatedInvoice = null; // Initialize generated invoice to null
+            if ($this->contractPrice !== null) {
+                $this->contract->update([
+                    'total_price' => $this->contractPrice,
+                ]);
+            }
 
-        // Generate invoice ONLY if this occupant is the PIC AND the contract does NOT have any existing invoices
-        if ($isPic && !$hasAnyInvoice) {
             $generatedInvoice = Invoice::create([
                 'invoice_number' => Invoice::generateInvoiceNumber(),
-                'contract_id' => $contract->id,
-                'description' => 'Pembayaran sewa pertama untuk unit ' . $contract->unit->room_number,
-                'amount' => $contract->total_price, // Use contract's total_price (updated above)
+                'contract_id' => $this->contract->id,
+                'description' => 'Pembayaran sewa pertama untuk unit ' . $this->contract->unit->room_number,
+                'amount' => $this->contract->total_price, // Use contract's total_price (updated above)
                 'due_at' => Carbon::now()->addHours(config('tenancy.initial_payment_due_hours')),
                 'status' => InvoiceStatus::UNPAID,
             ]);
-            LivewireAlert::info()->title('Penghuni utama berhasil diverifikasi. Invoice pertama berhasil dibuat.')->toast()->position('top-end')->show();
+
+            LivewireAlert::info()
+                ->title('PIC berhasil diverifikasi. Invoice pertama berhasil dibuat.')
+                ->toast()
+                ->position('top-end')
+                ->show();
         } else {
-            // Inform the user why no invoice was generated
-            if ($isPic && $hasAnyInvoice) {
-                LivewireAlert::info()->title('Penghuni utama berhasil diverifikasi. Invoice pertama telah dibuat sebelumnya.')->toast()->position('top-end')->show();
-            } else if (!$isPic) {
-                LivewireAlert::info()->title('Penghuni tambahan berhasil diverifikasi. Tidak ada invoice baru yang dibuat karena bukan PIC.')->toast()->position('top-end')->show();
+            if ($this->isPic && $this->latestInvoice) {
+                LivewireAlert::info()
+                    ->title('PIC berhasil diverifikasi. Invoice pertama telah dibuat sebelumnya.')
+                    ->toast()
+                    ->position('top-end')
+                    ->show();
+            } else if (!$this->isPic) {
+                LivewireAlert::info()
+                    ->title('Penghuni tambahan berhasil diverifikasi. Tidak ada invoice baru yang dibuat karena bukan PIC.')
+                    ->toast()
+                    ->position('top-end')
+                    ->show();
             }
         }
 
-        // Log the verification
         $this->occupant->verificationLogs()->create([
             'processed_by' => auth('web')->id(), // Manager's ID
             'status' => 'approved',
             'reason' => $this->responseMessage,
         ]);
 
-        // Create a signed URL for occupant login
         $authUrl = URL::temporarySignedRoute(
-            'occupant.auth.url',
+            'contract.auth.url',
             now()->addHours(value: 1),
-            ['data' => encrypt($contract->id)]
+            ['data' => encrypt($this->contract->id)]
         );
 
-        // Send welcome email to the occupant (passing null if no invoice was generated)
-        SendWelcomeEmail::dispatch($this->occupant, $contract, $authUrl, $generatedInvoice);
+        SendWelcomeEmail::dispatch($this->occupant, $this->contract, $authUrl, $generatedInvoice);
 
         // Reset properties to clear the modal and selection
         $this->resetProperties();
@@ -260,12 +262,14 @@ class OccupantVerification extends Component
     public function resetProperties()
     {
         $this->occupant = null;
+        $this->contract = null;
+        $this->isPic = false;
         $this->responseMessage = null;
         $this->contractPrice = null;
         $this->showModal = false;
         $this->modalType = '';
-        $this->occupantIdBeingSelected = null;
         $this->search = '';
         $this->occupantVerificationType = '';
+        $this->occupantIdBeingSelected = null;
     }
 }

@@ -7,7 +7,7 @@ use App\Models\Contract;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class AuthenticatedOccupantSessionController extends Controller
+class AuthenticatedContractSessionController extends Controller
 {
     public function authUrl(Request $request, $data)
     {
@@ -17,14 +17,14 @@ class AuthenticatedOccupantSessionController extends Controller
             abort(401, 'Link tidak valid atau sudah kedaluwarsa.');
         }
 
-        Auth::guard('occupant')->login($contract->pic->first());
+        Auth::guard('contract')->login($contract);
 
-        return redirect()->route('occupant.dashboard');
+        return redirect()->route('contract.dashboard');
     }
 
     public function logout(Request $request)
     {
-        Auth::guard('occupant')->logout();
+        Auth::guard('contract')->logout();
 
         $request->session()->invalidate();
 

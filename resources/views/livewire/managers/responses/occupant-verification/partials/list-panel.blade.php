@@ -30,20 +30,40 @@
 
     <div wire:poll.10s class="flex flex-col gap-4 overflow-y-auto pr-2" style="max-height: 70vh;">
         @if ($tab === 'recent')
-            @forelse ($recentOccupants as $occupant)
-                <div wire:click="selectOccupant({{ $occupant->id }})"
-                    class="p-6 rounded-lg border cursor-pointer transition-colors duration-200
-                    {{ $occupantIdBeingSelected === $occupant->id ? 'bg-green-100 border-green-500 dark:bg-green-900/30 dark:border-green-700' : 'bg-gray-50 border-gray-200 hover:bg-gray-100 dark:bg-zinc-700 dark:border-zinc-600 dark:hover:bg-zinc-600' }}">
-
-                    <div class="font-medium text-gray-800 dark:text-gray-200">
-                        {{ $occupant->full_name }}
+            @forelse ($contracts as $contract)
+                <div class="rounded-lg p-6 border bg-gray-50 dark:bg-zinc-700 border-gray-200 dark:border-zinc-700">
+                    {{-- Header untuk kode kontrak utama --}}
+                    <div class="mb-6">
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100">
+                            {{ $contract->contract_code }}
+                        </h3>
+                        <p>
+                            Unit {{ $contract->unit->room_number }} | {{ $contract->unit->unitCluster->name }}
+                        </p>
                     </div>
 
-                    <div class="text-sm text-gray-600 dark:text-gray-400">
-                        {{ $occupant->updated_at->format('d F Y, H:i') }} WIB
-                        <span class="text-xs text-gray-500 dark:text-gray-500 ml-2">
-                            ({{ $occupant->updated_at->diffForHumans() }})
-                        </span>
+                    <div class="space-y-4">
+                        @foreach ($contract->occupants as $occupant)
+                            <div wire:click="selectOccupant({{ $occupant->id }}, {{ $contract->id }})"
+                                class="py-3 px-6 rounded-lg border cursor-pointer transition-colors duration-200 flex flex-col gap-2
+                {{ $occupantIdBeingSelected === $occupant->id ? 'bg-green-100 border-green-500 dark:bg-green-900/30 dark:border-green-700' : 'bg-gray-50 border-gray-200 hover:bg-gray-100 dark:bg-zinc-700 dark:border-zinc-600 dark:hover:bg-zinc-600' }}">
+
+                                {{-- Nama Penghuni dan Status Verifikasi --}}
+                                <div class="flex justify-between items-center">
+                                    <h4 class="font-bold text-lg text-gray-800 dark:text-gray-200">
+                                        {{ $occupant->full_name }}
+                                    </h4>
+                                    <span class="text-xs text-gray-500 dark:text-gray-500">
+                                        {{ $occupant->updated_at->diffForHumans() }}
+                                    </span>
+                                </div>
+
+                                {{-- Informasi Waktu Pembaruan --}}
+                                <div class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                                    {{ $occupant->updated_at->format('d F Y, H:i') }} WIB
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
                 </div>
             @empty
@@ -68,7 +88,8 @@
 
                     <div class="text-sm text-gray-600 dark:text-gray-400">
                         <p>Diproses oleh: <span
-                                style="font-semibold">{{ $history->processor->name ?? 'System' }}</span></p>
+                                style="font-semibold">{{ $history->processor->name ?? 'System' }}</span>
+                        </p>
                         <p>Pada {{ $history->processed_at->format('d F Y, H:i') }} WIB <span
                                 class="text-xs text-gray-500 dark:text-gray-500 ml-2">
                                 ({{ $history->processed_at->diffForHumans() }})

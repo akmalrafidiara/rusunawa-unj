@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Occupants\Auth;
+namespace App\Livewire\Contracts\Auth;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -9,7 +9,7 @@ class Logout
 {
     public function __invoke()
     {
-        Auth::guard('occupant')->logout();
+        Auth::guard('contract')->logout();
 
         Session::invalidate();
         Session::regenerateToken();

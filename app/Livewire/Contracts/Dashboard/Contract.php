@@ -28,7 +28,7 @@ class Contract extends Component
     // Main properties
     public
         $contract,
-        $occupant,
+        $occupants,
         $unit,
         $latestInvoice,
         $invoices,
@@ -81,7 +81,7 @@ class Contract extends Component
          */
         $this->contract = Auth::guard('contract')->user();
 
-        $this->occupant = $this->contract->pic()->first();
+        $this->occupants = $this->contract->occupants()->get();
 
         $this->unit = $this->contract->unit ?? new Unit();
         $this->latestInvoice = $this->contract->invoices()->latest()->first();
@@ -113,12 +113,7 @@ class Contract extends Component
             // Occupant Validation
             'fullName' => 'required|string|max:255',
             // Email should be unique for new occupants, but not for the current occupant being edited
-            'email' => [
-                'nullable',
-                'email',
-                'max:255',
-                Rule::unique('occupants', 'email')->ignore($this->occupantIdBeingSelected)
-            ],
+            'email' => 'nullable|email|max:255',
             'whatsappNumber' => 'nullable|string|max:20',
             'gender' => [
                 'required',
@@ -192,23 +187,30 @@ class Contract extends Component
 
     public function showHistory()
     {
+        $this->resetAll();
+        $this->resetValidation();
+
         $this->showModal = true;
         $this->modalType = 'history';
     }
 
     public function showPaymentForm()
     {
+        $this->resetAll();
+        $this->resetValidation();
+
         $this->showModal = true;
         $this->modalType = 'payment';
     }
 
     public function showOccupantForm($occupantId = null)
     {
+        $this->resetAll();
+        $this->resetValidation();
+
         $this->showModal = true;
         $this->modalType = 'occupant';
 
-        $this->reset(['fullName', 'email', 'whatsappNumber', 'gender', 'identityCardFile', 'communityCardFile', 'isStudent', 'studentId', 'faculty', 'studyProgram', 'classYear']);
-        $this->resetValidation(); // Clear validation errors when opening form
 
         if($occupantId){
             $this->occupantIdBeingSelected = $occupantId;
@@ -264,28 +266,13 @@ class Contract extends Component
 
         $isAddingNewOccupant = is_null($this->occupantIdBeingSelected);
 
-        // Check if the current logged-in occupant is the PIC of this contract
-        $isCurrentUserPic = $this->contract && $this->contract->pic->isNotEmpty() && ($this->contract->pic->first()->id ?? null) === (Auth::guard('occupant')->user()->id ?? null);
-
-        // Capacity and PIC Authorization Check (for adding new occupants)
         if ($isAddingNewOccupant) {
-            if (!$isCurrentUserPic) {
-                LivewireAlert::
-                error()->title('Akses Ditolak!')
-                    ->text('Hanya penanggung jawab kontrak (PIC) yang dapat menambahkan penghuni lain.')
-                    ->toast()
-                    ->position('top-end')
-                    ->show();
-                return;
-            }
-
-            // Check if a new occupant (by email) would exceed capacity
             $prospectiveNewOccupantCount = $this->contract->occupants->count();
             if (Occupant::where('email', $this->email)->doesntExist()) {
                 $prospectiveNewOccupantCount++; // If email doesn't exist, this will be a truly new occupant
             }
 
-            if ($this->contract && $this->unit && $prospectiveNewOccupantCount > ($this->unit->capacity ?? 0)) {
+            if ($prospectiveNewOccupantCount > ($this->unit->capacity ?? 0)) {
                 LivewireAlert::title('Kapasitas Unit Penuh!')
                     ->text('Tidak dapat menambahkan penghuni baru. Jumlah penghuni sudah mencapai kapasitas maksimal unit ini (' . ($this->unit->capacity ?? 0) . ' orang).')
                     ->error()
@@ -440,6 +427,7 @@ class Contract extends Component
         $this->fullName = '';
         $this->email = '';
         $this->whatsappNumber = '';
+        $this->gender = '';
         $this->identityCardFile = null;
         $this->communityCardFile = null;
         $this->existingIdentityCardFile = null;

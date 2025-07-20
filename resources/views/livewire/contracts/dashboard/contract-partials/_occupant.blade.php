@@ -15,18 +15,14 @@
             <div>
                 <p class="text-sm text-gray-500">Aksi</p>
                 <a class="cursor-pointer text-emerald-600 hover:text-emerald-800 underline"
-                    wire:click="showHistory">Riwayat Transaksi</a> |
+                    wire:click="showHistory">Riwayat Transaksi</a>
                 @if (
                     $contract->occupants->count() < $contract->unit->capacity &&
                         $contract->invoices()->count() > 0 &&
                         $contract->invoices()->first()->status === \App\Enums\InvoiceStatus::PAID)
-                    <a class="cursor-pointer text-emerald-600 hover:text-emerald-800 underline font-normal"
+                    | <a class="cursor-pointer text-emerald-600 hover:text-emerald-800 underline font-normal"
                         wire:click="showOccupantForm">
                         Tambah Penghuni
-                    </a>
-                @else
-                    <a class="cursor-pointer text-red-600 hover:text-red-800 underline font-normal">
-                        Kapasitas Tercapai
                     </a>
                 @endif
             </div>

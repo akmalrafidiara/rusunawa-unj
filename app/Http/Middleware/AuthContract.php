@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class AuthOccupant
+class AuthContract
 {
     /**
      * Handle an incoming request.
@@ -16,8 +16,8 @@ class AuthOccupant
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!Auth::guard('occupant')->check()) {
-            return redirect()->route('occupant.auth');
+        if (!Auth::guard('contract')->check()) {
+            return redirect()->route('contract.auth');
         }
 
         return $next($request);

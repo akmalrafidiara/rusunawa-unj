@@ -7,7 +7,7 @@
     </div>
 
     {{-- Daftar Pembayaran --}}
-    <div wire:poll.1000ms class="flex flex-col gap-4 overflow-y-auto pr-2" style="max-height: 70vh;">
+    <div wire:poll.10s class="flex flex-col gap-4 overflow-y-auto pr-2" style="max-height: 70vh;">
         @forelse ($payments as $payment)
             <div wire:click="selectPayment({{ $payment->id }})"
                 class="p-6 rounded-lg border cursor-pointer transition-colors duration-200
