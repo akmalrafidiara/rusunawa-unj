@@ -64,6 +64,13 @@ class MaintenanceSchedules extends Component
         'schedulePage' => ['except' => 1, 'as' => 'jadwalPage'], // Untuk paginasi jadwal
     ];
 
+    protected $listeners = [
+        'recordHistoryUpdated' => '$refresh',
+        'editSchedule' => 'editSchedule',
+        'confirmDeleteSchedule' => 'confirmDeleteSchedule',
+        'refreshScheduleList' => '$refresh',
+    ];
+
     protected $messages = [
         'scheduleUnitId.required' => 'Unit wajib dipilih.',
         'scheduleUnitId.exists' => 'Unit yang dipilih tidak valid.',
