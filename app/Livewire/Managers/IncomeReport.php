@@ -2,6 +2,9 @@
 
 namespace App\Livewire\Managers;
 
+use App\Enums\ContractStatus;
+use App\Enums\InvoiceStatus;
+use App\Enums\OccupantStatus;
 use App\Exports\IncomeReportExport;
 use App\Models\Contract;
 use App\Models\Invoice;
@@ -30,19 +33,29 @@ class IncomeReport extends Component
 
     // Properti Grafik
     public ?array $chartData = null;
+    public $chartKey = '';
 
     // Properti Tabel
     public $perPage = 10;
+    public $occupants;
+    public $contracts;
     public array $occupantOptions = [];
     public array $contractOptions = [];
+
+    // Properti Modal
+    public $showModal = false;
+    public $selectedInvoice = null;
 
     /**
      * Inisialisasi komponen.
      */
     public function mount(): void
     {
-        $this->setDefaultDates();
+        $this->occupants = Occupant::where('status', OccupantStatus::VERIFIED)->with('contracts')->get();
+        $this->contracts = Contract::where('status', ContractStatus::ACTIVE)->with('unit', 'occupants')->get();
         $this->loadFilterOptions();
+        $this->setDefaultDates();
+        $this->prepareChartData();
     }
 
     /**
@@ -66,14 +79,33 @@ class IncomeReport extends Component
      */
     private function getInvoicesQuery()
     {
-        return Invoice::query()
-            ->where('status', 'paid')
-            ->when($this->startDate && $this->endDate, function ($q) {
-                $q->whereBetween('paid_at', [$this->startDate, Carbon::parse($this->endDate)->endOfDay()]);
-            })
-            ->when($this->occupantFilter, fn($q) => $q->whereHas('contract.occupants', fn($q2) => $q2->where('occupants.id', $this->occupantFilter)))
-            ->when($this->contractFilter, fn($q) => $q->where('contract_id', $this->contractFilter))
-            ->latest('paid_at');
+        $query = Invoice::query()
+            ->with(['contract.occupants', 'contract.unit', 'contract.occupantType'])
+            ->where('status', InvoiceStatus::PAID);
+
+        // Filter berdasarkan tanggal
+        if ($this->filterType !== 'all_time' && $this->startDate && $this->endDate) {
+            $query->whereBetween('paid_at', [
+                Carbon::parse($this->startDate)->startOfDay(),
+                Carbon::parse($this->endDate)->endOfDay()
+            ]);
+        }
+
+        // Filter berdasarkan penghuni
+        if ($this->occupantFilter) {
+            $query->whereHas('contract', function ($q) {
+                $q->whereHas('occupants', function ($q2) {
+                    $q2->where('occupants.id', $this->occupantFilter);
+                });
+            });
+        }
+
+        // Filter berdasarkan kontrak
+        if ($this->contractFilter) {
+            $query->where('contract_id', $this->contractFilter);
+        }
+
+        return $query->latest('paid_at');
     }
 
     /**
@@ -111,21 +143,53 @@ class IncomeReport extends Component
     public function prepareChartData(): void
     {
         $invoices = $this->getInvoicesQuery()->get();
-        $data = collect([
-            'labels' => [],
-            'datasets' => [['data' => []]],
-        ]);
 
-        if ($invoices->isNotEmpty()) {
-            $data = $invoices->groupBy(fn($inv) => Carbon::parse($inv->paid_at)->format('d M'))
-                             ->map(fn($group) => $group->sum('amount'));
+        if ($invoices->isEmpty()) {
+            $this->chartData = [
+                'labels' => [],
+                'datasets' => [[
+                    'label' => 'Pendapatan',
+                    'data' => [],
+                    'backgroundColor' => 'rgba(34, 197, 94, 0.1)',
+                    'borderColor' => 'rgba(34, 197, 94, 1)',
+                    'borderWidth' => 2,
+                    'fill' => true,
+                    'tension' => 0.4,
+                ]],
+            ];
+        } else {
+            // Determine grouping format based on filter type
+            $groupBy = match($this->filterType) {
+                'yearly' => 'M Y',
+                'monthly' => 'W \W\e\e\k',
+                'daily' => 'd M',
+                default => 'M Y'
+            };
+
+            $data = $invoices->groupBy(function($invoice) use ($groupBy) {
+                return Carbon::parse($invoice->paid_at)->format($groupBy);
+            })->map(function($group) {
+                return $group->sum('amount');
+            })->sortKeys();
+
+            $this->chartData = [
+                'labels' => $data->keys()->toArray(),
+                'datasets' => [[
+                    'label' => 'Pendapatan',
+                    'data' => $data->values()->toArray(),
+                    'backgroundColor' => 'rgba(34, 197, 94, 0.1)',
+                    'borderColor' => 'rgba(34, 197, 94, 1)',
+                    'borderWidth' => 2,
+                    'fill' => true,
+                    'tension' => 0.4,
+                ]],
+            ];
         }
 
-        $this->chartData = [
-            'labels' => $data->keys()->toArray(),
-            'datasets' => [['data' => $data->values()->toArray()]],
-        ];
+        // Update chart key to force re-render
+        $this->chartKey = uniqid();
 
+        // Always dispatch chart update
         $this->dispatch('updateChart', $this->chartData);
     }
 
@@ -146,6 +210,7 @@ class IncomeReport extends Component
     {
         $this->setDefaultDates();
         $this->resetPage();
+        $this->prepareChartData();
     }
 
     /**
@@ -156,6 +221,11 @@ class IncomeReport extends Component
     {
         if (in_array($propertyName, ['startDate', 'endDate', 'occupantFilter', 'contractFilter', 'perPage'])) {
             $this->resetPage();
+        }
+
+        // Update chart when filter properties change
+        if (in_array($propertyName, ['filterType', 'startDate', 'endDate', 'occupantFilter', 'contractFilter'])) {
+            $this->prepareChartData();
         }
     }
 
@@ -190,8 +260,17 @@ class IncomeReport extends Component
      */
     private function loadFilterOptions(): void
     {
-        $this->occupantOptions = Occupant::orderBy('full_name')->get()->map(fn($o) => ['value' => $o->id, 'label' => $o->full_name])->toArray();
-        $this->contractOptions = Contract::orderBy('contract_code')->get()->map(fn($c) => ['value' => $c->id, 'label' => $c->contract_code])->toArray();
+        $this->occupantOptions = Occupant::where('status', OccupantStatus::VERIFIED)
+            ->orderBy('full_name')
+            ->get()
+            ->map(fn($o) => ['value' => $o->id, 'label' => $o->full_name])
+            ->toArray();
+
+        $this->contractOptions = Contract::where('status', ContractStatus::ACTIVE)
+            ->orderBy('contract_code')
+            ->get()
+            ->map(fn($c) => ['value' => $c->id, 'label' => $c->contract_code])
+            ->toArray();
     }
 
     /**
@@ -223,5 +302,24 @@ class IncomeReport extends Component
     public function exportExcel()
     {
         return Excel::download(new IncomeReportExport($this->getInvoicesQuery()->get()), 'laporan-pendapatan-'.now()->format('d-m-Y').'.xlsx');
+    }
+
+    /**
+     * Melihat detail tagihan.
+     */
+    public function viewInvoiceDetails($invoiceId)
+    {
+        $this->selectedInvoice = Invoice::with(['contract.occupants', 'contract.unit', 'contract.occupantType'])
+            ->findOrFail($invoiceId);
+        $this->showModal = true;
+    }
+
+    /**
+     * Menutup modal detail tagihan.
+     */
+    public function closeModal()
+    {
+        $this->showModal = false;
+        $this->selectedInvoice = null;
     }
 }

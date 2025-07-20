@@ -1,59 +1,61 @@
-<div class="space-y-6">
+<div class="flex flex-col gap-6">
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Notifications</h1>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Manage your notifications and alerts</p>
+            <h1 class="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">Notifikasi</h1>
+            <p class="text-sm text-zinc-500 dark:text-zinc-400">Kelola notifikasi dan peringatan sistem</p>
         </div>
 
-        <!-- Actions -->
-        <div class="flex items-center gap-2">
+        <!-- Action Buttons -->
+        <div class="flex items-center gap-3">
             @if (!empty($selectedNotifications))
-                <button wire:click="markSelectedAsRead"
-                    class="px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                    Mark Selected as Read
-                </button>
-                <button wire:click="deleteSelected"
-                    class="px-3 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
-                    Delete Selected
-                </button>
+                <flux:button wire:click="markSelectedAsRead" variant="primary" size="sm" icon="check">
+                    Tandai Dipilih Sebagai Dibaca
+                </flux:button>
+                <flux:button wire:click="deleteSelected" variant="danger" size="sm" icon="trash">
+                    Hapus Dipilih
+                </flux:button>
             @endif
-            <button wire:click="markAllAsRead"
-                class="px-3 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                Mark All as Read
-            </button>
+            <flux:button wire:click="markAllAsRead" variant="outline" size="sm" icon="check-circle">
+                Tandai Semua Dibaca
+            </flux:button>
         </div>
     </div>
 
-    <!-- Filters -->
-    <div class="flex items-center gap-2 p-4 bg-white dark:bg-gray-800 rounded-lg shadow">
-        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Filter:</span>
-        <div class="flex gap-2">
-            <button wire:click="$set('filter', 'all')"
-                class="px-3 py-1 text-sm rounded-md transition-colors {{ $filter === 'all' ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600' }}">
-                All
-            </button>
-            <button wire:click="$set('filter', 'unread')"
-                class="px-3 py-1 text-sm rounded-md transition-colors {{ $filter === 'unread' ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600' }}">
-                Unread
-            </button>
-            <button wire:click="$set('filter', 'read')"
-                class="px-3 py-1 text-sm rounded-md transition-colors {{ $filter === 'read' ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600' }}">
-                Read
-            </button>
-        </div>
+    <!-- Filter Tabs -->
+    <div class="flex items-center gap-2 p-1 bg-zinc-100 dark:bg-zinc-800 rounded-lg w-fit">
+        <flux:button wire:click="$set('filter', 'all')" variant="{{ $filter === 'all' ? 'primary' : 'ghost' }}"
+            size="sm" class="px-4">
+            Semua
+            @if ($filter === 'all')
+                <flux:badge size="sm" color="white" class="ml-2">{{ $notifications->total() ?? 0 }}</flux:badge>
+            @endif
+        </flux:button>
+        <flux:button wire:click="$set('filter', 'unread')" variant="{{ $filter === 'unread' ? 'primary' : 'ghost' }}"
+            size="sm" class="px-4">
+            Belum Dibaca
+            @if ($filter === 'unread' && $unreadCount > 0)
+                <flux:badge size="sm" color="red" class="ml-2">{{ $unreadCount }}</flux:badge>
+            @endif
+        </flux:button>
+        <flux:button wire:click="$set('filter', 'read')" variant="{{ $filter === 'read' ? 'primary' : 'ghost' }}"
+            size="sm" class="px-4">
+            Sudah Dibaca
+        </flux:button>
     </div>
 
     <!-- Notifications List -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+    <div
+        class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 overflow-hidden">
         @if ($notifications->count() > 0)
             <!-- Select All Header -->
-            <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
-                <label class="flex items-center">
+            <div class="px-6 py-4 border-b border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-700">
+                <label class="flex items-center group cursor-pointer">
                     <input type="checkbox" wire:model.live="selectAll" wire:click="toggleSelectAll"
-                        class="rounded border-gray-300 text-blue-600 focus:border-blue-500 focus:ring-blue-500">
-                    <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">
-                        Select all ({{ $notifications->count() }} notifications)
+                        class="rounded border-zinc-300 dark:border-zinc-600 text-blue-600 focus:border-blue-500 focus:ring-blue-500 focus:ring-offset-0">
+                    <span
+                        class="ml-3 text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors">
+                        Pilih semua ({{ $notifications->count() }} notifikasi)
                     </span>
                 </label>
             </div>
@@ -61,88 +63,118 @@
             <!-- Notifications -->
             @foreach ($notifications as $notification)
                 <div
-                    class="px-4 py-4 border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors {{ $notification->unread() ? 'bg-blue-50 dark:bg-blue-900/20' : '' }}">
-                    <div class="flex items-start gap-4">
-                        <!-- Checkbox -->
-                        <div class="flex-shrink-0 pt-1">
-                            <input type="checkbox" value="{{ $notification->id }}"
-                                wire:model.live="selectedNotifications"
-                                class="rounded border-gray-300 text-blue-600 focus:border-blue-500 focus:ring-blue-500">
-                        </div>
-
-                        <!-- Icon -->
-                        <div class="flex-shrink-0">
-                            <div
-                                class="w-10 h-10 {{ $this->getNotificationColor($notification->data['color'] ?? 'blue') }} rounded-lg flex items-center justify-center">
-                                <flux:icon
-                                    name="{{ $this->getNotificationIcon($notification->data['icon'] ?? 'bell') }}"
-                                    class="w-5 h-5 text-white" />
+                    class="group border-b border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-700/50 transition-colors duration-150 {{ $notification->unread() ? 'bg-blue-50/50 dark:bg-blue-900/10' : '' }}">
+                    <div class="px-6 py-5">
+                        <div class="flex items-start gap-4">
+                            <!-- Checkbox -->
+                            <div class="flex-shrink-0 pt-1">
+                                <input type="checkbox" value="{{ $notification->id }}"
+                                    wire:model.live="selectedNotifications"
+                                    class="rounded border-zinc-300 dark:border-zinc-600 text-blue-600 focus:border-blue-500 focus:ring-blue-500 focus:ring-offset-0">
                             </div>
-                        </div>
 
-                        <!-- Content -->
-                        <div class="flex-1 min-w-0">
-                            <div class="flex items-start justify-between gap-4">
-                                <div class="flex-1">
-                                    <p class="text-sm font-medium text-gray-900 dark:text-white">
-                                        {{ $notification->data['message'] }}
-                                    </p>
+                            <!-- Icon -->
+                            <div class="flex-shrink-0">
+                                <div
+                                    class="w-10 h-10 {{ $this->getNotificationColor($notification->data['color'] ?? 'blue') }} rounded-xl flex items-center justify-center shadow-sm">
+                                    <flux:icon
+                                        name="{{ $this->getNotificationIcon($notification->data['icon'] ?? 'bell') }}"
+                                        class="w-5 h-5 text-white" />
+                                </div>
+                            </div>
 
-                                    <!-- Additional Info -->
-                                    <div class="mt-1 space-y-1">
-                                        @if (isset($notification->data['occupant_name']))
-                                            <p class="text-xs text-gray-500 dark:text-gray-400">
-                                                <span class="font-medium">Occupant:</span>
-                                                {{ $notification->data['occupant_name'] }}
-                                            </p>
-                                        @endif
-                                        @if (isset($notification->data['invoice_number']))
-                                            <p class="text-xs text-gray-500 dark:text-gray-400">
-                                                <span class="font-medium">Invoice:</span>
-                                                {{ $notification->data['invoice_number'] }}
-                                                @if (isset($notification->data['amount']))
-                                                    - Rp
-                                                    {{ number_format($notification->data['amount'], 0, ',', '.') }}
+                            <!-- Content -->
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-start justify-between gap-4">
+                                    <div class="flex-1">
+                                        <p
+                                            class="text-sm {{ $notification->unread() ? 'font-semibold text-zinc-900 dark:text-zinc-100' : 'font-medium text-zinc-700 dark:text-zinc-300' }}">
+                                            {{ $notification->data['message'] }}
+                                        </p>
+
+                                        <!-- Additional Info -->
+                                        @if (isset($notification->data['occupant_name']) ||
+                                                isset($notification->data['invoice_number']) ||
+                                                isset($notification->data['contract_code']) ||
+                                                isset($notification->data['report_id']))
+                                            <div class="mt-2 space-y-1">
+                                                @if (isset($notification->data['occupant_name']))
+                                                    <p
+                                                        class="text-xs text-zinc-600 dark:text-zinc-400 flex items-center gap-1">
+                                                        <flux:icon.user class="w-3 h-3" />
+                                                        <span class="font-medium">Penghuni:</span>
+                                                        {{ $notification->data['occupant_name'] }}
+                                                    </p>
                                                 @endif
-                                            </p>
+                                                @if (isset($notification->data['invoice_number']))
+                                                    <p
+                                                        class="text-xs text-zinc-600 dark:text-zinc-400 flex items-center gap-1">
+                                                        <flux:icon.document-text class="w-3 h-3" />
+                                                        <span class="font-medium">Invoice:</span>
+                                                        {{ $notification->data['invoice_number'] }}
+                                                        @if (isset($notification->data['amount']))
+                                                            - <span
+                                                                class="font-semibold text-green-600 dark:text-green-400">Rp
+                                                                {{ number_format($notification->data['amount'], 0, ',', '.') }}</span>
+                                                        @endif
+                                                    </p>
+                                                @endif
+                                                @if (isset($notification->data['contract_code']))
+                                                    <p
+                                                        class="text-xs text-zinc-600 dark:text-zinc-400 flex items-center gap-1">
+                                                        <flux:icon.document class="w-3 h-3" />
+                                                        <span class="font-medium">Kontrak:</span>
+                                                        {{ $notification->data['contract_code'] }}
+                                                    </p>
+                                                @endif
+                                                @if (isset($notification->data['report_id']))
+                                                    <p
+                                                        class="text-xs text-zinc-600 dark:text-zinc-400 flex items-center gap-1">
+                                                        <flux:icon.flag class="w-3 h-3" />
+                                                        <span class="font-medium">ID Laporan:</span>
+                                                        #{{ $notification->data['report_id'] }}
+                                                    </p>
+                                                @endif
+                                            </div>
                                         @endif
-                                        @if (isset($notification->data['contract_code']))
-                                            <p class="text-xs text-gray-500 dark:text-gray-400">
-                                                <span class="font-medium">Contract:</span>
-                                                {{ $notification->data['contract_code'] }}
+
+                                        <div class="flex items-center gap-3 mt-3">
+                                            <p class="text-xs text-zinc-500 dark:text-zinc-400 flex items-center gap-1">
+                                                <flux:icon.clock class="w-3 h-3" />
+                                                {{ $notification->created_at->format('d M Y, H:i') }}
+                                                <span
+                                                    class="text-zinc-400 dark:text-zinc-500">({{ $notification->created_at->diffForHumans() }})</span>
                                             </p>
-                                        @endif
-                                        @if (isset($notification->data['report_id']))
-                                            <p class="text-xs text-gray-500 dark:text-gray-400">
-                                                <span class="font-medium">Report ID:</span>
-                                                #{{ $notification->data['report_id'] }}
-                                            </p>
-                                        @endif
+                                        </div>
                                     </div>
 
-                                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-2">
-                                        {{ $notification->created_at->format('M d, Y \a\t h:i A') }}
-                                        ({{ $notification->created_at->diffForHumans() }})
-                                    </p>
-                                </div>
+                                    <!-- Status & Actions -->
+                                    <div class="flex items-center gap-3">
+                                        @if ($notification->unread())
+                                            <div class="flex items-center gap-2">
+                                                <flux:badge color="blue" size="sm">Baru</flux:badge>
+                                                <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                            </div>
+                                        @endif
 
-                                <!-- Actions -->
-                                <div class="flex items-center gap-2">
-                                    @if ($notification->unread())
-                                        <button wire:click="markAsRead('{{ $notification->id }}')"
-                                            class="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
-                                            Mark as read
-                                        </button>
-                                        <div class="w-2 h-2 bg-blue-600 rounded-full"></div>
-                                    @endif
+                                        <div
+                                            class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+                                            @if (isset($notification->data['url']))
+                                                <flux:button
+                                                    wire:click="readAndRedirect('{{ $notification->id }}', '{{ $notification->data['url'] }}')"
+                                                    variant="outline" size="xs" icon="arrow-top-right-on-square">
+                                                    Lihat
+                                                </flux:button>
+                                            @endif
 
-                                    @if (isset($notification->data['url']))
-                                        <button
-                                            wire:click="readAndRedirect('{{ $notification->id }}', '{{ $notification->data['url'] }}')"
-                                            class="text-xs text-gray-600 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
-                                            View
-                                        </button>
-                                    @endif
+                                            @if ($notification->unread())
+                                                <flux:button wire:click="markAsRead('{{ $notification->id }}')"
+                                                    variant="ghost" size="xs" icon="check">
+                                                    Tandai dibaca
+                                                </flux:button>
+                                            @endif
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -151,29 +183,31 @@
             @endforeach
 
             <!-- Pagination -->
-            <div class="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
+            <div class="px-6 py-4 border-t border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800">
                 {{ $notifications->links() }}
             </div>
         @else
             <!-- Empty State -->
-            <div class="px-4 py-12 text-center">
-                <flux:icon.bell class="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
+            <div class="px-6 py-16 text-center">
+                <div class="w-20 h-20 mx-auto mb-6 text-zinc-300 dark:text-zinc-600">
+                    <flux:icon.bell class="w-full h-full" />
+                </div>
+                <h3 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-2">
                     @if ($filter === 'unread')
-                        No unread notifications
+                        Tidak ada notifikasi yang belum dibaca
                     @elseif($filter === 'read')
-                        No read notifications
+                        Tidak ada notifikasi yang sudah dibaca
                     @else
-                        No notifications yet
+                        Belum ada notifikasi
                     @endif
                 </h3>
-                <p class="text-sm text-gray-500 dark:text-gray-400">
+                <p class="text-sm text-zinc-500 dark:text-zinc-400 max-w-sm mx-auto">
                     @if ($filter === 'unread')
-                        You're all caught up! No new notifications to review.
+                        Semua notifikasi sudah dibaca! Anda sudah mengetahui semua update terbaru.
                     @elseif($filter === 'read')
-                        No previously read notifications found.
+                        Belum ada notifikasi yang dibaca sebelumnya.
                     @else
-                        When you receive notifications, they'll appear here.
+                        Notifikasi terbaru akan muncul di sini ketika ada aktivitas baru di sistem.
                     @endif
                 </p>
             </div>
