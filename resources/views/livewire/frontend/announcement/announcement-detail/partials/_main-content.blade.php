@@ -8,7 +8,7 @@
 
     @if ($announcement->image)
     <div class="overflow-hidden rounded-lg mb-6">
-        <img src="{{ Storage::url($announcement->image) }}" alt="{{ $announcement->title }}" class="w-full h-full object-cover object-center">
+        <img src="{{ Storage::url($announcement->image) }}" alt="{{ $announcement->title }}" class="w-full h-max-96 object-cover object-center">
     </div>
     @endif
 

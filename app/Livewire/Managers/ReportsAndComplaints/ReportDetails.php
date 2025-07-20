@@ -20,6 +20,7 @@ use Livewire\Attributes\On;
 use App\Models\UnitCluster;
 use App\Notifications\ReportNotification;
 use App\Models\User;
+use App\Notifications\OccupantReportNotification; 
 
 
 class ReportDetails extends Component
@@ -231,6 +232,18 @@ class ReportDetails extends Component
         foreach ($this->newAttachments as $file) {
             $path = $file->store('reports/updates_attachments', 'public');
             $newLog->attachments()->create(['name' => $file->getClientOriginalName(),'file_name' => basename($path),'mime_type' => $file->getMimeType(),'path' => $path]);
+        }
+
+        $occupants = $report->contract->occupants; // Mengambil semua penghuni dari relasi kontrak
+        if ($occupants->isNotEmpty()) {
+            $newStatusLabel = ReportStatus::from($this->newStatus)->label();
+            $occupantMessage = "Status laporan #{$report->unique_id} Anda telah diperbarui menjadi '{$newStatusLabel}'.";
+            
+            // Loop dan kirim notifikasi ke setiap penghuni
+            foreach ($occupants as $occupant) {
+                // Pastikan model Occupant menggunakan trait Notifiable
+                $occupant->notify(new OccupantReportNotification($report, $occupantMessage));
+            }
         }
 
         $this->notifyUsers($report, $currentUser, $oldStatus, $this->newStatus);

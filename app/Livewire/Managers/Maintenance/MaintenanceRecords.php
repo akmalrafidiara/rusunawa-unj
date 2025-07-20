@@ -78,7 +78,6 @@ class MaintenanceRecords extends Component
 
     protected $listeners = [
         'scheduleSelected' => 'handleScheduleSelected', // Listen to the event from MaintenanceSchedules
-        // Pastikan listener untuk event dispatch dari komponen MaintenanceSchedules ada jika Anda menggunakannya
         'editSchedule' => 'editScheduleOnParent', // Listener untuk event editSchedule
         'confirmDeleteSchedule' => 'confirmDeleteScheduleOnParent', // Listener untuk event confirmDeleteSchedule
     ];
@@ -319,6 +318,9 @@ class MaintenanceRecords extends Component
             $schedule->save();
         }
 
+        // Refresh the schedule list in the parent component
+        $this->dispatch('refreshScheduleList')->to('managers.maintenance.maintenance-schedules');
+
         LivewireAlert::title($this->recordIdBeingEdited ? 'Rekaman pemeliharaan berhasil diperbarui.' : 'Rekaman pemeliharaan berhasil ditambahkan.')
             ->success()
             ->toast()
@@ -435,8 +437,7 @@ class MaintenanceRecords extends Component
         }
     }
 
-    // --- Metode baru untuk menangani dispatch dari tombol Edit/Hapus Jadwal ---
-    // Pastikan metode ini ada dan bersifat public
+    // --- Metode untuk menangani dispatch dari tombol Edit/Hapus Jadwal ---
     public function editSelectedSchedule($scheduleId)
     {
         $this->dispatch('editSchedule', schedule: $scheduleId)->to('managers.maintenance.maintenance-schedules');

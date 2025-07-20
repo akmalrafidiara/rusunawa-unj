@@ -1,0 +1,61 @@
+<div class="relative h-full" x-data="{ open: false }" wire:poll.5s>
+    {{-- Tombol Notifikasi untuk Desktop --}}
+    <a @click.prevent="open = !open" href="#"
+        class="hidden lg:flex relative bg-white dark:bg-zinc-800 rounded-lg shadow-md p-3 border dark:border-zinc-700 flex-col items-center justify-center h-full w-full text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white transition-colors">
+        <span class="sr-only">Lihat Notifikasi</span>
+        <flux:icon.bell class="w-6 h-6" />
+        @if($unreadCount > 0)
+            <span class="absolute top-1 right-1 flex h-4 w-4">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-4 w-4 bg-red-500 text-white text-xs items-center justify-center">{{ $unreadCount }}</span>
+            </span>
+        @endif
+    </a>
+
+    {{-- Tombol Notifikasi untuk Mobile (di dalam dropdown menu) --}}
+    <a @click.prevent="open = !open" href="#" class="lg:hidden flex items-center justify-between text-left w-full text-gray-700 dark:text-gray-300">
+        <div class="flex items-center gap-x-3">
+            <div class="relative">
+                <flux:icon.bell class="w-5 h-5" />
+                @if($unreadCount > 0)
+                   <span class="absolute -top-1 -right-1 flex h-3 w-3">
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                   </span>
+                @endif
+            </div>
+            <span>Notifikasi</span>
+        </div>
+        @if($unreadCount > 0)
+            <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">{{ $unreadCount }}</span>
+        @endif
+    </a>
+
+
+    {{-- Dropdown Konten Notifikasi (Sama untuk mobile dan desktop) --}}
+    <div x-show="open" @click.away="open = false" x-transition 
+         class="absolute right-0 mt-2 w-80 bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-lg shadow-lg z-20">
+        <div class="p-4 border-b border-gray-200 dark:border-zinc-700 flex justify-between items-center">
+            <h6 class="font-semibold text-gray-800 dark:text-gray-200">Notifikasi</h6>
+            @if($unreadCount > 0)
+                <button wire:click="markAllAsRead" class="text-sm text-blue-500 hover:underline">Tandai semua dibaca</button>
+            @endif
+        </div>
+        <div class="max-h-96 overflow-y-auto">
+            @forelse($notifications as $notification)
+                <div class="block p-4 border-b border-gray-100 dark:border-zinc-700 hover:bg-gray-100 dark:hover:bg-zinc-700">
+                    <a href="#" wire:click.prevent="readAndRedirect('{{ $notification->id }}', '{{ $notification->data['url'] ?? '#' }}')">
+                        <p class="text-sm text-gray-700 dark:text-gray-300">{{ $notification->data['message'] }}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ $notification->created_at->diffForHumans() }}</p>
+                    </a>
+                    @if(is_null($notification->read_at))
+                        <button wire:click="markAsRead('{{ $notification->id }}')" class="mt-2 text-xs text-blue-500 hover:underline">Tandai dibaca</button>
+                    @endif
+                </div>
+            @empty
+                <div class="p-4 text-center text-gray-500 dark:text-gray-400">
+                    Tidak ada notifikasi baru.
+                </div>
+            @endforelse
+        </div>
+    </div>
+</div>
