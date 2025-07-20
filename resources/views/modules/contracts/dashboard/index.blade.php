@@ -47,18 +47,9 @@
                         x-transition:leave="transition ease-in duration-75"
                         x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
                         class="absolute right-0 mt-2 w-48 bg-white dark:bg-zinc-800 rounded-md shadow-lg py-1 z-20 border dark:border-zinc-700">
-                        <a href="#"
-                            class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-700">
-                            <flux:icon name="bell" class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400" />
-                            Notifikasi
-                            <span class="ml-auto flex-shrink-0 relative">
-                                <span class="absolute top-0 right-0 h-2 w-2 flex items-center justify-center">
-                                    <span
-                                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-                                </span>
-                            </span>
-                        </a>
+                        <div class="px-4 py-2">
+                             <livewire:contracts.dashboard.notifications />
+                        </div>
                         <form method="POST" action="{{ route('contract.auth.logout') }}" class="w-full">
                             @csrf
                             <button type="submit"
@@ -89,16 +80,9 @@
 
                     {{-- Notif & Logout di desktop --}}
                     <div class="lg:col-span-2 flex gap-4 items-stretch">
-                        <a href="#"
-                            class="relative bg-white dark:bg-zinc-800 rounded-lg shadow-md p-3 border dark:border-zinc-700 flex flex-col items-center justify-center flex-1 h-full w-full text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white transition-colors">
-                            <span class="sr-only">Lihat Notifikasi</span>
-                            <flux:icon name="bell" class="w-6 h-6" />
-                            <span class="absolute top-1 right-1 h-2 w-2 flex items-center justify-center">
-                                <span
-                                    class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-                            </span>
-                        </a>
+                        <div class="flex-1">
+                             <livewire:contracts.dashboard.notifications />
+                        </div>
                         <form method="POST" action="{{ route('contract.auth.logout') }}" class="flex-1">
                             @csrf
                             <button type="submit"
