@@ -53,7 +53,7 @@ class CheckMaintenanceSchedule extends Command
             }
             // Check for overdue maintenance reminders
             else {
-                $overdueReminders = [-3, -5, -7];
+                $overdueReminders = [-1, -3, -5, -7];
                 if (in_array($daysUntilDue, $overdueReminders)) {
                     $shouldNotify = true;
                     $daysPastDue = abs($daysUntilDue);
