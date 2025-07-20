@@ -178,7 +178,7 @@ new #[Layout('components.layouts.frontend'), Title('Rusunawa UNJ | Lacak Pengadu
                     <x-frontend.complaint.form-label for="reportIdToTrack">Masukkan ID Pengaduan <span class="text-red-500">*</span></x-frontend.complaint.form-label>
                     <div class="flex items-start gap-2"> {{-- Changed from items-end to items-start --}}
                         <div class="flex-grow"> {{-- Input takes available space --}}
-                            <x-frontend.search wire:model.live="reportIdToTrack" clearable placeholder="PGD89078" class="w-full" />
+                            <x-frontend.search wire:model.live="reportIdToTrack" clearable placeholder="PGD-XXX-XXX-XXX" class="w-full" />
                         </div>
                         {{-- Tombol Cari --}}
                         <x-frontend.complaint.button type="submit" variant="primary" class="shrink-0 h-[42px]">Cari</x-frontend.complaint.button>
