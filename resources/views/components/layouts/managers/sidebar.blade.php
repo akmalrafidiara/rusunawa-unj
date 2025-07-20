@@ -26,7 +26,7 @@ $adminSidebarMenu = [
                 'label' => __('Verifikasi Penghuni'),
                 'route' => route('occupant.verification'),
                 'current' => request()->routeIs('occupant.verification'),
-                'badge' => 3,
+                'badge' => $pendingOccupants ?? 0,
                 'roles' => [RoleUser::ADMIN->value, RoleUser::HEAD_OF_RUSUNAWA->value], // Add roles
             ],
             [
@@ -34,7 +34,7 @@ $adminSidebarMenu = [
                 'label' => __('Konfirmasi Pembayaran'),
                 'route' => route('payment.confirmation'),
                 'current' => request()->routeIs('payment.confirmation'),
-                'badge' => 5,
+                'badge' => $pendingPayments ?? 0,
                 'roles' => [RoleUser::ADMIN->value, RoleUser::HEAD_OF_RUSUNAWA->value], // Add roles
             ],
         ],
@@ -126,7 +126,7 @@ $adminSidebarMenu = [
                 'label' => __('Laporan & Keluhan'),
                 'route' => route('reports.and.complaints'),
                 'current' => request()->routeIs('reports.and.complaints'),
-                'badge' => 1,
+                'badge' => $pendingReports ?? 0,
                 'roles' => [RoleUser::ADMIN->value, RoleUser::HEAD_OF_RUSUNAWA->value, RoleUser::STAFF_OF_RUSUNAWA->value], // Add roles
             ],
             [
@@ -202,7 +202,7 @@ $adminSidebarMenu = [
                 'label' => __('Pertanyaan Pengunjung'),
                 'route' => route('guest.questions'),
                 'current' => request()->routeIs('guest.questions'),
-                'badge' => 4,
+                'badge' => $pendingQuestions ?? 0,
                 'roles' => [RoleUser::ADMIN->value, RoleUser::HEAD_OF_RUSUNAWA->value], // Add roles
             ],
             [
@@ -313,7 +313,8 @@ foreach ($adminSidebarMenu as $group) {
                                 }
                             }
                         @endphp
-                        <flux:navlist.group :heading="$item['label']" expandable :expanded="$isExpanded" :icon="isset($item['icon']) ? $item['icon'] : null">
+                        <flux:navlist.group :heading="$item['label']" expandable :expanded="$isExpanded"
+                            :icon="isset($item['icon']) ? $item['icon'] : null">
                             @foreach ($item['items'] as $subItem)
                                 <flux:navlist.item :href="$subItem['route']" :current="$subItem['current']"
                                     wire:navigate.hover :icon="isset($subItem['icon']) ? $subItem['icon'] : null">

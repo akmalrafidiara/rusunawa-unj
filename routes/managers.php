@@ -1,4 +1,4 @@
-<?php 
+<?php
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 use App\Enums\RoleUser;
@@ -7,6 +7,9 @@ use App\Enums\RoleUser;
 Route::prefix('managers')->middleware(['auth', 'verified', 'role:'.RoleUser::ADMIN->value.'|'.RoleUser::HEAD_OF_RUSUNAWA->value.'|'.RoleUser::STAFF_OF_RUSUNAWA->value])->group(function () {
     // Dashboard
     Route::view('/', 'modules.managers.overview')->name('dashboard');
+
+    // Notifications
+    Route::view('notifications', 'modules.managers.notifications')->name('managers.notifications');
 
     // Settings
     Route::redirect('settings', 'managers.settings.profile');
