@@ -163,7 +163,7 @@
                                     <h3 style="font-size: 18px; color: #1a202c; margin-top: 0; font-weight: 600;">Metode
                                         Login Manual</h3>
                                     <p style="font-size: 15px; color: #4a5568;">Simpan informasi ini untuk login kapan
-                                        saja melalui <a href="{{ route('occupant.auth') }}"
+                                        saja melalui <a href="{{ route('contract.auth') }}"
                                             style="color: #059669; text-decoration: none;">halaman portal</a> kami:</p>
                                     <ul style="list-style-type: none; padding-left: 0;">
                                         <li style="margin-bottom: 8px; font-size: 15px;"><strong>ID Pemesanan:</strong>

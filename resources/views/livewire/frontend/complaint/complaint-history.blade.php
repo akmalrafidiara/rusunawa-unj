@@ -150,7 +150,7 @@ new #[Layout('components.layouts.frontend'), Title('Rusunawa UNJ | Riwayat Penga
                     <h2 class="text-xl font-semibold text-gray-800 lg:text-2xl dark:text-gray-100">Anda Belum Login</h2>
                     <p class="mb-6 text-gray-600 text-m lg:text-lg dark:text-gray-300">Silakan login terlebih dahulu
                         untuk melihat riwayat pengaduan Anda.</p>
-                    <a href="{{ route('occupant.auth', ['redirect' => url()->current()]) }}" wire:navigate
+                    <a href="{{ route('contract.auth', ['redirect' => url()->current()]) }}" wire:navigate
                         class="px-6 py-2 text-lg font-bold text-white transition duration-300 ease-in-out bg-green-500 rounded-full shadow-md hover:bg-green-600">
                         Login
                     </a>

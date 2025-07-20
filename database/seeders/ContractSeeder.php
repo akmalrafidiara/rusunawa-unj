@@ -17,6 +17,8 @@ class ContractSeeder extends Seeder
      */
     public function run(): void
     {
+        $total_contract = (int) $this->command->ask('Berapa banyak kontrak yang ingin dibuat?', 15);
+
         $units = Unit::where('status', 'available')->get();
         $occupantTypes = OccupantType::all();
 
@@ -25,7 +27,7 @@ class ContractSeeder extends Seeder
             return;
         }
 
-        for ($i = 0; $i < 15; $i++) {
+        for ($i = 0; $i < $total_contract; $i++) {
             $unit = $units->random();
             $occupantType = $occupantTypes->random();
             $pricingBasis = fake()->randomElement(PricingBasis::values());
