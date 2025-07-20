@@ -17,8 +17,8 @@
         activeIndex: -1,
     }" x-init="..." @click.away="open = false" class="relative">
 
-        <button type="button" @click="open = !open" {{-- PERBAIKAN UTAMA ADA DI SINI --}}
-            class="relative w-full cursor-pointer rounded-md border bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:outline-none focus:ring-1 sm:text-sm 
+        <button type="button" @click="open = !open"
+            class="pl-4 pr-2 py-2 cursor-pointer border rounded-md border-gray-300 focus:border-emerald-500 focus:ring-emerald-500 dark:border-gray-600 dark:bg-zinc-800 dark:text-white shadow-sm flex justify-between items-center gap-2 w-full bg-transparent
                    {{ $error ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-emerald-500 focus:ring-emerald-500' }} 
                    dark:border-gray-600 dark:bg-zinc-800 dark:text-white">
 
@@ -26,7 +26,7 @@
                 x-text="selectedValue ? (isArrayOfValues ? selectedValue : (options.find(o => o.value === selectedValue)?.label ?? selectedValue)) : '{{ $label ?? 'Pilih salah satu...' }}'"
                 class="block truncate"></span>
 
-            <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+            <span class="pointer-events-none flex items-center pr-2">
                 <svg class="h-5 w-5 text-gray-400 transition-transform duration-200" :class="{ 'rotate-180': open }"
                     xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />

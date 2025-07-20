@@ -4,7 +4,7 @@
 
 <div x-data="{ open: false }" class="relative">
     <button @click="open = !open"
-        class="px-4 py-2 border rounded-md border-gray-300 focus:border-emerald-500 focus:ring-emerald-500 dark:border-gray-600 dark:bg-zinc-800 dark:text-white shadow-sm flex justify-between items-center w-full bg-transparent text-gray-700"
+        class="px-4 py-2 cursor-pointer border rounded-md border-gray-300 focus:border-emerald-500 focus:ring-emerald-500 dark:border-gray-600 dark:bg-zinc-800 dark:text-white shadow-sm flex justify-between items-center w-full bg-transparent text-gray-700"
         :class="{ 'ring-2 ring-blue-500': open }" type="button">
         @if (isset($trigger) && $trigger)
             {{ $trigger }}
