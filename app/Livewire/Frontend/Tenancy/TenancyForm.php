@@ -5,6 +5,7 @@ namespace App\Livewire\Frontend\Tenancy;
 use App\Enums\ContractStatus;
 use App\Enums\GenderAllowed;
 use App\Enums\InvoiceStatus;
+use App\Enums\KeyStatus;
 use App\Enums\OccupantStatus;
 use App\Jobs\SendWelcomeEmail;
 use App\Models\Contract;
@@ -307,6 +308,7 @@ class TenancyForm extends Component
                 'end_date' => $this->endDate,
                 'pricing_basis' => $this->pricingBasis->value,
                 'total_price' => $this->totalPrice,
+                'key_status' => KeyStatus::PENDING_HANDOVER,
                 'status' => ContractStatus::PENDING_PAYMENT,
             ]);
 

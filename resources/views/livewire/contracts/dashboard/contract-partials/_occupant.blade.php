@@ -49,9 +49,18 @@
                 <p class="font-semibold">{{ $contract->start_date->format('d M Y') }} -
                     {{ $contract->end_date->format('d M Y') }}</p>
             </div>
-            <div>
-                <p class="text-sm text-gray-500">Tipe Sewa</p>
-                <p class="font-semibold">{{ $contract->pricing_basis->label() }}</p>
+            <div class="flex items-center gap-4">
+                <div>
+                    <p class="text-sm text-gray-500">Tipe Sewa</p>
+                    <p class="font-semibold">{{ $contract->pricing_basis->label() }}
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Kunci</p>
+                    <x-managers.ui.badge class="{{ implode(' ', $contract->key_status->color()) }}">
+                        {{ $contract->key_status->label() }}
+                    </x-managers.ui.badge></p>
+                </div>
+
             </div>
             <div class="border-t dark:border-zinc-600 pt-4">
                 <div class="grid gap-4">
