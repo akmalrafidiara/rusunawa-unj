@@ -3,6 +3,7 @@
 namespace App\Livewire\Managers;
 
 use App\Enums\InvoiceStatus;
+use App\Mail\InvoiceReminder;
 use App\Models\Contract;
 use App\Models\Invoice as InvoiceModel;
 use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
@@ -10,7 +11,8 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\InvoicesExport; // Anda perlu membuat export ini nanti
+use App\Exports\InvoicesExport;
+use Illuminate\Support\Facades\Mail;
 
 class Invoice extends Component
 {
@@ -22,8 +24,8 @@ class Invoice extends Component
         $contractId = '',
         $description = '',
         $amount = '',
-        $dueAt = '',
-        $paidAt = '',
+        $dueAt = null,
+        $paidAt = null,
         $status = '';
 
     // Opsi dropdown
@@ -187,7 +189,9 @@ class Invoice extends Component
             'status' => $this->status,
         ];
 
-        InvoiceModel::updateOrCreate(['id' => $this->invoiceIdBeingSelected], $data);
+        $invoice = InvoiceModel::updateOrCreate(['id' => $this->invoiceIdBeingSelected], $data);
+
+        Mail::to($invoice->contract->pic->email)->send(new InvoiceReminder($invoice, 'created'));
 
         LivewireAlert::title($this->invoiceIdBeingSelected ? 'Data tagihan berhasil diperbarui.' : 'Tagihan berhasil ditambahkan.')
             ->success()
@@ -197,6 +201,12 @@ class Invoice extends Component
 
         $this->resetForm();
         $this->showModal = false;
+    }
+
+    public function reminder($invoiceId)
+    {
+        $invoice = InvoiceModel::find($invoiceId);
+        Mail::to($invoice->contract->pic->email)->send(new InvoiceReminder($invoice, 'created'));
     }
 
     public function resetForm()

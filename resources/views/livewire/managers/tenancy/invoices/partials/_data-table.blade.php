@@ -56,6 +56,12 @@
 
                     <x-managers.table.cell class="text-right">
                         <div class="flex gap-2">
+                            {{-- Reminder Button --}}
+                            <x-managers.ui.button wire:click="reminder({{ $invoice->id }})" variant="info"
+                                size="sm">
+                                <flux:icon.bell class="w-4" />
+                            </x-managers.ui.button>
+
                             {{-- Detail Button --}}
                             <x-managers.ui.button wire:click="detail({{ $invoice->id }})" variant="info"
                                 size="sm">

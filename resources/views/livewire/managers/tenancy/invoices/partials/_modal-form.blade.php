@@ -23,7 +23,7 @@
         {{-- Jumlah --}}
         <div>
             <x-managers.form.label>Jumlah</x-managers.form.label>
-            <x-managers.form.input wire:model="amount" type="number" step="0.01"
+            <x-managers.form.input wire:model="amount" rupiah type="number" step="0.01"
                 placeholder="Masukkan jumlah tagihan" required />
         </div>
 

@@ -36,6 +36,8 @@ class InvoiceReminder extends Mailable implements ShouldQueue
             $subject = 'Pengingat: Tagihan Rusunawa UNJ Anda Akan Jatuh Tempo - #' . $this->invoice->invoice_number;
         } elseif ($this->reminderType === 'overdue') {
             $subject = 'Peringatan: Tagihan Rusunawa UNJ Anda Sudah Jatuh Tempo! - #' . $this->invoice->invoice_number;
+        } elseif ($this->reminderType === 'created') {
+            $subject = 'Pemberitahuan: Tagihan Rusunawa UNJ Anda Dibuat! - #' . $this->invoice->invoice_number;
         }
 
         return new Envelope(
@@ -49,10 +51,10 @@ class InvoiceReminder extends Mailable implements ShouldQueue
     public function content(): Content
     {
         return new Content(
-            markdown: 'emails.invoices.invoice-reminder',
+            markdown: 'emails.invoice-reminder',
             with: [
                 'invoice' => $this->invoice,
-                'occupantName' => $this->invoice->contract->occupants->first()->full_name ?? 'Penghuni',
+                'occupantName' => $this->invoice->contract->pic->full_name ?? 'Penghuni',
                 'unitNumber' => $this->invoice->contract->unit->room_number ?? 'N/A',
                 'unitCluster' => $this->invoice->contract->unit->unitCluster->name ?? 'N/A',
                 'reminderType' => $this->reminderType,

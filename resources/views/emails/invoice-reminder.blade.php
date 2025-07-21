@@ -9,6 +9,8 @@
                 Pengingat: Tagihan Akan Jatuh Tempo - #{{ $invoice->invoice_number }}
             @elseif ($reminderType === 'overdue')
                 Peringatan: Tagihan Sudah Jatuh Tempo! - #{{ $invoice->invoice_number }}
+            @elseif ($reminderType === 'created')
+                Pemberitahuan: Tagihan Rusunawa UNJ Anda Dibuat! - #{{ $invoice->invoice_number }}
             @endif
         </title>
         <style>
@@ -74,7 +76,7 @@
                                     </p>
                                     <p style="font-size: 16px; line-height: 1.6; color: #4a5568;">
                                         Tagihan ini akan jatuh tempo pada tanggal <strong
-                                            style="color: #eab308;">{{ $invoice->due_at->translatedFormat('d F Y H:i') }}
+                                            style="color: #eab308;">{{ $invoice->due_at->format('d F Y H:i') }}
                                             WIB</strong>.
                                         Mohon segera lakukan pembayaran untuk menghindari denda atau sanksi.
                                     </p>
@@ -90,7 +92,7 @@
                                     </p>
                                     <p style="font-size: 16px; line-height: 1.6; color: #4a5568;">
                                         Tagihan ini sudah jatuh tempo pada tanggal <strong
-                                            style="color: #ef4444;">{{ $invoice->due_at->translatedFormat('d F Y H:i') }}
+                                            style="color: #ef4444;">{{ $invoice->due_at->format('d F Y H:i') }}
                                             WIB</strong>.
                                         Mohon segera lakukan pembayaran untuk menghindari denda atau sanksi lebih
                                         lanjut.
@@ -136,7 +138,7 @@
                                                         Batas Waktu Pembayaran</td>
                                                     <td
                                                         style="padding: 10px 0 0 0; font-size: 16px; color: #dc3545; text-align: right; font-weight: 600; border-top: 1px solid #e2e8f0; margin-top: 10px;">
-                                                        {{ $invoice->due_at->translatedFormat('d M Y, H:i') }} WIB
+                                                        {{ $invoice->due_at->format('d M Y, H:i') }} WIB
                                                     </td>
                                                 </tr>
                                             </table>
