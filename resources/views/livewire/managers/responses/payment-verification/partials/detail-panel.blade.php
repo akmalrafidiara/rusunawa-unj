@@ -21,14 +21,14 @@
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nama Penghuni
                             (PIC)</label>
                         <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">
-                            {{ $payment->invoice->contract->pic->first()->full_name ?? '-' }}
+                            {{ $payment->invoice->contract->pic->full_name ?? '-' }}
                         </p>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nomor WhatsApp
                             Penghuni</label>
                         <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">
-                            {{ $payment->invoice->contract->pic->first()->whatsapp_number ?? '-' }}
+                            {{ $payment->invoice->contract->pic->whatsapp_number ?? '-' }}
                         </p>
                     </div>
                     <div>
@@ -79,7 +79,7 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Status
                                 Invoice</label>
-                            <x-managers.ui.badge :variant="$payment->invoice->status->color()" class="mt-1">
+                            <x-managers.ui.badge class="mt-1 {{ implode(' ', $payment->invoice->status->color()) }}">
                                 {{ $payment->invoice->status->label() }}
                             </x-managers.ui.badge>
                         </div>

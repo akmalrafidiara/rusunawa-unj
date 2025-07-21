@@ -81,7 +81,7 @@
                         {{ $history->loggable->full_name ?? 'N/A' }}
                         <span
                             class="ml-2 text-xs px-2 py-1 rounded-full
-                            {{ $history->status === 'approved' ? 'bg-green-200 text-green-800 dark:bg-green-700 dark:text-green-100' : 'bg-red-200 text-red-800 dark:bg-red-700 dark:text-red-100' }}">
+                            {{ $history->status === \App\Enums\VerificationStatus::APPROVED ? 'bg-green-200 text-green-800 dark:bg-green-700 dark:text-green-100' : 'bg-red-200 text-red-800 dark:bg-red-700 dark:text-red-100' }}">
                             {{ ucfirst($history->status->value) }}
                         </span>
                     </div>

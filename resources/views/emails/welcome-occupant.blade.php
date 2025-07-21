@@ -58,7 +58,7 @@
                         <tr>
                             <td style="padding: 30px 40px; color: #333333;">
                                 <h1 style="font-size: 24px; color: #1a202c; margin-top: 0; font-weight: 600;">Selamat
-                                    Datang, {{ $contract->pic->first()->full_name }}!</h1>
+                                    Datang, {{ $contract->pic->full_name }}!</h1>
                                 <p style="font-size: 16px; line-height: 1.6; color: #4a5568;">
                                     Pemesanan Anda untuk unit <strong
                                         style="font-size: 18px;">{{ $contract->unit->room_number }}</strong> telah

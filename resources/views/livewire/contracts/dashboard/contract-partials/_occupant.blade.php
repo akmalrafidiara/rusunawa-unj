@@ -25,6 +25,16 @@
                         Tambah Penghuni
                     </a>
                 @endif
+                @if (
+                    $contract->status === \App\Enums\ContractStatus::ACTIVE &&
+                        $contract->pricing_basis === \App\Enums\PricingBasis::PER_NIGHT &&
+                        $contract->invoices()->count() > 0 &&
+                        $contract->invoices()->latest()->first()->status === \App\Enums\InvoiceStatus::PAID)
+                    | <a class="cursor-pointer text-emerald-600 hover:text-emerald-800 underline font-normal"
+                        wire:click="showExtendContractForm">
+                        Perpanjang Kontrak
+                    </a>
+                @endif
             </div>
             <div>
                 <p class="text-sm text-gray-500">Unit Terisi</p>

@@ -8,4 +8,5 @@
     @include('livewire.contracts.dashboard.contract-partials._modal-history')
     @include('livewire.contracts.dashboard.contract-partials._modal-occupant-form')
     @include('livewire.contracts.dashboard.contract-partials._modal-payment-form')
+    @include('livewire.contracts.dashboard.contract-partials._modal-extended-contract')
 </div>

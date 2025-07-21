@@ -6,6 +6,8 @@ use App\Data\AcademicData;
 use App\Enums\GenderAllowed;
 use App\Enums\InvoiceStatus;
 use App\Enums\OccupantStatus;
+use App\Enums\PaymentStatus;
+use App\Enums\PricingBasis;
 use App\Models\Contract as ContractModel;
 use App\Models\Invoice;
 use App\Models\Occupant;
@@ -16,6 +18,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 use Livewire\Component;
+use Carbon\Carbon;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
 use Spatie\LivewireFilepond\WithFilePond;
@@ -69,6 +72,14 @@ class Contract extends Component
         $studyProgramOptions = [],
         $classYearOptions = [];
 
+
+    // Extension Contract
+    public $newEndDate;
+    public $extensionMustBePaid;
+    public $extensionAmountPaid;
+    public $extensionProofOfPayment;
+    public $extensionNotes;
+
     public bool $showModal = false;
     public string $modalType = '';
 
@@ -76,17 +87,15 @@ class Contract extends Component
     {
         $this->invoice = $invoice;
 
-        /**
-         * @var ContractModel $contract
-         */
-        $this->contract = Auth::guard('contract')->user();
+        // Ambil user contract dari Auth, lalu ambil model ContractModel
+        $userContract = Auth::guard('contract')->user();
+        $this->contract = ContractModel::where('id', $userContract->id ?? null)->first();
 
-        $this->occupants = $this->contract->occupants()->get();
-
-        $this->unit = $this->contract->unit ?? new Unit();
-        $this->latestInvoice = $this->contract->invoices()->latest()->first();
-        $this->invoices = $this->contract->invoices()->get();
-        $this->payments = $this->contract->payments()->get();
+        $this->occupants = $this->contract?->occupants()->get() ?? collect();
+        $this->unit = $this->contract?->unit ?? new Unit();
+        $this->latestInvoice = $this->contract?->invoices()->latest()->first();
+        $this->invoices = $this->contract?->invoices()->get() ?? collect();
+        $this->payments = $this->contract?->payments()->get() ?? collect();
 
         $this->genderOptions = GenderAllowed::optionsWithoutGeneral();
         $this->facultyOptions = collect(AcademicData::getFacultiesAndPrograms())->keys()->map(fn($f) => ['value' => $f, 'label' => $f])->toArray();
@@ -451,5 +460,113 @@ class Contract extends Component
         return $this->contract?->occupants
             ->where('status', OccupantStatus::REJECTED)
             ->reject(fn($o) => $o->id === ($this->occupant->id ?? null));
+    }
+
+    /**
+    * ====================================================
+    * INI PERPANJANGAN KONTRAAAAAAKKKK >> KELUPAAAN WKWKWK
+    * ====================================================
+    */
+
+    public function updatedNewEndDate($value)
+    {
+        $this->extensionMustBePaid = $this->calculateExtensionCost($value);
+    }
+
+    private function calculateExtensionCost($newEndDateValue): int
+    {
+        if (!$newEndDateValue) {
+            return 0;
+        }
+
+        $oldEndDate = Carbon::parse($this->contract->end_date);
+        $newEndDate = Carbon::parse($newEndDateValue);
+
+        if ($newEndDate->isAfter($oldEndDate)) {
+            $days = $oldEndDate->diffInDays($newEndDate);
+            $pricePerNight = $this->contract->total_price ?? 0;
+            
+            return $days * $pricePerNight;
+        }
+
+        return 0;
+    }
+
+    public function showExtendContractForm()
+    {
+        $this->resetAll();
+        $this->resetValidation();
+        
+        $this->showModal = true;
+        $this->modalType = 'extend';
+        
+        $currentEndDate = $this->contract->end_date;
+        $nextDay = Carbon::parse($currentEndDate)->addDay()->toDateString();
+        $this->newEndDate = $nextDay;
+
+        $this->updatedNewEndDate($this->newEndDate);
+
+        $this->extensionAmountPaid = null;
+        $this->extensionProofOfPayment = null;
+        $this->extensionNotes = '';
+    }
+
+    public function extendContract()
+    {
+        if ($this->contract->pricing_basis !== PricingBasis::PER_NIGHT) {
+            LivewireAlert::title('Gagal')
+                ->text('Hanya kontrak dengan tipe per malam yang dapat diperpanjang.')
+                ->error()->toast()->position('top-end')->show();
+            return;
+        }
+
+        $this->validate([
+            'newEndDate' => 'required|date|after:' . $this->contract->end_date,
+            'extensionAmountPaid' => 'required|numeric|min:0',
+            'extensionProofOfPayment' => 'required|file|mimes:jpeg,png,jpg,pdf|max:2048',
+            'extensionNotes' => 'nullable|string|max:255',
+        ], [
+            'newEndDate.required' => 'Tanggal akhir baru wajib diisi.',
+            'newEndDate.after' => 'Tanggal akhir baru harus lebih dari tanggal akhir kontrak saat ini.',
+            'extensionAmountPaid.required' => 'Jumlah pembayaran wajib diisi.',
+            'extensionProofOfPayment.required' => 'Bukti pembayaran wajib diunggah.',
+            'extensionProofOfPayment.file' => 'File harus berupa gambar atau PDF.',
+            'extensionProofOfPayment.mimes' => 'File harus .jpg, .jpeg, .png, atau .pdf.',
+            'extensionProofOfPayment.max' => 'Ukuran file tidak boleh lebih dari 2MB.',
+            'extensionNotes.max' => 'Catatan tidak boleh lebih dari 255 karakter.',
+        ]);
+
+        $path = null;
+        if ($this->extensionProofOfPayment instanceof TemporaryUploadedFile) {
+            $path = $this->extensionProofOfPayment->store('payments', 'public');
+        }
+
+        $this->contract->end_date = $this->newEndDate;
+        $this->contract->save();
+
+        $invoice = Invoice::create([
+            'contract_id' => $this->contract->id,
+            'amount' => $this->extensionAmountPaid,
+            'due_at' => $this->newEndDate,
+            'status' => InvoiceStatus::PENDING_PAYMENT_VERIFICATION,
+            'description' => 'Perpanjangan kontrak #' . $this->contract->contract_code . ' hingga ' . $this->newEndDate,
+        ]);
+
+        Payment::create([
+            'invoice_id' => $invoice->id,
+            'amount_paid' => $this->extensionAmountPaid,
+            'payment_date' => now(),
+            'proof_of_payment_path' => $path,
+            'notes' => $this->extensionNotes,
+            'status' => PaymentStatus::PENDING_VERIFICATION,
+        ]);
+
+        LivewireAlert::title('Berhasil')
+            ->text('Perpanjangan kontrak berhasil diajukan dan menunggu verifikasi.')
+            ->success()->toast()->position('top-end')->show();
+
+        $this->showModal = false;
+        $this->modalType = '';
+        $this->mount();
     }
 }

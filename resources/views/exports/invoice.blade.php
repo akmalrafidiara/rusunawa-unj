@@ -123,8 +123,8 @@
                             <tr>
                                 <td>
                                     <strong style="color: #555;">Ditagihkan Kepada:</strong><br>
-                                    {{ $contract->pic->first()->full_name }}<br>
-                                    {{ $contract->pic->first()->email }}
+                                    {{ $contract->pic->full_name }}<br>
+                                    {{ $contract->pic->email }}
                                 </td>
                                 <td class="text-right">
                                     <strong style="color: #555;">Dari:</strong><br>
