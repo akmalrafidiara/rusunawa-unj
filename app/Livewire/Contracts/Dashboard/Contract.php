@@ -462,6 +462,12 @@ class Contract extends Component
             ->reject(fn($o) => $o->id === ($this->occupant->id ?? null));
     }
 
+    /**
+    * ====================================================
+    * INI PERPANJANGAN KONTRAAAAAAKKKK >> KELUPAAAN WKWKWK
+    * ====================================================
+    */
+
     public function updatedNewEndDate($value)
     {
         $this->extensionMustBePaid = $this->calculateExtensionCost($value);
@@ -498,7 +504,6 @@ class Contract extends Component
         $nextDay = Carbon::parse($currentEndDate)->addDay()->toDateString();
         $this->newEndDate = $nextDay;
 
-        // Panggil kalkulasi saat form pertama kali dibuka
         $this->updatedNewEndDate($this->newEndDate);
 
         $this->extensionAmountPaid = null;
@@ -508,7 +513,6 @@ class Contract extends Component
 
     public function extendContract()
     {
-        // Pastikan hanya kontrak per_night yang bisa diperpanjang
         if ($this->contract->pricing_basis !== PricingBasis::PER_NIGHT) {
             LivewireAlert::title('Gagal')
                 ->text('Hanya kontrak dengan tipe per malam yang dapat diperpanjang.')
@@ -516,7 +520,6 @@ class Contract extends Component
             return;
         }
 
-        // Validasi tanggal baru harus lebih dari end_date lama
         $this->validate([
             'newEndDate' => 'required|date|after:' . $this->contract->end_date,
             'extensionAmountPaid' => 'required|numeric|min:0',
@@ -533,17 +536,14 @@ class Contract extends Component
             'extensionNotes.max' => 'Catatan tidak boleh lebih dari 255 karakter.',
         ]);
 
-        // Simpan bukti pembayaran
         $path = null;
         if ($this->extensionProofOfPayment instanceof TemporaryUploadedFile) {
             $path = $this->extensionProofOfPayment->store('payments', 'public');
         }
 
-        // Update kontrak end_date
         $this->contract->end_date = $this->newEndDate;
         $this->contract->save();
 
-        // Buat invoice baru untuk perpanjangan
         $invoice = Invoice::create([
             'contract_id' => $this->contract->id,
             'amount' => $this->extensionAmountPaid,
@@ -552,7 +552,6 @@ class Contract extends Component
             'description' => 'Perpanjangan kontrak #' . $this->contract->contract_code . ' hingga ' . $this->newEndDate,
         ]);
 
-        // Simpan pembayaran
         Payment::create([
             'invoice_id' => $invoice->id,
             'amount_paid' => $this->extensionAmountPaid,
