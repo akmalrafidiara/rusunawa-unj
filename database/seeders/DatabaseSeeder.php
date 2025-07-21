@@ -39,6 +39,7 @@ class DatabaseSeeder extends Seeder
             MaintenanceRecordSeeder::class,
             ContractSeeder::class,
             OccupantSeeder::class,
+            InvoiceSeeder::class,
             ReportSeeder::class,
             ReportLogSeeder::class,
         ]);

@@ -72,7 +72,7 @@ class OccupantSeeder extends Seeder
                     'class_year' => null,
                     'agree_to_regulations' => true,
                     'notes' => fake()->optional()->text(100),
-                    'status' => 'pending_verification',
+                    'status' => fake()->randomElement(['verified', 'pending_verification']),
                 ];
                 $additionalOccupant = Occupant::create($additionalOccupantData);
                 $contract->occupants()->attach($additionalOccupant->id); // Attach tanpa is_pic

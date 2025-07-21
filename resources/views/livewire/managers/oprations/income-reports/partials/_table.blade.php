@@ -65,10 +65,10 @@
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex flex-col">
                                 <span class="text-sm font-medium text-zinc-900 dark:text-white">
-                                    {{ $invoice->paid_at->translatedFormat('d M Y') }}
+                                    {{ $invoice->paid_at ? $invoice->paid_at->format('d M Y') : 'N/A' }}
                                 </span>
                                 <span class="text-xs text-zinc-500 dark:text-zinc-400">
-                                    {{ $invoice->paid_at->translatedFormat('H:i') }} WIB
+                                    {{ $invoice->paid_at ? $invoice->paid_at->format('H:i') . ' WIB' : '' }}
                                 </span>
                             </div>
                         </td>

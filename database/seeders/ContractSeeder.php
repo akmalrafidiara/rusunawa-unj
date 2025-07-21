@@ -42,7 +42,7 @@ class ContractSeeder extends Seeder
                 'end_date' => $endDate,
                 'pricing_basis' => $pricingBasis,
                 'total_price' => fake()->numberBetween(500000, 2000000),
-                'status' => ContractStatus::PENDING_PAYMENT,
+                'status' => fake()->randomElement([ContractStatus::PENDING_PAYMENT, ContractStatus::ACTIVE]),
                 'expired_date' => $endDate->copy()->addHours(config('tenancy.initial_payment_due_hours', 2)),
             ]);
 
