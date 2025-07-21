@@ -3,6 +3,7 @@
 namespace App\Livewire\Managers;
 
 use App\Enums\ContractStatus;
+use App\Enums\KeyStatus;
 use App\Enums\PricingBasis;
 use App\Models\Contract as ContractModel;
 use App\Models\Occupant;
@@ -29,11 +30,13 @@ class Contract extends Component
         $startDate = '',
         $endDate = '',
         $pricingBasis = '',
+        $keyStatus = '',
         $status = '';
 
     // Opsi dropdown
     public
         $statusOptions,
+        $keyStatusOptions,
         $unitOptions,
         $occupantOptions,
         $occupantTypeOptions,
@@ -65,6 +68,7 @@ class Contract extends Component
     public function mount()
     {
         $this->statusOptions = ContractStatus::options();
+        $this->keyStatusOptions = KeyStatus::options(); 
         $this->pricingBasisOptions = PricingBasis::options();
         $this->occupantTypeOptions = OccupantType::query()
             ->get()
@@ -160,6 +164,7 @@ class Contract extends Component
         $this->startDate = $contract->start_date ? $contract->start_date->format('Y-m-d') : null;
         $this->endDate = $contract->end_date ? $contract->end_date->format('Y-m-d') : null;
         $this->pricingBasis = $contract->pricing_basis->value;
+        $this->keyStatus = $contract->key_status->value;
         $this->status = $contract->status->value;
     }
 
@@ -176,6 +181,7 @@ class Contract extends Component
             'endDate' => 'required|date|after_or_equal:startDate',
             'pricingBasis' => ['required', \Illuminate\Validation\Rule::in(PricingBasis::values())],
             'status' => ['required', \Illuminate\Validation\Rule::in(ContractStatus::values())],
+            'keyStatus' => ['nullable', \Illuminate\Validation\Rule::in(KeyStatus::values())],
         ];
     }
 
@@ -203,6 +209,8 @@ class Contract extends Component
             'pricingBasis.in' => 'Dasar harga yang dipilih tidak valid.',
             'status.required' => 'Status kontrak wajib diisi.',
             'status.in' => 'Status kontrak yang dipilih tidak valid.',
+            'keyStatus.in' => 'Status kunci yang dipilih tidak valid.',
+            'keyStatus.nullable' => 'Status kunci bersifat opsional.',
         ];
     }
 
@@ -217,6 +225,10 @@ class Contract extends Component
     {
         $this->validate($this->rules());
 
+        if ($this->contractCode === '') {
+            $this->contractCode = ContractModel::generateAutoContractCode();
+        }
+
         $data = [
             'contract_code' => $this->contractCode,
             'unit_id' => $this->unitId,
@@ -225,6 +237,7 @@ class Contract extends Component
             'start_date' => $this->startDate,
             'end_date' => $this->endDate,
             'pricing_basis' => $this->pricingBasis,
+            'key_status' => $this->keyStatus,
             'status' => $this->status,
         ];
 
@@ -255,6 +268,7 @@ class Contract extends Component
             'endDate',
             'pricingBasis',
             'status',
+            'keyStatus',
         ]);
         $this->contractIdBeingSelected = null;
         $this->showModal = false;

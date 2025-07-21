@@ -2,14 +2,13 @@
 
 namespace App\Enums;
 
-enum ContractStatus: string
+enum KeyStatus: string
 {
     // --- 1. Definisi Kasus ---
-    case PENDING_PAYMENT = 'pending_payment';
-    case ACTIVE = 'active';
-    case EXPIRED = 'expired';
-    case CANCELLED = 'cancelled';
-    case TERMINATED = 'terminated';
+    case PENDING_HANDOVER = 'pending_handover';
+    case HANDED_OVER = 'handed_over';
+    case RETURNED = 'returned';
+    case LOST = 'lost';
 
     /**
      * Mengembalikan semua nilai 'value' dari enum.
@@ -26,11 +25,10 @@ enum ContractStatus: string
     {
         // --- 2. Label untuk Setiap Status ---
         return match ($this) {
-            self::PENDING_PAYMENT => 'Menunggu Pembayaran',
-            self::ACTIVE => 'Aktif',
-            self::EXPIRED => 'Kedaluwarsa',
-            self::CANCELLED => 'Dibatalkan',
-            self::TERMINATED => 'Dihentikan',
+            self::PENDING_HANDOVER => 'Belum Diserahkan',
+            self::HANDED_OVER      => 'Sudah Diserahkan',
+            self::RETURNED         => 'Sudah Dikembalikan',
+            self::LOST             => 'Hilang',
         };
     }
 
@@ -54,11 +52,10 @@ enum ContractStatus: string
     {
         // --- 3. Warna untuk Setiap Status ---
         return match ($this) {
-            self::PENDING_PAYMENT => ['bg-yellow-100', 'text-yellow-800', 'dark:bg-yellow-900/30', 'dark:text-yellow-400'],
-            self::ACTIVE => ['bg-green-100', 'text-green-800', 'dark:bg-green-900/30', 'dark:text-green-400'],
-            self::EXPIRED => ['bg-gray-100', 'text-gray-800', 'dark:bg-gray-900/30', 'dark:text-gray-400'],
-            self::CANCELLED => ['bg-orange-100', 'text-orange-800', 'dark:bg-orange-900/30', 'dark:text-orange-400'],
-            self::TERMINATED => ['bg-red-100', 'text-red-800', 'dark:bg-red-900/30', 'dark:text-red-400'],
+            self::PENDING_HANDOVER => ['bg-yellow-100', 'text-yellow-800', 'dark:bg-yellow-900/30', 'dark:text-yellow-400'], // Kuning untuk status menunggu
+            self::HANDED_OVER      => ['bg-green-100', 'text-green-800', 'dark:bg-green-900/30', 'dark:text-green-400'],   // Hijau untuk status sukses/aktif
+            self::RETURNED         => ['bg-blue-100', 'text-blue-800', 'dark:bg-blue-900/30', 'dark:text-blue-400'],     // Biru untuk status selesai/netral
+            self::LOST             => ['bg-red-100', 'text-red-800', 'dark:bg-red-900/30', 'dark:text-red-400'],         // Merah untuk status masalah/hilang
         };
     }
 

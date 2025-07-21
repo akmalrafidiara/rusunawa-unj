@@ -1,5 +1,14 @@
 <x-managers.ui.card class="p-0">
-    <x-managers.table.table :headers="['Kode Kontrak', 'Penyewa Utama', 'Unit', 'Total Harga', 'Jangka Waktu', 'Status', 'Aksi']">
+    <x-managers.table.table :headers="[
+        'Kode Kontrak',
+        'Penyewa Utama',
+        'Unit',
+        'Total Harga',
+        'Jangka Waktu',
+        'Status Kunci',
+        'Status',
+        'Aksi',
+    ]">
         <x-managers.table.body>
             @forelse ($contracts as $contract)
                 <x-managers.table.row wire:key="{{ $contract->id }}">
@@ -46,6 +55,13 @@
                             {{ $contract->start_date->translatedFormat('d M Y') }} -
                             {{ $contract->end_date->translatedFormat('d M Y') }}
                         </span>
+                    </x-managers.table.cell>
+
+                    {{-- Key Status --}}
+                    <x-managers.table.cell>
+                        <x-managers.ui.badge :color="$contract->key_status->color()">
+                            {{ $contract->key_status->label() }}
+                        </x-managers.ui.badge>
                     </x-managers.table.cell>
 
                     {{-- Status --}}

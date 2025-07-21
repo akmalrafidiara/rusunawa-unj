@@ -26,11 +26,19 @@ return new class extends Migration
 
             $table->timestamp('expired_date')->nullable();
 
+            $table->enum('key_status', [
+               'pending_handover',
+               'handed_over',
+               'returned',
+               'lost',
+           ])->nullable();
+
             $table->enum('status', [
                 'pending_payment',
                 'active',
                 'expired',
                 'cancelled',
+                'terminated',
             ])->default('pending_payment');
 
             $table->timestamps();

@@ -50,13 +50,20 @@
         {{-- Dasar Harga --}}
         <div>
             <x-managers.form.label>Dasar Harga</x-managers.form.label>
-            <x-managers.form.select wire:model="pricingBasis" :options="$pricingBasisOptions" label="Pilih Dasar Harga" required />
+            <x-managers.form.select wire:model="pricingBasis" rupiah :options="$pricingBasisOptions" label="Pilih Dasar Harga"
+                required />
         </div>
 
         {{-- Status Kontrak --}}
         <div>
             <x-managers.form.label>Status Kontrak</x-managers.form.label>
             <x-managers.form.select wire:model="status" :options="$statusOptions" label="Pilih Status" required />
+        </div>
+
+        {{-- Status Kunci --}}
+        <div>
+            <x-managers.form.label>Status Kunci</x-managers.form.label>
+            <x-managers.form.select wire:model="keyStatus" :options="$keyStatusOptions" label="Pilih Status Kunci" />
         </div>
 
         <div class="flex justify-end gap-2 pt-4">
