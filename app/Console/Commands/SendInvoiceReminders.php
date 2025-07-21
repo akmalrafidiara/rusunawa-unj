@@ -42,7 +42,7 @@ class SendInvoiceReminders extends Command
             ->get();
 
         foreach ($dueSoonInvoices as $invoice) {
-            $occupantEmail = $invoice->contract->pic->first()->email ?? null;
+            $occupantEmail = $invoice->contract->pic->email ?? null;
             if ($occupantEmail) {
                 try {
                     Mail::to($occupantEmail)->send(new InvoiceReminder($invoice, 'due_soon'));
@@ -77,7 +77,7 @@ class SendInvoiceReminders extends Command
             ->get();
 
         foreach ($overdueInvoicesForReminders as $invoice) {
-            $occupantEmail = $invoice->contract->pic->first()->email ?? null;
+            $occupantEmail = $invoice->contract->pic->email ?? null;
             if ($occupantEmail) {
                 try {
                     // Send reminder only if it hasn't been sent today for this invoice and type

@@ -44,7 +44,7 @@ class ProcessInitialContractCancellation implements ShouldQueue
                 $contract->unit->update(['status' => UnitStatus::AVAILABLE]);
             }
 
-            $pic = $contract->pic->first();
+            $pic = $contract->pic;
             if ($pic) {
                 Mail::to($pic->email)->send(new ContractCancelledMail($contract));
             }

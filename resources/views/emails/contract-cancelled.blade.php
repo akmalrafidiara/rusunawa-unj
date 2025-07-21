@@ -8,7 +8,7 @@
     <body style="font-family: sans-serif; background-color: #f4f7f6; padding: 20px;">
         <div style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 8px; padding: 30px;">
             <h1 style="color: #dc3545;">Pemesanan Anda Dibatalkan</h1>
-            <p style="color: #4a5568;">Halo {{ $contract->pic->first()->full_name }},</p>
+            <p style="color: #4a5568;">Halo {{ $contract->pic->full_name }},</p>
             <p style="color: #4a5568;">
                 Dengan berat hati kami memberitahukan bahwa pemesanan Anda untuk unit
                 <strong>{{ $contract->unit->room_number }}</strong> dengan ID Pemesanan
