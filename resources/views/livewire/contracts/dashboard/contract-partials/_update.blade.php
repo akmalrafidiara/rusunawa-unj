@@ -22,6 +22,12 @@
         $this->latestInvoice->payments->isNotEmpty() &&
         $this->latestInvoice->payments->last()->status === \App\Enums\PaymentStatus::PENDING_VERIFICATION;
 
+    $isKeyPendingHandover = $this->contract->key_status === \App\Enums\KeyStatus::PENDING_HANDOVER;
+
+    $isKeyHandover = $this->contract->key_status === \App\Enums\KeyStatus::HANDED_OVER;
+
+    $isKeyReturned = $this->contract->key_status === \App\Enums\KeyStatus::RETURNED;
+
     $doesntHasInvoice = !isset($latestInvoice) && !$isAnyOccupantPending && !$isAnyOccupantRejected;
 @endphp
 
@@ -63,6 +69,18 @@
                 !$isPaymentRejected &&
                 !$isPaymentPendingVerification)
             @include('livewire.contracts.dashboard.contract-partials.status._default')
+
+            @if ($isKeyPendingHandover)
+                @include('livewire.contracts.dashboard.contract-partials.status._key-pending-handover')
+            @endif
+        @endif
+
+        @if ($isKeyHandover)
+            @include('livewire.contracts.dashboard.contract-partials.status._key-handover')
+        @endif
+
+        @if ($isKeyReturned)
+            @include('livewire.contracts.dashboard.contract-partials.status._key-returned')
         @endif
     </div>
 </div>
