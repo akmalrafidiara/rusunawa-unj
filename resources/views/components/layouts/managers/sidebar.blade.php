@@ -48,7 +48,7 @@ $adminSidebarMenu = [
                 'route' => route('contracts'),
                 'current' => request()->routeIs('contracts'),
                 'badge' => null,
-                'roles' => [RoleUser::ADMIN->value, RoleUser::HEAD_OF_RUSUNAWA->value], // Add roles
+                'roles' => [RoleUser::ADMIN->value, RoleUser::HEAD_OF_RUSUNAWA->value, RoleUser::STAFF_OF_RUSUNAWA->value], // Add roles
             ],
             [
                 'icon' => 'banknotes',
@@ -134,7 +134,7 @@ $adminSidebarMenu = [
                 'label' => __('Maintenance'),
                 'route' => route('maintenance'),
                 'current' => request()->routeIs('maintenance'),
-                'badge' => null,
+                'badge' => $upcomingMaintenance ?? 0,
                 'roles' => [RoleUser::ADMIN->value, RoleUser::HEAD_OF_RUSUNAWA->value], // Add roles
             ],
         ],

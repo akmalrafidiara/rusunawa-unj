@@ -8,9 +8,6 @@ Route::prefix('managers')->middleware(['auth', 'verified', 'role:'.RoleUser::ADM
     // Dashboard
     Route::view('/', 'modules.managers.overview')->name('dashboard');
 
-    // Notifications
-    Route::view('notifications', 'modules.managers.notifications')->name('managers.notifications');
-
     // Settings
     Route::redirect('settings', 'managers.settings.profile');
 
@@ -19,23 +16,19 @@ Route::prefix('managers')->middleware(['auth', 'verified', 'role:'.RoleUser::ADM
     Volt::route('settings/appearance', 'managers.settings.appearance')->name('managers.settings.appearance');
 
     //Tenancy
-    Route::view('invoices', 'modules.managers.tenancy.invoices')->name('invoices');
-    Route::view('occupants', 'modules.managers.tenancy.occupants')->name('occupants');
+    Route::view('contracts', 'modules.managers.tenancy.contracts.index')->name('contracts');
+    Route::view('invoices', 'modules.managers.tenancy.invoices.index')->name('invoices');
+    Route::view('occupants', 'modules.managers.tenancy.occupants.index')->name('occupants');
 
-    // COmplaints
+    // Complaints
     Route::view('reports-and-complaints', 'modules.managers.oprations.reports-and-complaints.index')->name('reports.and.complaints');
 
     // Role: ADMIN, Kepala Rusunawa
     Route::middleware(['role:'.RoleUser::ADMIN->value.'|'.RoleUser::HEAD_OF_RUSUNAWA->value])->group(function () {
-         // Responses
+        // Responses
         Route::view('occupant-verification', 'modules.managers.responses.occupant-verification.index')->name('occupant.verification');
         Route::view('payment-confirmation', 'modules.managers.responses.payment-confirmation.index')->name('payment.confirmation');
-
-        // Tenancy
-        Route::view('contracts', 'modules.managers.tenancy.contracts.index')->name('contracts');
-        Route::view('invoices', 'modules.managers.tenancy.invoices.index')->name('invoices');
-        Route::view('occupants', 'modules.managers.tenancy.occupants.index')->name('occupants');
-
+        
         // Oprations
         Route::view('users', 'modules.managers.oprations.users.index')->name('users');
         Route::view('incomes-reports', 'modules.managers.oprations.income-reports.index')->name('income.reports');
