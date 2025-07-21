@@ -2,15 +2,15 @@
 
 namespace App\View\Composers;
 
+use App\Enums\PaymentStatus;
+use App\Models\Payment;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Occupant;
-use App\Models\Invoice;
 use App\Models\Report;
 use App\Models\GuestQuestion;
 use App\Models\MaintenanceSchedule;
 use App\Enums\OccupantStatus;
-use App\Enums\InvoiceStatus;
 use App\Enums\ReportStatus;
 use App\Enums\MaintenanceScheduleStatus;
 use App\Enums\RoleUser;
@@ -32,7 +32,7 @@ class SidebarComposer
             $pendingOccupants = Occupant::where('status', OccupantStatus::PENDING_VERIFICATION->value)->count();
             
             // Count pending payment confirmations
-            $pendingPayments = Invoice::where('status', InvoiceStatus::PENDING_PAYMENT_VERIFICATION->value)->count();
+            $pendingPayments = Payment::where('status', PaymentStatus::PENDING_VERIFICATION->value)->count();
             
             // Count unread guest questions
             $pendingQuestions = GuestQuestion::where('is_read', false)->count();
