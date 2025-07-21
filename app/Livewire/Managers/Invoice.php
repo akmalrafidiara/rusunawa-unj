@@ -18,13 +18,13 @@ class Invoice extends Component
 
     // Properti data utama
     public
-        $invoiceNumber,
-        $contractId,
-        $description,
-        $amount,
-        $dueAt,
-        $paidAt,
-        $status;
+        $invoiceNumber = '',
+        $contractId = '',
+        $description = '',
+        $amount = '',
+        $dueAt = '',
+        $paidAt = '',
+        $status = '';
 
     // Opsi dropdown
     public

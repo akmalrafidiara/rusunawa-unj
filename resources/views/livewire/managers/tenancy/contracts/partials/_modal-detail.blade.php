@@ -95,12 +95,6 @@
                                 {{ \Carbon\Carbon::parse($endDate)->translatedFormat('d F Y') }}
                             </span>
                         </div>
-                        <div class="py-2">
-                            <span class="text-zinc-600 dark:text-zinc-300 block mb-1">Catatan</span>
-                            <p class="font-semibold text-zinc-800 dark:text-zinc-100 text-sm leading-relaxed">
-                                {{ $notes ?: '-' }}
-                            </p>
-                        </div>
                     </div>
                 </div>
             </div>

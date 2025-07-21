@@ -21,16 +21,15 @@ class Contract extends Component
 
     // Properti data utama
     public
-        $contractCode,
-        $unitId,
-        $occupantIds, // Untuk multiple select
-        $occupantTypeId,
-        $totalPrice,
-        $startDate,
-        $endDate,
-        $pricingBasis,
-        $notes,
-        $status;
+        $contractCode = '',
+        $unitId = '',
+        $occupantIds = [], // Untuk multiple select
+        $occupantTypeId = '',
+        $totalPrice = '',
+        $startDate = '',
+        $endDate = '',
+        $pricingBasis = '',
+        $status = '';
 
     // Opsi dropdown
     public
@@ -105,7 +104,6 @@ class Contract extends Component
             ->when($this->search, function ($query) {
                 $query->where('contract_code', 'like', '%' . $this->search . '%')
                     ->orWhere('total_price', 'like', '%' . $this->search . '%')
-                    ->orWhere('notes', 'like', '%' . $this->search . '%')
                     ->orWhereHas('occupants', function ($q) {
                         $q->where('full_name', 'like', '%' . $this->search . '%');
                     })
@@ -162,14 +160,13 @@ class Contract extends Component
         $this->startDate = $contract->start_date ? $contract->start_date->format('Y-m-d') : null;
         $this->endDate = $contract->end_date ? $contract->end_date->format('Y-m-d') : null;
         $this->pricingBasis = $contract->pricing_basis->value;
-        $this->notes = $contract->notes;
         $this->status = $contract->status->value;
     }
 
     public function rules()
     {
         return [
-            'contractCode' => 'nullable|string|max:255|unique:contracts,contract_code,' . $this->contractIdBeingSelected,
+            'contractCode' => "nullable|string|max:255|unique:contracts,contract_code,{$this->contractIdBeingSelected}",
             'unitId' => 'required|exists:units,id',
             'occupantIds' => 'required|array|min:1',
             'occupantIds.*' => 'exists:occupants,id',
@@ -178,7 +175,6 @@ class Contract extends Component
             'startDate' => 'required|date',
             'endDate' => 'required|date|after_or_equal:startDate',
             'pricingBasis' => ['required', \Illuminate\Validation\Rule::in(PricingBasis::values())],
-            'notes' => 'nullable|string|max:500',
             'status' => ['required', \Illuminate\Validation\Rule::in(ContractStatus::values())],
         ];
     }
@@ -229,7 +225,6 @@ class Contract extends Component
             'start_date' => $this->startDate,
             'end_date' => $this->endDate,
             'pricing_basis' => $this->pricingBasis,
-            'notes' => $this->notes,
             'status' => $this->status,
         ];
 
@@ -259,42 +254,41 @@ class Contract extends Component
             'startDate',
             'endDate',
             'pricingBasis',
-            'notes',
             'status',
         ]);
         $this->contractIdBeingSelected = null;
         $this->showModal = false;
     }
 
-    // public function confirmDelete(ContractModel $contract)
-    // {
-    //     $this->contractIdBeingSelected = $contract->id;
-    //     LivewireAlert::confirm('Apakah Anda yakin ingin menghapus kontrak ini? Tindakan ini tidak dapat dibatalkan dan akan menghapus semua invoice terkait!', [
-    //         'confirmButtonText' => 'Ya, Hapus!',
-    //         'cancelButtonText' => 'Batal',
-    //         'onConfirmed' => 'delete',
-    //         'onDismissed' => 'cancelDelete',
-    //         'position' => 'center',
-    //         'showConfirmButton' => true,
-    //         'showCancelButton' => true,
-    //         'confirmButtonColor' => '#EF4444',
-    //         'cancelButtonColor' => '#6B7280',
-    //     ]);
-    // }
+    public function confirmDelete(ContractModel $contract)
+    {
+        $this->contractIdBeingSelected = $contract->id;
+        LivewireAlert::confirm('Apakah Anda yakin ingin menghapus kontrak ini? Tindakan ini tidak dapat dibatalkan dan akan menghapus semua invoice terkait!', [
+            'confirmButtonText' => 'Ya, Hapus!',
+            'cancelButtonText' => 'Batal',
+            'onConfirmed' => 'delete',
+            'onDismissed' => 'cancelDelete',
+            'position' => 'center',
+            'showConfirmButton' => true,
+            'showCancelButton' => true,
+            'confirmButtonColor' => '#EF4444',
+            'cancelButtonColor' => '#6B7280',
+        ]);
+    }
 
-    // public function delete()
-    // {
-    //     if ($this->contractIdBeingSelected) {
-    //         ContractModel::find($this->contractIdBeingSelected)->delete();
-    //         LivewireAlert::title('Kontrak berhasil dihapus.')->success()->toast();
-    //         $this->reset(['contractIdBeingSelected']);
-    //     }
-    // }
+    public function delete()
+    {
+        if ($this->contractIdBeingSelected) {
+            ContractModel::find($this->contractIdBeingSelected)->delete();
+            LivewireAlert::title('Kontrak berhasil dihapus.')->success()->toast();
+            $this->reset(['contractIdBeingSelected']);
+        }
+    }
 
-    // public function cancelDelete()
-    // {
-    //     $this->reset(['contractIdBeingSelected']);
-    // }
+    public function cancelDelete()
+    {
+        $this->reset(['contractIdBeingSelected']);
+    }
 
     public function exportPdf()
     {

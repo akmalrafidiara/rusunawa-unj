@@ -30,18 +30,20 @@
 
             @forelse ($options as $option)
                 @php
-                    // Buat ID yang unik tapi konsisten untuk setiap iterasi loop
-                    $optionId = 'option_' . $option['value'];
+                    $optionId = 'option_' . md5($option['value'] . '_' . $loop->index);
                 @endphp
-
-                {{-- PERBAIKAN UTAMA ADA DI 'for' dan 'id' di bawah ini --}}
                 <label for="{{ $optionId }}"
                     class="relative flex cursor-pointer select-none items-center py-2 pl-3 pr-9 text-gray-900 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-zinc-700">
-
                     <input id="{{ $optionId }}" type="checkbox" value="{{ $option['value'] }}"
-                        x-model="selectedValues"
+                        :checked="selectedValues.includes('{{ $option['value'] }}')"
+                        @change="
+                            if ($event.target.checked) {
+                                selectedValues.push('{{ $option['value'] }}');
+                            } else {
+                                selectedValues = selectedValues.filter(v => v !== '{{ $option['value'] }}');
+                            }
+                        "
                         class="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500">
-
                     <span class="ml-3 block truncate">{{ $option['label'] }}</span>
                 </label>
             @empty

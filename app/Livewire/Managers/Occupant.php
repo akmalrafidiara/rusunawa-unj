@@ -27,28 +27,28 @@ class Occupant extends Component
 
     // Main data properties
     public
-        $fullName,
-        $email,
-        $whatsappNumber,
-        $gender,
-        $identityCardFile,
-        $communityCardFile,
-        $agreeToRegulation,
-        $notes,
-        $status;
+        $fullName = '',
+        $email = '',
+        $whatsappNumber = '',
+        $gender = '',
+        $identityCardFile = null,
+        $communityCardFile = null,
+        $agreeToRegulation = false,
+        $notes = '',
+        $status = '';
 
     public bool $isStudent = false;
 
     public
-        $studentId,
-        $faculty,
-        $studyProgram,
-        $classYear;
+        $studentId = '',
+        $faculty = '',
+        $studyProgram = '',
+        $classYear = '';
 
     // Relational data properties
     public
-        $contracts,
-        $contractIds;
+        $contracts = [],
+        $contractIds = [];
 
     // Temporary file properties for uploads
     public

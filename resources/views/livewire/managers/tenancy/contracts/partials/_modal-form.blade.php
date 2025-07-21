@@ -59,12 +59,6 @@
             <x-managers.form.select wire:model="status" :options="$statusOptions" label="Pilih Status" required />
         </div>
 
-        {{-- Catatan (Opsional) --}}
-        <div>
-            <x-managers.form.label>Catatan (Opsional)</x-managers.form.label>
-            <x-managers.form.textarea wire:model="notes" placeholder="Masukkan catatan jika ada" rows="3" />
-        </div>
-
         <div class="flex justify-end gap-2 pt-4">
             <x-managers.ui.button type="button" variant="secondary" wire:click="$set('showModal', false)">
                 Batal
