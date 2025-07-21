@@ -5,32 +5,38 @@
         {{-- Kode Kontrak --}}
         <div>
             <x-managers.form.label>Kode Kontrak (Opsional, akan digenerate jika kosong)</x-managers.form.label>
-            <x-managers.form.input wire:model="contractCode" placeholder="Masukkan kode kontrak" />
+            <x-managers.form.input wire:model.live="contractCode" placeholder="Masukkan kode kontrak" />
         </div>
 
         {{-- Unit Terkait --}}
         <div>
             <x-managers.form.label>Unit Terkait</x-managers.form.label>
-            <x-managers.form.select wire:model="unitId" :options="$unitOptions" label="Pilih Unit" required />
+            <x-managers.form.select wire:model.live="unitId" :options="$unitOptions" label="Pilih Unit" required />
         </div>
 
         {{-- Penghuni Terkait (Multiple Select) --}}
         <div>
             <x-managers.form.label>Pilih Penghuni</x-managers.form.label>
-            <x-managers.form.multiple-select wire:model="occupantIds" :options="$occupantOptions" />
+            <x-managers.form.multiple-select wire:model.live="occupantIds" :options="$occupantOptions" />
+        </div>
+
+        {{-- PIC --}}
+        <div>
+            <x-managers.form.label>PIC</x-managers.form.label>
+            <x-managers.form.select wire:model.live="picId" :options="$occupantOnContractOptions" label="Pilih PIC" required />
         </div>
 
         {{-- Tipe Penghuni --}}
         <div>
             <x-managers.form.label>Tipe Penghuni</x-managers.form.label>
-            <x-managers.form.select wire:model="occupantTypeId" :options="$occupantTypeOptions" label="Pilih Tipe Penghuni"
+            <x-managers.form.select wire:model.live="occupantTypeId" :options="$occupantTypeOptions" label="Pilih Tipe Penghuni"
                 required />
         </div>
 
         {{-- Total Harga --}}
         <div>
             <x-managers.form.label>Total Harga</x-managers.form.label>
-            <x-managers.form.input wire:model="totalPrice" type="number" step="0.01"
+            <x-managers.form.input wire:model.live="totalPrice" rupiah type="number" step="0.01"
                 placeholder="Masukkan total harga" required />
         </div>
 
@@ -38,32 +44,32 @@
             {{-- Tanggal Mulai --}}
             <div>
                 <x-managers.form.label>Tanggal Mulai Kontrak</x-managers.form.label>
-                <x-managers.form.input wire:model="startDate" type="date" required />
+                <x-managers.form.input wire:model.live="startDate" type="date" required />
             </div>
             {{-- Tanggal Berakhir --}}
             <div>
                 <x-managers.form.label>Tanggal Berakhir Kontrak</x-managers.form.label>
-                <x-managers.form.input wire:model="endDate" type="date" required />
+                <x-managers.form.input wire:model.live="endDate" type="date" required />
             </div>
         </div>
 
         {{-- Dasar Harga --}}
         <div>
             <x-managers.form.label>Dasar Harga</x-managers.form.label>
-            <x-managers.form.select wire:model="pricingBasis" rupiah :options="$pricingBasisOptions" label="Pilih Dasar Harga"
+            <x-managers.form.select wire:model.live="pricingBasis" rupiah :options="$pricingBasisOptions" label="Pilih Dasar Harga"
                 required />
         </div>
 
         {{-- Status Kontrak --}}
         <div>
             <x-managers.form.label>Status Kontrak</x-managers.form.label>
-            <x-managers.form.select wire:model="status" :options="$statusOptions" label="Pilih Status" required />
+            <x-managers.form.select wire:model.live="status" :options="$statusOptions" label="Pilih Status" required />
         </div>
 
         {{-- Status Kunci --}}
         <div>
             <x-managers.form.label>Status Kunci</x-managers.form.label>
-            <x-managers.form.select wire:model="keyStatus" :options="$keyStatusOptions" label="Pilih Status Kunci" />
+            <x-managers.form.select wire:model.live="keyStatus" :options="$keyStatusOptions" label="Pilih Status Kunci" />
         </div>
 
         <div class="flex justify-end gap-2 pt-4">

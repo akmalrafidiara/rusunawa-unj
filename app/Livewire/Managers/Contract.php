@@ -24,7 +24,8 @@ class Contract extends Component
     public
         $contractCode = '',
         $unitId = '',
-        $occupantIds = [], // Untuk multiple select
+        $picId = '',
+        $occupantIds = [],
         $occupantTypeId = '',
         $totalPrice = '',
         $startDate = '',
@@ -39,6 +40,7 @@ class Contract extends Component
         $keyStatusOptions,
         $unitOptions,
         $occupantOptions,
+        $occupantOnContractOptions,
         $occupantTypeOptions,
         $pricingBasisOptions;
 
@@ -124,6 +126,25 @@ class Contract extends Component
             ->orderBy($this->orderBy, $this->sort);
     }
 
+    public function updatedOccupantIds($value)
+    {
+        $occupantIds = (array) $value;
+
+        if ($this->picId && !in_array($this->picId, $occupantIds)) {
+            $occupantIds[] = $this->picId;
+        }
+
+        $this->occupantOnContractOptions = Occupant::query()
+            ->whereIn('id', $occupantIds)
+            ->get()
+            ->map(fn($occupant) => [
+                'value' => $occupant->id,
+                'label' => "{$occupant->full_name} ({$occupant->email})",
+            ])->toArray();
+        
+        $this->occupantIds = $occupantIds;
+    }
+
     public function render()
     {
         $contracts = $this->buildContractQuery()->paginate($this->perPage);
@@ -158,6 +179,7 @@ class Contract extends Component
         $this->contractIdBeingSelected = $contract->id;
         $this->contractCode = $contract->contract_code;
         $this->unitId = $contract->unit_id;
+        $this->picId = $contract->pic->id;
         $this->occupantIds = $contract->occupants->pluck('id')->toArray();
         $this->occupantTypeId = $contract->occupant_type_id;
         $this->totalPrice = $contract->total_price;
@@ -166,6 +188,8 @@ class Contract extends Component
         $this->pricingBasis = $contract->pricing_basis->value;
         $this->keyStatus = $contract->key_status->value;
         $this->status = $contract->status->value;
+
+        $this->updatedOccupantIds($this->occupantIds);
     }
 
     public function rules()
@@ -173,6 +197,7 @@ class Contract extends Component
         return [
             'contractCode' => "nullable|string|max:255|unique:contracts,contract_code,{$this->contractIdBeingSelected}",
             'unitId' => 'required|exists:units,id',
+            'picId' => 'required|exists:occupants,id',
             'occupantIds' => 'required|array|min:1',
             'occupantIds.*' => 'exists:occupants,id',
             'occupantTypeId' => 'required|exists:occupant_types,id',
@@ -191,6 +216,8 @@ class Contract extends Component
             'contractCode.unique' => 'Kode kontrak ini sudah digunakan.',
             'unitId.required' => 'Unit wajib dipilih.',
             'unitId.exists' => 'Unit yang dipilih tidak valid.',
+            'picId.required' => 'PIC wajib dipilih.',
+            'picId.exists' => 'PIC yang dipilih tidak valid.',
             'occupantIds.required' => 'Setidaknya satu penghuni wajib dipilih.',
             'occupantIds.array' => 'Penghuni harus dalam format array.',
             'occupantIds.min' => 'Setidaknya satu penghuni wajib dipilih.',
@@ -232,6 +259,7 @@ class Contract extends Component
         $data = [
             'contract_code' => $this->contractCode,
             'unit_id' => $this->unitId,
+            'contract_pic' => $this->picId,
             'occupant_type_id' => $this->occupantTypeId,
             'total_price' => $this->totalPrice,
             'start_date' => $this->startDate,
@@ -261,6 +289,7 @@ class Contract extends Component
         $this->reset([
             'contractCode',
             'unitId',
+            'picId',
             'occupantIds',
             'occupantTypeId',
             'totalPrice',

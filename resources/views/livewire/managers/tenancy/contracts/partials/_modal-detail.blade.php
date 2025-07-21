@@ -114,7 +114,11 @@
                                     src="https://ui-avatars.com/api/?name={{ urlencode($occupant->full_name) }}&background=random&color=fff"
                                     alt="Avatar">
                                 <div>
-                                    <p class="font-medium text-zinc-800 dark:text-zinc-100">{{ $occupant->full_name }}
+                                    <p class="font-medium text-zinc-800 dark:text-zinc-100">
+                                        @if ($occupant->id === $picId)
+                                            <x-managers.ui.badge type="success">PIC</x-managers.ui.badge>
+                                        @endif
+                                        {{ $occupant->full_name }}
                                     </p>
                                     <p class="text-xs text-zinc-500 dark:text-zinc-400">{{ $occupant->email }}</p>
                                 </div>

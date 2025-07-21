@@ -35,12 +35,13 @@
                 <label for="{{ $optionId }}"
                     class="relative flex cursor-pointer select-none items-center py-2 pl-3 pr-9 text-gray-900 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-zinc-700">
                     <input id="{{ $optionId }}" type="checkbox" value="{{ $option['value'] }}"
-                        :checked="selectedValues.includes('{{ $option['value'] }}')"
+                        :checked="selectedValues.includes({{ $option['value'] }})"
                         @change="
+                            let value = {{ $option['value'] }}; // Simpan value sebagai angka
                             if ($event.target.checked) {
-                                selectedValues.push('{{ $option['value'] }}');
+                                selectedValues.push(value);
                             } else {
-                                selectedValues = selectedValues.filter(v => v !== '{{ $option['value'] }}');
+                                selectedValues = selectedValues.filter(v => v !== value);
                             }
                         "
                         class="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500">

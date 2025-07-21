@@ -23,7 +23,7 @@
                     <x-managers.table.cell>
                         @if ($contract->occupants->isNotEmpty())
                             <span class="text-gray-600 dark:text-gray-400">
-                                {{ $contract->occupants->first()->full_name }}
+                                {{ $contract->pic->full_name ?? 'Belum Ada PIC' }}
                             </span>
                         @else
                             <span class="text-gray-400 italic">-</span>
