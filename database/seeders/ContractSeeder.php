@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\KeyStatus;
 use Illuminate\Database\Seeder;
 use App\Models\Contract;
 use App\Models\Unit;
@@ -44,6 +45,7 @@ class ContractSeeder extends Seeder
                 'total_price' => fake()->numberBetween(500000, 2000000),
                 'status' => fake()->randomElement([ContractStatus::PENDING_PAYMENT, ContractStatus::ACTIVE]),
                 'expired_date' => $endDate->copy()->addHours(config('tenancy.initial_payment_due_hours', 2)),
+                'key_status' => KeyStatus::PENDING_HANDOVER,
             ]);
 
             // Tandai unit sebagai tidak tersedia untuk mencegah duplikasi

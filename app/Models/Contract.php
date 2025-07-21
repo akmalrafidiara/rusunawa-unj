@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ContractStatus;
+use App\Enums\KeyStatus;
 use App\Enums\PricingBasis;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -25,6 +26,7 @@ class Contract extends Model implements Authenticatable
         'total_price',
         'expired_date',
         'status',
+        'key_status',
     ];
 
     protected $casts = [
@@ -33,6 +35,7 @@ class Contract extends Model implements Authenticatable
         'expired_date' => 'datetime',
         'pricing_basis' => PricingBasis::class,
         'status' => ContractStatus::class,
+        'key_status' => KeyStatus::class,
     ];
 
     public function unit()
