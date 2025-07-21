@@ -72,7 +72,7 @@
             @endforelse
         @elseif ($tab === 'history')
             @forelse ($historyLogs as $history)
-                <div wire:click="selectOccupant({{ $history->loggable->id }})"
+                <div wire:click="selectOccupantOnly({{ $history->loggable->id }})"
                     class="p-6 flex flex-col gap-2 rounded-lg border cursor-pointer transition-colors duration-200
                     {{ $occupantIdBeingSelected === $history->loggable->id ? 'bg-green-100 border-green-500 dark:bg-green-900/30 dark:border-green-700' : 'bg-gray-50 border-gray-200 hover:bg-gray-100 dark:bg-zinc-700 dark:border-zinc-600 dark:hover:bg-zinc-600' }}">
 
@@ -82,7 +82,7 @@
                         <span
                             class="ml-2 text-xs px-2 py-1 rounded-full
                             {{ $history->status === 'approved' ? 'bg-green-200 text-green-800 dark:bg-green-700 dark:text-green-100' : 'bg-red-200 text-red-800 dark:bg-red-700 dark:text-red-100' }}">
-                            {{ ucfirst($history->status) }}
+                            {{ ucfirst($history->status->value) }}
                         </span>
                     </div>
 

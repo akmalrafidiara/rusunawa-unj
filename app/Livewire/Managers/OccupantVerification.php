@@ -100,6 +100,53 @@ class OccupantVerification extends Component
         $this->reset(['occupant', 'occupantIdBeingSelected', 'responseMessage', 'contractPrice', 'occupantVerificationType']); // Hapus detail panel saat tab berubah
     }
 
+    public function selectOccupantOnly($occupantId)
+    {
+        $this->occupantIdBeingSelected = $occupantId;
+
+        $occupant = Occupant::with('verificationLogs')->find($occupantId);
+
+        if (!$occupant) {
+            $this->occupantVerificationType = 'Penghuni tidak ditemukan.';
+            $this->contractPrice = null;
+            $this->occupant = null;
+            return;
+        }
+
+        $this->occupant = $occupant;
+
+        // Cek apakah penghuni ini adalah PIC
+        $this->isPic = $occupant->picContracts()->first() !== null;
+
+        // Ambil kontrak terkait dengan penghuni ini
+        $this->contract = $occupant->contracts()->with(['pic', 'invoices'])->first();
+
+        if (!$this->contract) {
+            $this->occupantVerificationType = 'Kontrak tidak ditemukan untuk penghuni ini.';
+            $this->contractPrice = null;
+            return;
+        }
+
+        // Ambil invoice terakhir untuk kontrak ini
+        $this->latestInvoice = $this->contract->invoices->last();
+
+        // Tentukan jenis verifikasi berdasarkan status dan apakah penghuni adalah PIC
+        if ($this->isPic) {
+            if (!$this->latestInvoice && !$occupant->verificationLogs()->where('status', VerificationStatus::APPROVED)->exists()) {
+                $this->occupantVerificationType = 'Pengajuan Kontrak Baru (PIC)';
+            } else {
+                $this->occupantVerificationType = 'Perubahan Data / Re-verifikasi (PIC)';
+            }
+            $this->contractPrice = $this->contract->total_price ?? null;
+        } else { // Bukan PIC
+            if (!$occupant->verificationLogs()->where('status', VerificationStatus::APPROVED)->exists()) {
+                $this->occupantVerificationType = 'Penambahan Penghuni Baru (Non-PIC)';
+            } else {
+                $this->occupantVerificationType = 'Perubahan Data / Re-verifikasi (Non-PIC)';
+            }
+        }
+    }
+
     public function selectOccupant($occupantId, $contractId)
     {
         $this->occupantIdBeingSelected = $occupantId;
