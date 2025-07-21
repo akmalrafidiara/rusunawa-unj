@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\ContractStatus;
 use App\Enums\KeyStatus;
 use App\Enums\PricingBasis;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -25,8 +26,8 @@ class Contract extends Model implements Authenticatable
         'pricing_basis',
         'total_price',
         'expired_date',
-        'status',
         'key_status',
+        'status',
     ];
 
     protected $casts = [
@@ -34,8 +35,8 @@ class Contract extends Model implements Authenticatable
         'end_date' => 'datetime',
         'expired_date' => 'datetime',
         'pricing_basis' => PricingBasis::class,
-        'status' => ContractStatus::class,
         'key_status' => KeyStatus::class,
+        'status' => ContractStatus::class,
     ];
 
     public function unit()
@@ -80,6 +81,17 @@ class Contract extends Model implements Authenticatable
         $parts = explode('_', $pricingBasis);
         $basisChar = isset($parts[1]) ? substr($parts[1], 0, 1) : 'X';
         $prefix = strtoupper($clusterChar . $typeChar . $basisChar);
+        do {
+            $randomPart = strtoupper(Str::random(5));
+            $generatedCode = $prefix . $randomPart;
+        } while (self::where('contract_code', $generatedCode)->exists());
+
+        return $generatedCode;
+    }
+
+    public static function generateAutoContractCode()
+    {
+        $prefix = strtoupper(Carbon::now()->format('D'));
         do {
             $randomPart = strtoupper(Str::random(5));
             $generatedCode = $prefix . $randomPart;
