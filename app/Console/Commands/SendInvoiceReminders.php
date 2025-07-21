@@ -69,30 +69,30 @@ class SendInvoiceReminders extends Command
             }
         }
 
-        // --- Pengingat harian untuk invoice yang sudah jatuh tempo (hingga H+7) ---
+        // --- Pengingat harian untuk invoice yang sudah jatuh tempo (hingga H+3) ---
         $overdueRemindersSent = 0;
         $overdueInvoicesForReminders = Invoice::whereIn('status', [InvoiceStatus::OVERDUE, InvoiceStatus::UNPAID])
             ->where('due_at', '<=', $now->startOfDay()) // Past due date
-            ->where('due_at', '>', $now->copy()->subDays(7)->startOfDay()) // Not more than 7 days overdue
+            ->where('due_at', '>', $now->copy()->subDays(3)->startOfDay()) // Not more than 3 days overdue
             ->get();
 
         foreach ($overdueInvoicesForReminders as $invoice) {
             $occupantEmail = $invoice->contract->pic->email ?? null;
             if ($occupantEmail) {
-                try {
-                    // Send reminder only if it hasn't been sent today for this invoice and type
-                    // Or if it's the first time it becomes overdue and we need to send the first reminder
-                    $daysOverdue = $now->diffInDays($invoice->due_at, false);
-                    if ($daysOverdue >= 0 && $daysOverdue < 7) { // Between 0 (due_at passed) and 6 days overdue
-                        Mail::to($occupantEmail)->send(new InvoiceReminder($invoice, 'overdue'));
-                        $this->info("Pengingat 'sudah jatuh tempo' untuk Invoice #{$invoice->invoice_number} (Hari ke {$daysOverdue}) dikirim ke {$occupantEmail}.");
-                        $overdueRemindersSent++;
-                    }
-                } catch (\Exception $e) {
-                    Log::error("Gagal mengirim pengingat 'sudah jatuh tempo' untuk Invoice #{$invoice->invoice_number}: " . $e->getMessage());
+            try {
+                // Send reminder only if it hasn't been sent today for this invoice and type
+                // Or if it's the first time it becomes overdue and we need to send the first reminder
+                $daysOverdue = $now->diffInDays($invoice->due_at, false);
+                if ($daysOverdue >= 0 && $daysOverdue < 3) { // Between 0 (due_at passed) and 2 days overdue
+                Mail::to($occupantEmail)->send(new InvoiceReminder($invoice, 'overdue'));
+                $this->info("Pengingat 'sudah jatuh tempo' untuk Invoice #{$invoice->invoice_number} (Hari ke {$daysOverdue}) dikirim ke {$occupantEmail}.");
+                $overdueRemindersSent++;
                 }
+            } catch (\Exception $e) {
+                Log::error("Gagal mengirim pengingat 'sudah jatuh tempo' untuk Invoice #{$invoice->invoice_number}: " . $e->getMessage());
+            }
             } else {
-                Log::warning("Tidak dapat mengirim pengingat 'sudah jatuh tempo' untuk Invoice #{$invoice->invoice_number}: Email penghuni tidak ditemukan.");
+            Log::warning("Tidak dapat mengirim pengingat 'sudah jatuh tempo' untuk Invoice #{$invoice->invoice_number}: Email penghuni tidak ditemukan.");
             }
         }
 
