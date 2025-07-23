@@ -187,7 +187,7 @@ $navMenu = [
             @endforeach
 
             {{-- Mobile Auth Buttons --}}
-            @if (Route::has('login'))
+            @if (Route::has('contract.auth'))
                 <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                     @auth
                         <a href="{{ route('dashboard') }}" wire:navigate @click="open = false"
