@@ -122,8 +122,17 @@ class IncomeReport extends Component
 
         $this->totalRevenue = $invoices->sum('amount');
 
-        $firstDate = Carbon::parse($invoices->min('paid_at'));
-        $lastDate = Carbon::parse($invoices->max('paid_at'));
+        $firstDate = null;
+        $lastDate = null;
+
+        if ($this->filterType !== 'all_time' && $this->startDate && $this->endDate) {
+            $firstDate = Carbon::parse($this->startDate);
+            // $lastDate = now()->min(Carbon::parse($this->endDate));
+            $lastDate = Carbon::parse($this->endDate);
+        } else {
+            $firstDate = Carbon::parse($invoices->min('paid_at'));
+            $lastDate = Carbon::parse($invoices->max('paid_at'));
+        }
 
         $daysDifference = $firstDate->diffInDays($lastDate) + 1;
         $monthsDifference = $firstDate->diffInMonths($lastDate, true);

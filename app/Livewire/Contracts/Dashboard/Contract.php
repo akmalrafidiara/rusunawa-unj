@@ -546,7 +546,7 @@ class Contract extends Component
 
         $invoice = Invoice::create([
             'contract_id' => $this->contract->id,
-            'amount' => $this->extensionAmountPaid,
+            'amount' => $this->extensionMustBePaid,
             'due_at' => $this->newEndDate,
             'status' => InvoiceStatus::PENDING_PAYMENT_VERIFICATION,
             'description' => 'Perpanjangan kontrak #' . $this->contract->contract_code . ' hingga ' . $this->newEndDate,
