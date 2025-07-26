@@ -17,15 +17,34 @@ class LogActivity
     {
         $response = $next($request);
 
-        $user = $request->user();
+        // Determine activity based on Livewire or HTTP request
+        if ($request->header('X-Livewire') || $request->is('livewire/message/*')) {
+            $activity = 'Livewire Action';
+            $payload = $request->input('updates', []);
+            if (isset($payload[0]['payload']['method'])) {
+                $method = $payload[0]['payload']['method'];
+                $component = $request->input('fingerprint.name', 'UnknownComponent');
+                $activity = "Livewire: {$component}@{$method}";
+            }
+        } else {
+            // For normal HTTP requests
+            $activity = $request->method() . ' ' . $request->path();
+        }
 
-        if ($user) {
-            $user->activityLogs()->create([
-                'activity'   => 'Viewed Page',
-                'url'        => $request->fullUrl(),
-                'ip_address' => $request->ip(),
-                'user_agent' => $request->header('user-agent'),
-            ]);
+        foreach (array_keys(config('auth.guards')) as $guard) {
+            $user = auth()->guard($guard)->user();
+            if ($user) {
+                if (method_exists($user, 'activityLogs')) {
+                    $user->activityLogs()->create([
+                        'activity'   => $activity,
+                        'url'        => $request->fullUrl(),
+                        'ip_address' => $request->ip(),
+                        'user_agent' => $request->header('user-agent'),
+                        'guard'      => $guard,
+                    ]);
+                }
+                break;
+            }
         }
 
         return $response;
