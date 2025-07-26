@@ -60,17 +60,16 @@ class User extends Authenticatable
             ->implode('');
     }
 
-    // Remove this if staff_id is removed from unit_clusters table
-    // public function unitCluster()
-    // {
-    //     return $this->belongsTo(UnitCluster::class);
-    // }
-
     /**
      * Define a many-to-many relationship with UnitCluster for staff.
      */
     public function unitClusters()
     {
         return $this->belongsToMany(UnitCluster::class, 'user_unit_cluster');
+    }
+
+    public function activityLogs()
+    {
+        return $this->morphMany(ActivityLog::class, 'loggable');
     }
 }

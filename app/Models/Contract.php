@@ -99,4 +99,9 @@ class Contract extends Model implements Authenticatable
 
         return $generatedCode;
     }
+
+    public function activityLogs()
+    {
+        return $this->morphMany(ActivityLog::class, 'loggable');
+    }
 }

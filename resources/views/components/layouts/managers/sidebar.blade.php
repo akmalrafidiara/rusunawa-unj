@@ -137,6 +137,14 @@ $adminSidebarMenu = [
                 'badge' => $upcomingMaintenance ?? 0,
                 'roles' => [RoleUser::ADMIN->value, RoleUser::HEAD_OF_RUSUNAWA->value], // Add roles
             ],
+            [
+                'icon' => 'command-line',
+                'label' => __('Aktivitas'),
+                'route' => route('activity.logs'),
+                'current' => request()->routeIs('activity.logs'),
+                'badge' => null,
+                'roles' => [RoleUser::ADMIN->value, RoleUser::HEAD_OF_RUSUNAWA->value], // Add roles
+            ],
         ],
     ],
     [

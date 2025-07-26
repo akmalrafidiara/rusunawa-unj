@@ -17,6 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
             'auth.contract' => \App\Http\Middleware\AuthContract::class,
         ]);
+        $middleware->web(append: [
+            \App\Http\Middleware\LogActivity::class,
+        ]);
     })
     ->withProviders([
         \Barryvdh\DomPDF\ServiceProvider::class

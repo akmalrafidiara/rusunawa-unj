@@ -28,7 +28,7 @@ Route::prefix('managers')->middleware(['auth', 'verified', 'role:'.RoleUser::ADM
         // Responses
         Route::view('occupant-verification', 'modules.managers.responses.occupant-verification.index')->name('occupant.verification');
         Route::view('payment-confirmation', 'modules.managers.responses.payment-confirmation.index')->name('payment.confirmation');
-        
+
         // Oprations
         Route::view('users', 'modules.managers.oprations.users.index')->name('users');
         Route::view('incomes-reports', 'modules.managers.oprations.income-reports.index')->name('income.reports');
@@ -39,6 +39,7 @@ Route::prefix('managers')->middleware(['auth', 'verified', 'role:'.RoleUser::ADM
             Route::view('clusters', 'modules.managers.oprations.unit-clusters.index')->name('unit.clusters');
             Route::view('occupant-types', 'modules.managers.oprations.occupant-types.index')->name('occupant.types');
         });
+        Route::view('activity-logs', 'modules.managers.oprations.activity-logs.index')->name('activity.logs');
 
         // Content
         Route::prefix('page-contents')->group(function () {
