@@ -1,6 +1,6 @@
 <!-- Recent Announcements -->
 @if ($recentAnnouncements && $recentAnnouncements->count() > 0)
-    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+    <div class="bg-white dark:bg-zinc-800 overflow-hidden shadow rounded-lg">
         <div class="px-4 py-5 sm:p-6">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white">Recent Announcements</h3>

@@ -1,7 +1,7 @@
 <!-- Secondary Statistics -->
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
     <!-- Occupants -->
-    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+    <div class="bg-white dark:bg-zinc-800 overflow-hidden shadow rounded-lg">
         <div class="px-4 py-5 sm:p-6">
             <div class="flex items-center justify-between">
                 <div>
@@ -29,7 +29,7 @@
     </div>
 
     <!-- Reports -->
-    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+    <div class="bg-white dark:bg-zinc-800 overflow-hidden shadow rounded-lg">
         <div class="px-4 py-5 sm:p-6">
             <div class="flex items-center justify-between">
                 <div>
@@ -57,7 +57,7 @@
     </div>
 
     <!-- Maintenance -->
-    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+    <div class="bg-white dark:bg-zinc-800 overflow-hidden shadow rounded-lg">
         <div class="px-4 py-5 sm:p-6">
             <div class="flex items-center justify-between">
                 <div>

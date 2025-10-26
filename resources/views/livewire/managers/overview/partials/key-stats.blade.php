@@ -1,7 +1,7 @@
 <!-- Key Statistics Cards -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
     <!-- Units Overview -->
-    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg flex flex-col justify-between">
+    <div class="bg-white dark:bg-zinc-800 overflow-hidden shadow rounded-lg flex flex-col justify-between">
         <div class="p-5">
             <div class="flex items-center gap-4">
                 <div class="flex-shrink-0">
@@ -21,7 +21,7 @@
                 </div>
             </div>
         </div>
-        <div class="bg-gray-50 dark:bg-gray-700 px-5 py-3">
+        <div class="bg-gray-50 dark:bg-zinc-700 px-5 py-3">
             <div class="text-sm">
                 <span class="font-medium text-green-600">{{ $occupiedUnits }} Occupied</span>
                 <span class="text-gray-500 dark:text-gray-400 mx-2">•</span>
@@ -31,7 +31,7 @@
     </div>
 
     <!-- Occupancy Rate -->
-    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg flex flex-col justify-between">
+    <div class="bg-white dark:bg-zinc-800 overflow-hidden shadow rounded-lg flex flex-col justify-between">
         <div class="p-5">
             <div class="flex items-center gap-4">
                 <div class="flex-shrink-0">
@@ -51,7 +51,7 @@
                 </div>
             </div>
         </div>
-        <div class="bg-gray-50 dark:bg-gray-700 px-5 py-4">
+        <div class="bg-gray-50 dark:bg-zinc-700 px-5 py-4">
             <div class="w-full bg-gray-200 rounded-full h-2">
                 <div class="bg-green-600 h-2 rounded-full" style="width: {{ $occupancyRate }}%"></div>
             </div>
@@ -59,7 +59,7 @@
     </div>
 
     <!-- Active Contracts -->
-    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg flex flex-col justify-between">
+    <div class="bg-white dark:bg-zinc-800 overflow-hidden shadow rounded-lg flex flex-col justify-between">
         <div class="p-5">
             <div class="flex items-center gap-4">
                 <div class="flex-shrink-0">
@@ -79,7 +79,7 @@
                 </div>
             </div>
         </div>
-        <div class="bg-gray-50 dark:bg-gray-700 px-5 py-3">
+        <div class="bg-gray-50 dark:bg-zinc-700 px-5 py-3">
             <div class="text-sm">
                 <span class="font-medium text-orange-600">{{ $expiringContractsThisMonth }} Expiring This
                     Month</span>
@@ -88,7 +88,7 @@
     </div>
 
     <!-- Monthly Revenue -->
-    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg flex flex-col justify-between">
+    <div class="bg-white dark:bg-zinc-800 overflow-hidden shadow rounded-lg flex flex-col justify-between">
         <div class="p-5">
             <div class="flex items-center gap-4">
                 <div class="flex-shrink-0">
@@ -108,7 +108,7 @@
                 </div>
             </div>
         </div>
-        <div class="bg-gray-50 dark:bg-gray-700 px-5 py-3">
+        <div class="bg-gray-50 dark:bg-zinc-700 px-5 py-3">
             <div class="text-sm">
                 <span class="font-medium text-red-600">{{ $overdueInvoices }} Overdue</span>
                 <span class="text-gray-500 dark:text-gray-400 mx-2">•</span>
