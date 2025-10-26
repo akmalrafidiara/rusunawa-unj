@@ -15,11 +15,11 @@
         options: @js($options),
         isArrayOfValues: @js(is_array($options) && !empty($options) && !isset(current($options)['value'])),
         activeIndex: -1,
-    }" x-init="..." @click.away="open = false" class="relative">
+    }" x-init="$nextTick(() => {})" @click.away="open = false" class="relative">
 
         <button type="button" @click="open = !open"
             class="pl-4 pr-2 py-2 cursor-pointer border rounded-md border-gray-300 focus:border-emerald-500 focus:ring-emerald-500 dark:border-gray-600 dark:bg-zinc-800 dark:text-white shadow-sm flex justify-between items-center gap-2 w-full bg-transparent
-                   {{ $error ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-emerald-500 focus:ring-emerald-500' }} 
+                   {{ $error ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-emerald-500 focus:ring-emerald-500' }}
                    dark:border-gray-600 dark:bg-zinc-800 dark:text-white">
 
             <span

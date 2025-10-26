@@ -198,8 +198,10 @@ class IncomeReport extends Component
         // Update chart key to force re-render
         $this->chartKey = uniqid();
 
-        // Always dispatch chart update
-        $this->dispatch('updateChart', $this->chartData);
+    // Dispatch a Livewire browser event (legacy helper used in this project)
+    // so frontend listeners receive the data. This uses the project's
+    // Livewire/Flux helper which expects `dispatch`.
+    $this->dispatch('updateChart', $this->chartData);
     }
 
     /**

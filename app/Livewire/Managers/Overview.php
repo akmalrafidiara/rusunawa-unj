@@ -31,7 +31,7 @@ class Overview extends Component
     public $totalOccupants;
     public $activeOccupants;
     public $pendingOccupants;
-    
+
     public $totalContracts;
     public $activeContracts;
     public $expiredContracts;
@@ -62,6 +62,7 @@ class Overview extends Component
     {
         $this->loadStatistics();
         $this->loadChartData();
+        $this->refreshData();
     }
 
     public function loadStatistics()
@@ -71,7 +72,7 @@ class Overview extends Component
         $this->occupiedUnits = Unit::where('status', UnitStatus::OCCUPIED)->count();
         $this->availableUnits = Unit::where('status', UnitStatus::AVAILABLE)->count();
         $this->maintenanceUnits = Unit::where('status', UnitStatus::UNDER_MAINTENANCE)->count();
-        $this->occupancyRate = $this->totalUnits > 0 ? 
+        $this->occupancyRate = $this->totalUnits > 0 ?
             round(($this->occupiedUnits / $this->totalUnits) * 100, 1) : 0;
 
         // Occupant Statistics
@@ -95,7 +96,7 @@ class Overview extends Component
         $this->overdueInvoices = Invoice::where('status', InvoiceStatus::UNPAID)
             ->where('due_at', '<', Carbon::now())
             ->count();
-        
+
         $this->totalRevenue = Invoice::where('status', InvoiceStatus::PAID)->sum('amount');
         $this->monthlyRevenue = Invoice::where('status', InvoiceStatus::PAID)
             ->whereMonth('paid_at', Carbon::now()->month)
@@ -105,7 +106,7 @@ class Overview extends Component
         // Report Statistics
         $this->totalReports = Report::count();
         $this->pendingReports = Report::whereIn('status', [
-            ReportStatus::REPORT_RECEIVED, 
+            ReportStatus::REPORT_RECEIVED,
             ReportStatus::IN_PROCESS
         ])->count();
         $this->resolvedReports = Report::where('status', ReportStatus::CONFIRMED_COMPLETED)->count();
@@ -114,7 +115,7 @@ class Overview extends Component
         $this->upcomingMaintenance = MaintenanceSchedule::where('next_due_date', '>=', Carbon::now())
             ->where('next_due_date', '<=', Carbon::now()->addDays(7))
             ->count();
-        
+
         $this->completedMaintenanceThisMonth = MaintenanceRecord::whereMonth('created_at', Carbon::now()->month)
             ->whereYear('created_at', Carbon::now()->year)
             ->count();
@@ -135,7 +136,7 @@ class Overview extends Component
                 ->whereMonth('paid_at', $date->month)
                 ->whereYear('paid_at', $date->year)
                 ->sum('amount') ?? 0;
-            
+
             $this->monthlyRevenueChart[] = [
                 'month' => $date->format('M Y'),
                 'revenue' => $revenue
@@ -151,9 +152,9 @@ class Overview extends Component
                 ->whereDate('start_date', '<=', $date->endOfMonth())
                 ->whereDate('end_date', '>=', $date->startOfMonth())
                 ->count();
-            
+
             $rate = $totalUnits > 0 ? round(($occupiedUnits / $totalUnits) * 100, 1) : 0;
-            
+
             $this->occupancyChart[] = [
                 'month' => $date->format('M Y'),
                 'rate' => $rate
@@ -172,14 +173,15 @@ class Overview extends Component
     {
         $this->loadStatistics();
         $this->loadChartData();
-        
+
         $this->dispatch('refresh-charts');
-        
+
         session()->flash('message', 'Data refreshed successfully!');
     }
 
     public function render()
     {
+        $this->refreshData();
         return view('livewire.managers.overview.index');
     }
 }

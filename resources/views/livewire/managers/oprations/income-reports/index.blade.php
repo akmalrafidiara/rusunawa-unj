@@ -121,8 +121,24 @@
 </div>
 
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        // Dynamically ensure Chart.js is loaded before using it (avoid Chart is not defined)
+        function ensureChartJsLoaded() {
+            if (typeof Chart !== 'undefined') return Promise.resolve();
+            if (window._chartJsLoader) return window._chartJsLoader;
+
+            window._chartJsLoader = new Promise((resolve, reject) => {
+                const s = document.createElement('script');
+                s.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+                s.async = true;
+                s.onload = () => resolve();
+                s.onerror = (e) => reject(e);
+                document.head.appendChild(s);
+            });
+
+            return window._chartJsLoader;
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             let chart = null;
 
@@ -198,10 +214,10 @@
                 });
             }
 
-            // Initialize chart
+            // Initialize chart (wait for Chart.js)
             const initialData = @json($chartData);
             if (initialData && initialData.labels && initialData.labels.length > 0) {
-                initChart(initialData);
+                ensureChartJsLoaded().then(() => initChart(initialData)).catch(() => {});
             }
 
             // Listen for chart updates
@@ -211,7 +227,22 @@
                 // Wait a bit for DOM to update
                 setTimeout(() => {
                     if (chartData && chartData.labels && chartData.labels.length > 0) {
-                        initChart(chartData);
+                        ensureChartJsLoaded().then(() => initChart(chartData)).catch(() => {});
+                    } else {
+                        if (chart) {
+                            chart.destroy();
+                            chart = null;
+                        }
+                    }
+                }, 100);
+            });
+
+            // Also listen for a browser event (dispatched from the Livewire component)
+            window.addEventListener('charts-updated', (e) => {
+                const chartData = e.detail;
+                setTimeout(() => {
+                    if (chartData && chartData.labels && chartData.labels.length > 0) {
+                        ensureChartJsLoaded().then(() => initChart(chartData)).catch(() => {});
                     } else {
                         if (chart) {
                             chart.destroy();
@@ -241,7 +272,8 @@
                         }
 
                         if (currentData && currentData.labels && currentData.labels.length > 0) {
-                            initChart(currentData);
+                            ensureChartJsLoaded().then(() => initChart(currentData)).catch(
+                                () => {});
                         } else if (chart) {
                             chart.destroy();
                             chart = null;
