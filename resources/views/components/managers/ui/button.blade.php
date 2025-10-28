@@ -5,8 +5,10 @@
 
 @php
     $classes = match ($variant) {
-        'primary' => 'bg-[var(--color-accent)] hover:bg-[var(--color-accent-content)] text-[var(--color-accent-foreground)]',
-        'secondary' => 'bg-gray-200 hover:bg-gray-300 text-gray-500 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white',
+        'primary'
+            => 'bg-[var(--color-accent)] hover:bg-[var(--color-accent-content)] text-[var(--color-accent-foreground)]',
+        'secondary'
+            => 'bg-gray-200 hover:bg-gray-300 text-gray-500 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white',
         'danger' => 'bg-red-600 hover:bg-red-700 text-white dark:bg-red-500 dark:hover:bg-red-600',
         'warning' => 'bg-yellow-400 hover:bg-yellow-500 text-white dark:bg-yellow-500 dark:hover:bg-yellow-600',
         default => '',
@@ -15,7 +17,8 @@
 
 <button type="{{ $type }}"
     {{ $attributes->merge([
-        'class' => "px-4 py-2 rounded-md cursor-pointer {$classes} whitespace-nowrap flex items-center justify-center gap-2",
+        'secondary' =>
+            'bg-gray-200 hover:bg-gray-300 text-gray-500 dark:bg-zinc-700 dark:hover:bg-zinc-600 dark:text-white',
     ]) }}
     @if ($type === 'submit') wire:loading.attr="disabled" @endif>
 

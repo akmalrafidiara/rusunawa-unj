@@ -32,7 +32,7 @@
             
                 images: {{ $unitType->attachments->map(fn($att) => ['url' => Storage::url($att->path), 'alt' => $att->name])->toJson() }}
             }" class="col-span-1 lg:col-span-5 flex flex-col gap-4">
-                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-lg shadow-md">
+                <div class="w-full bg-gray-200 dark:bg-zinc-700 rounded-lg shadow-md">
                     <img :src="mainImageUrl" alt="Gambar Utama {{ $unitType->name }}"
                         class="w-full h-[300px] sm:max-h-[400px] object-cover rounded-lg" loading="lazy">
                 </div>
@@ -56,7 +56,7 @@
             </div>
         @else
             <div class="col-span-1 lg:col-span-5">
-                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-lg shadow-md">
+                <div class="w-full bg-gray-200 dark:bg-zinc-700 rounded-lg shadow-md">
                     <img src="{{ asset('images/placeholder.png') }}" alt="Placeholder"
                         class="w-full h-auto max-h-[300px] sm:max-h-[400px] object-cover rounded-lg">
                 </div>
@@ -145,7 +145,7 @@
                     }
                 }" class="relative">
                     <button @click="open = !open"
-                        class="w-full sm:w-auto bg-white hover:bg-gray-50 dark:bg-white dark:hover:bg-gray-100 text-gray-700 font-semibold py-3 px-6 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg cursor-pointer text-sm sm:text-base flex items-center justify-center gap-2 border border-gray-300 dark:border-gray-300">
+                        class="w-full sm:w-auto bg-white hover:bg-gray-50 dark:bg-white dark:hover:bg-zinc-700 text-gray-700 font-semibold py-3 px-6 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg cursor-pointer text-sm sm:text-base flex items-center justify-center gap-2 border border-gray-300 dark:border-zinc-600">
                         <flux:icon name="share" class="w-4 h-4" />
                         Share
                     </button>
@@ -154,23 +154,23 @@
                         x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
                         x-transition:leave="transition ease-in duration-75"
                         x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
-                        class="absolute bottom-full mb-2 left-0 sm:left-auto sm:right-0 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 min-w-48 z-10">
+                        class="absolute bottom-full mb-2 left-0 sm:left-auto sm:right-0 bg-white dark:bg-zinc-800 rounded-lg shadow-lg border border-gray-200 dark:border-zinc-700 py-2 min-w-48 z-10">
 
                         <a href="https://api.whatsapp.com/send?text={{ urlencode('Lihat unit ' . ($unitType->name ?? 'ini') . ' di ' . request()->fullUrl()) }}"
                             target="_blank"
-                            class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                            class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors">
                             <flux:icon name="chat-bubble-left-right" class="w-4 h-4 text-green-500" />
                             Share to WhatsApp
                         </a>
 
                         <a href="mailto:?subject={{ urlencode('Unit ' . ($unitType->name ?? 'Rusunawa')) }}&body={{ urlencode('Lihat unit ' . ($unitType->name ?? 'ini') . ' di ' . request()->fullUrl()) }}"
-                            class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                            class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors">
                             <flux:icon name="envelope" class="w-4 h-4 text-blue-500" />
                             Share via Email
                         </a>
 
                         <button @click="copyLink(); open = false"
-                            class="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                            class="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors">
                             <flux:icon name="clipboard" class="w-4 h-4 text-purple-500" />
                             <span x-text="copySuccess ? 'Link Copied!' : 'Copy Link'"></span>
                         </button>

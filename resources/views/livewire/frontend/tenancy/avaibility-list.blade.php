@@ -21,7 +21,7 @@
                         class="border border-gray-200 dark:border-zinc-700 rounded-lg overflow-hidden shadow-sm hover:shadow-lg dark:shadow-gray-800 dark:hover:shadow-gray-700 transition bg-white dark:bg-zinc-800">
                         <div class="relative w-full h-48 bg-cover bg-center"
                             style="background-image: url('{{ $unitType->attachments->isNotEmpty() ? Storage::url($unitType->attachments->first()->path) : asset('images/placeholder.png') }}');">
-                            <div class="absolute bottom-0 right-0 bg-white dark:bg-gray-800 py-2 px-4">
+                            <div class="absolute bottom-0 right-0 bg-white dark:bg-zinc-800 py-2 px-4">
                                 @if ($priceInfo = $unitType->unitPrices->first())
                                     <span class="text-2xl font-semibold text-emerald-600 dark:text-emerald-400">
                                         Rp{{ number_format($priceInfo->price, 0, ',', '.') }}

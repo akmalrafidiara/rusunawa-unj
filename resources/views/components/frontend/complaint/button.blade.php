@@ -8,7 +8,7 @@
         'primary'
             => 'bg-[var(--color-accent)] hover:bg-[var(--color-accent-content)] text-[var(--color-accent-foreground)]',
         'secondary'
-            => 'bg-gray-200 hover:bg-gray-300 text-gray-500 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white',
+            => 'bg-gray-200 hover:bg-gray-300 text-gray-500 dark:bg-zinc-700 dark:hover:bg-zinc-600 dark:text-white',
         'danger' => 'bg-red-600 hover:bg-red-700 text-white dark:bg-red-500 dark:hover:bg-red-600',
         'warning' => 'bg-yellow-400 hover:bg-yellow-500 text-white dark:bg-yellow-500 dark:hover:bg-yellow-600',
         'info' => 'bg-blue-500 hover:bg-blue-600 text-white dark:bg-blue-400 dark:hover:bg-blue-500',

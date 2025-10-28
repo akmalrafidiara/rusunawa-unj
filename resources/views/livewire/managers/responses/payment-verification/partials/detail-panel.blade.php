@@ -122,10 +122,10 @@
 
                         @if ($isImage)
                             <img src="{{ Storage::url($payment->proof_of_payment_path) }}" alt="Bukti Pembayaran"
-                                class="max-w-full h-auto rounded-lg border border-gray-300 dark:border-gray-600">
+                                class="max-w-full h-auto rounded-lg border border-gray-300 dark:border-zinc-600">
                         @elseif(strtolower($extension) === 'pdf')
                             <div
-                                class="border border-gray-300 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
+                                class="border border-gray-300 dark:border-zinc-600 rounded-lg p-4 bg-gray-50 dark:bg-zinc-800">
                                 <div class="flex items-center justify-between mb-3">
                                     <span class="text-sm text-gray-600 dark:text-gray-400">Dokumen PDF</span>
                                     <a href="{{ Storage::url($payment->proof_of_payment_path) }}" target="_blank"
@@ -136,7 +136,7 @@
                                 <embed
                                     src="{{ Storage::url($payment->proof_of_payment_path) }}#toolbar=1&navpanes=1&scrollbar=1"
                                     type="application/pdf"
-                                    class="w-full h-96 rounded border border-gray-200 dark:border-gray-700">
+                                    class="w-full h-96 rounded border border-gray-200 dark:border-zinc-700">
                             </div>
                         @else
                             <p class="text-sm text-gray-600 dark:text-gray-400">Tipe file tidak didukung untuk

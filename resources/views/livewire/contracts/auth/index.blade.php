@@ -80,7 +80,7 @@
             <div class="flex items-center gap-2" @paste="handlePaste">
                 @for ($i = 0; $i < 5; $i++)
                     <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*"
-                        class="w-12 h-12 md:w-14 md:h-14 text-center border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        class="w-12 h-12 md:w-14 md:h-14 text-center border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-zinc-700 dark:border-zinc-600 dark:text-white"
                         @input="handleInput($event)" @keydown="handleBackspace($event)">
                 @endfor
             </div>

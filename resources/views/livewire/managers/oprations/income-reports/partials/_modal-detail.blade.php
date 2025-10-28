@@ -73,7 +73,7 @@
                                                 'overdue'
                                                     => 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400',
                                                 default
-                                                    => 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400',
+                                                    => 'bg-gray-100 text-gray-800 dark:bg-zinc-700/30 dark:text-gray-400',
                                             };
                                         @endphp
                                         <span

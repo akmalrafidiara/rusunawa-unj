@@ -13,7 +13,7 @@
         @endif
     </label>
     <select id="{{ $name }}" wire:model.live="{{ $name }}"
-        class="{{ $inputBaseClass }} {{ $errors->has($name) ? 'border-red-500' : 'border-gray-300 dark:border-gray-600' }} @if ($disabled) opacity-50 cursor-not-allowed bg-gray-100 dark:bg-gray-600 @endif"
+        class="{{ $inputBaseClass }} {{ $errors->has($name) ? 'border-red-500' : 'border-gray-300 dark:border-zinc-600' }} @if ($disabled) opacity-50 cursor-not-allowed bg-gray-100 dark:bg-zinc-600 @endif"
         @if ($disabled) disabled @endif>
         <option value="">Pilih {{ $label }}</option>
         @foreach ($options as $option)

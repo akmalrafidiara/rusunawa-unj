@@ -29,7 +29,7 @@
                     {{-- Virtual Account Number --}}
                     <x-managers.table.cell>
                         <span
-                            class="bg-gray-200 dark:bg-gray-700 font-mono p-2 text-gray-900 dark:text-gray-100 whitespace-nowrap">{{ chunk_split($unit->virtual_account_number, 4, ' ') }}</span>
+                            class="bg-gray-200 dark:bg-zinc-700 font-mono p-2 text-gray-900 dark:text-gray-100 whitespace-nowrap">{{ chunk_split($unit->virtual_account_number, 4, ' ') }}</span>
                     </x-managers.table.cell>
 
                     <!-- Gender Allowed -->

@@ -25,7 +25,7 @@
         @if ($uploadedFile)
             {{-- Bagian ini sudah benar, tidak perlu diubah --}}
             <div
-                class="flex items-center justify-between rounded-md border border-gray-300 bg-white dark:border-gray-600 dark:bg-zinc-800 p-2.5 shadow-sm">
+                class="flex items-center justify-between rounded-md border border-gray-300 bg-white dark:border-zinc-600 dark:bg-zinc-800 p-2.5 shadow-sm">
                 <button type="button"
                     @if (str_starts_with($uploadedFile->getMimeType(), 'image/')) x-on:click="previewUrl = '{{ $uploadedFile->temporaryUrl() }}'; showPreview = true"
                     @else onclick="window.open('{{ $uploadedFile->temporaryUrl() }}', '_blank')" @endif
@@ -55,7 +55,7 @@
                 class="relative flex w-full cursor-pointer justify-center rounded-md border-2 border-dashed px-6 py-10 transition-colors duration-300"
                 :class="{
                     'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20': isDragging,
-                    '{{ $errors->has($name) ? 'border-red-500' : 'border-gray-300 dark:border-gray-600' }}': !isDragging
+                    '{{ $errors->has($name) ? 'border-red-500' : 'border-gray-300 dark:border-zinc-600' }}': !isDragging
                 }">
 
                 {{-- Input file tersembunyi, tetap dibutuhkan --}}
@@ -80,7 +80,7 @@
     </div>
 
     {{-- Progress bar --}}
-    <div x-show="isUploading" class="mt-2 w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+    <div x-show="isUploading" class="mt-2 w-full bg-gray-200 rounded-full h-2.5 dark:bg-zinc-700">
         <div class="bg-emerald-600 h-2.5 rounded-full transition-all" :style="`width: ${progress}%`"></div>
     </div>
 

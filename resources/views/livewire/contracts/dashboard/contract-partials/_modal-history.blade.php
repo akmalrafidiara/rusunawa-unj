@@ -1,6 +1,6 @@
 <x-managers.ui.modal title="Riwayat Transaksi" :show="$showModal && $modalType === 'history'" class="max-w-4xl">
     <div x-data="{ activeTab: 'invoices' }" class="space-y-6">
-        <div class="border-b border-gray-200 dark:border-gray-700">
+        <div class="border-b border-gray-200 dark:border-zinc-700">
             <nav class="-mb-px flex space-x-8" aria-label="Tabs">
                 <a @click="activeTab = 'invoices'"
                     :class="{ 'border-green-500 text-green-600 dark:text-green-400': activeTab === 'invoices', 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600': activeTab !== 'invoices' }"
@@ -19,7 +19,7 @@
         <div x-show="activeTab === 'invoices'" class="space-y-4">
             @if ($invoices->isNotEmpty())
                 @foreach ($invoices as $invoice)
-                    <div class="border border-gray-200 dark:border-gray-700 rounded-md p-4 bg-gray-50 dark:bg-gray-800">
+                    <div class="border border-gray-200 dark:border-zinc-700 rounded-md p-4 bg-gray-50 dark:bg-zinc-800">
                         <div class="flex justify-between items-center mb-2">
                             <h4 class="font-semibold text-gray-900 dark:text-gray-100">Invoice
                                 #{{ $invoice->invoice_number }}</h4>
@@ -45,7 +45,7 @@
                                 <ul class="space-y-2">
                                     @foreach ($invoice->payments as $payment)
                                         <li
-                                            class="flex justify-between items-center bg-white dark:bg-gray-700 p-2 rounded-md shadow-sm">
+                                            class="flex justify-between items-center bg-white dark:bg-zinc-700 p-2 rounded-md shadow-sm">
                                             <div>
                                                 <p class="text-sm text-gray-800 dark:text-gray-200">Rp
                                                     {{ number_format($payment->amount_paid, 0, ',', '.') }}</p>
@@ -96,10 +96,10 @@
                                 @if ($isImage)
                                     <img src="{{ Storage::url($payment->proof_of_payment_path) }}"
                                         alt="Bukti Pembayaran"
-                                        class="max-w-full h-auto rounded-lg border border-gray-300 dark:border-gray-600">
+                                        class="max-w-full h-auto rounded-lg border border-gray-300 dark:border-zinc-600">
                                 @elseif(strtolower($extension) === 'pdf')
                                     <div
-                                        class="border border-gray-300 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
+                                        class="border border-gray-300 dark:border-zinc-600 rounded-lg p-4 bg-gray-50 dark:bg-zinc-800">
                                         <div class="flex items-center justify-between mb-3">
                                             <span class="text-sm text-gray-600 dark:text-gray-400">Dokumen PDF</span>
                                             <a href="{{ Storage::url($payment->proof_of_payment_path) }}"
@@ -111,7 +111,7 @@
                                         <embed
                                             src="{{ Storage::url($payment->proof_of_payment_path) }}#toolbar=1&navpanes=1&scrollbar=1"
                                             type="application/pdf"
-                                            class="w-full h-96 rounded border border-gray-200 dark:border-gray-700">
+                                            class="w-full h-96 rounded border border-gray-200 dark:border-zinc-700">
                                     </div>
                                 @endif
                             </div>

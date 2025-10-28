@@ -13,9 +13,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use App\Enums\ReporterType; // Make sure to include this enum
 
-
-new #[Layout('components.layouts.frontend'), Title('Rusunawa UNJ | Lacak Pengaduan')] class extends Component
-{
+new #[Layout('components.layouts.frontend'), Title('Rusunawa UNJ | Lacak Pengaduan')] class extends Component {
     public $reportIdToTrack = '';
 
     public $foundReport = null;
@@ -85,8 +83,8 @@ new #[Layout('components.layouts.frontend'), Title('Rusunawa UNJ | Lacak Pengadu
         if ($this->foundReport) {
             $this->showDetail = true;
             $this->reportNotFound = false;
-            $this->isConfirmed = ($this->foundReport->status === ReportStatus::CONFIRMED_COMPLETED);
-            $this->canConfirm = ($this->foundReport->status === ReportStatus::COMPLETED);
+            $this->isConfirmed = $this->foundReport->status === ReportStatus::CONFIRMED_COMPLETED;
+            $this->canConfirm = $this->foundReport->status === ReportStatus::COMPLETED;
 
             if ($this->canConfirm && $this->foundReport->completion_deadline) {
                 $now = Carbon::now();
@@ -148,11 +146,7 @@ new #[Layout('components.layouts.frontend'), Title('Rusunawa UNJ | Lacak Pengadu
             $this->canConfirm = false;
             $this->confirmationDeadlineDaysLeft = null;
 
-            LivewireAlert::success('Konfirmasi berhasil!')
-                ->text('Pengaduan Anda telah dikonfirmasi selesai.')
-                ->toast()
-                ->position('top-end')
-                ->show();
+            LivewireAlert::success('Konfirmasi berhasil!')->text('Pengaduan Anda telah dikonfirmasi selesai.')->toast()->position('top-end')->show();
 
             // Re-fetch details to update the UI
             $this->fetchReportDetails($this->reportIdToTrack);
@@ -163,7 +157,8 @@ new #[Layout('components.layouts.frontend'), Title('Rusunawa UNJ | Lacak Pengadu
     public function getStatusColor($status): string
     {
         $enum = ReportStatus::tryFrom($status);
-        return $enum ? implode(' ', $enum->color()) : 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400';
+        // Use zinc tokens for dark mode to match project theme
+        return $enum ? implode(' ', $enum->color()) : 'bg-gray-100 text-gray-800 dark:bg-zinc-700/30 dark:text-gray-400';
     }
 }; ?>
 
@@ -175,193 +170,221 @@ new #[Layout('components.layouts.frontend'), Title('Rusunawa UNJ | Lacak Pengadu
 
             <form wire:submit.prevent="submitForm" class="space-y-4">
                 <div>
-                    <x-frontend.complaint.form-label for="reportIdToTrack">Masukkan ID Pengaduan <span class="text-red-500">*</span></x-frontend.complaint.form-label>
+                    <x-frontend.complaint.form-label for="reportIdToTrack">Masukkan ID Pengaduan <span
+                            class="text-red-500">*</span></x-frontend.complaint.form-label>
                     <div class="flex items-start gap-2"> {{-- Changed from items-end to items-start --}}
                         <div class="flex-grow"> {{-- Input takes available space --}}
-                            <x-frontend.search wire:model.live="reportIdToTrack" clearable placeholder="PGD-XXX-XXX-XXX" class="w-full" />
+                            <x-frontend.search wire:model.live="reportIdToTrack" clearable placeholder="PGD-XXX-XXX-XXX"
+                                class="w-full" />
                         </div>
                         {{-- Tombol Cari --}}
-                        <x-frontend.complaint.button type="submit" variant="primary" class="shrink-0 h-[42px]">Cari</x-frontend.complaint.button>
+                        <x-frontend.complaint.button type="submit" variant="primary"
+                            class="shrink-0 h-[42px]">Cari</x-frontend.complaint.button>
                     </div>
                 </div>
             </form>
 
             @if ($showDetail && $foundReport)
-            <h1 class="text-3xl font-bold mb-6 mt-12 dark:text-gray-100">Hasil Pencarian</h1>
+                <h1 class="text-3xl font-bold mb-6 mt-12 dark:text-gray-100">Hasil Pencarian</h1>
 
-            {{-- Pembungkus untuk layout dua kolom: Informasi Laporan dan Status & Waktu --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                {{-- Card 1: Informasi Laporan --}}
-                <x-frontend.complaint.card class="p-6">
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                        <flux:icon.information-circle class="w-6 h-6 text-blue-500 dark:text-blue-400" />
-                        Informasi Laporan
-                    </h3>
-                    <div class="space-y-2 text-gray-700 dark:text-gray-300">
-                        <p><strong>ID Pengaduan:</strong> {{ $foundReport->unique_id }}</p> {{-- Changed to ID Pengaduan --}}
-                        <p><strong>Dilaporkan oleh:</strong>
-                            {{ $foundReport->reporter_type->label() }} -
-                            @if ($foundReport->reporter_type === \App\Enums\ReporterType::ROOM)
-                            Kamar {{ $foundReport->contract->unit->room_number ?? 'N/A' }}
-                            @elseif ($foundReport->reporter_type === \App\Enums\ReporterType::INDIVIDUAL)
-                            {{ $foundReport->reporter->full_name ?? 'N/A' }}
-                            @else
-                            N/A
-                            @endif
-                        </p>
-                        <p><strong>Dibuat Pada:</strong> {{ $foundReport->created_at->translatedFormat('d F Y, H:i') }} WIB</p>
-                    </div>
-                </x-frontend.complaint.card>
+                {{-- Pembungkus untuk layout dua kolom: Informasi Laporan dan Status & Waktu --}}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    {{-- Card 1: Informasi Laporan --}}
+                    <x-frontend.complaint.card class="p-6">
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                            <flux:icon.information-circle class="w-6 h-6 text-blue-500 dark:text-blue-400" />
+                            Informasi Laporan
+                        </h3>
+                        <div class="space-y-2 text-gray-700 dark:text-gray-300">
+                            <p><strong>ID Pengaduan:</strong> {{ $foundReport->unique_id }}</p> {{-- Changed to ID Pengaduan --}}
+                            <p><strong>Dilaporkan oleh:</strong>
+                                {{ $foundReport->reporter_type->label() }} -
+                                @if ($foundReport->reporter_type === \App\Enums\ReporterType::ROOM)
+                                    Kamar {{ $foundReport->contract->unit->room_number ?? 'N/A' }}
+                                @elseif ($foundReport->reporter_type === \App\Enums\ReporterType::INDIVIDUAL)
+                                    {{ $foundReport->reporter->full_name ?? 'N/A' }}
+                                @else
+                                    N/A
+                                @endif
+                            </p>
+                            <p><strong>Dibuat Pada:</strong>
+                                {{ $foundReport->created_at->translatedFormat('d F Y, H:i') }} WIB</p>
+                        </div>
+                    </x-frontend.complaint.card>
 
-                {{-- Card 2: Status & Waktu --}}
-                <x-frontend.complaint.card class="p-6">
-                    <div class="space-y-2 text-gray-700 dark:text-gray-300 mb-6">
-                        <div class="flex justify-between items-center">
-                            <strong>Status Saat Ini:</strong>
-                            <span class="px-2 py-1 rounded-full text-xs {{ implode(' ', $foundReport->status->color()) }}">{{ $foundReport->status->label() }}</span>
+                    {{-- Card 2: Status & Waktu --}}
+                    <x-frontend.complaint.card class="p-6">
+                        <div class="space-y-2 text-gray-700 dark:text-gray-300 mb-6">
+                            <div class="flex justify-between items-center">
+                                <strong>Status Saat Ini:</strong>
+                                <span
+                                    class="px-2 py-1 rounded-full text-xs {{ implode(' ', $foundReport->status->color()) }}">{{ $foundReport->status->label() }}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <strong>Terakhir Diperbarui:</strong>
+                                <span>{{ $foundReport->updated_at->translatedFormat('d F Y, H:i') }} WIB</span>
+                            </div>
+                            <hr class="border-gray-200 dark:border-zinc-600 my-4">
+                            <div class="flex justify-between items-center">
+                                <strong>Konfirmasi Selesai:</strong>
+                                <x-frontend.complaint.button wire:click="confirmCompletion" variant="primary"
+                                    class="{{ !$canConfirm ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700' }}"
+                                    :disabled="!$canConfirm || $isConfirmed"
+                                    class="{{ !$canConfirm || $isConfirmed ? 'bg-gray-400 cursor-not-allowed' : '' }}"
+                                    title="{{ !$canConfirm || $isConfirmed ? 'Laporan belum dapat dikonfirmasi oleh Anda atau sudah dikonfirmasi.' : '' }}">
+                                    {{ $isConfirmed ? 'Selesai' : 'Keluhan Selesai' }}
+                                </x-frontend.complaint.button>
+                            </div>
                         </div>
-                        <div class="flex justify-between items-center">
-                            <strong>Terakhir Diperbarui:</strong>
-                            <span>{{ $foundReport->updated_at->translatedFormat('d F Y, H:i') }} WIB</span>
-                        </div>
-                        <hr class="border-gray-200 dark:border-zinc-600 my-4">
-                        <div class="flex justify-between items-center">
-                            <strong>Konfirmasi Selesai:</strong>
-                            <x-frontend.complaint.button wire:click="confirmCompletion"
-                                variant="primary"
-                                class="{{ !$canConfirm ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700' }}"
-                                :disabled="!$canConfirm || $isConfirmed"
-                                class="{{ !$canConfirm || $isConfirmed ? 'bg-gray-400 cursor-not-allowed' : '' }}"
-                                title="{{ !$canConfirm || $isConfirmed ? 'Laporan belum dapat dikonfirmasi oleh Anda atau sudah dikonfirmasi.' : '' }}">
-                                {{ $isConfirmed ? 'Selesai' : 'Keluhan Selesai' }}
-                            </x-frontend.complaint.button>
-                        </div>
-                    </div>
-                </x-frontend.complaint.card>
-            </div>
-
-            {{-- Bagian Konfirmasi Penyelesaian (jika belum dikonfirmasi) --}}
-            <div class="mb-6">
-                @if ($canConfirm || $isConfirmed)
-                @if ($canConfirm)
-                <div class="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg text-center">
-                    <p class="text-yellow-800 dark:text-yellow-300 font-semibold mb-2">
-                        Laporan ini dinyatakan selesai oleh Pengelola. Mohon konfirmasi jika sudah sesuai.
-                    </p>
-                    @if ($confirmationDeadlineDaysLeft !== null)
-                    <p class="text-yellow-700 dark:text-yellow-400 text-sm mb-3">
-                        @if (abs($confirmationDeadlineDaysLeft) <= 1)
-                            @php
-                            $deadline=Carbon::parse($foundReport->completion_deadline);
-                            $now = Carbon::now();
-                            $diffInHours = $now->diffInHours($deadline, false);
-                            $diffInMinutes = $now->diffInMinutes($deadline, false) % 60;
-                            @endphp
-                            Batas waktu konfirmasi: <span class="font-bold">{{ abs($diffInHours) }} jam {{ abs($diffInMinutes) }} menit lagi</span>
-                            @else
-                            Batas waktu konfirmasi: <span class="font-bold">{{ round(abs($confirmationDeadlineDaysLeft)) }} hari lagi.</span>
-                            @endif
-                            (Batas waktu: {{ $foundReport->completion_deadline->translatedFormat('d F Y') }})
-                    </p>
-                    @endif
+                    </x-frontend.complaint.card>
                 </div>
-                @elseif($isConfirmed)
-                <div class="mt-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg text-center text-green-800 dark:text-green-300 font-semibold">
-                    Laporan ini telah Anda konfirmasi selesai.
-                </div>
-                @endif
-                @endif
-            </div>
 
-            {{-- Deskripsi Laporan --}}
-            <div class="mb-6">
-                <x-frontend.complaint.card class="p-6">
-                    <h4 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                        <flux:icon.document-text class="w-6 h-6 text-orange-500 dark:text-orange-400" />
-                        Deskripsi Laporan
-                    </h4>
-                    <p class="text-gray-700 dark:text-gray-300 leading-relaxed mb-4"><strong>Subjek Laporan:</strong> {{ $foundReport->subject }}</p> {{-- Added Subjek Laporan --}}
-                    <p class="text-gray-700 dark:text-gray-300 leading-relaxed">{{ $foundReport->description }}</p>
-
-                    {{-- Lampiran Gambar Laporan di dalam Deskripsi --}}
-                    @php
-                    $imageAttachments = $foundReport->attachments->filter(fn($att) => Str::startsWith($att->mime_type, 'image/'));
-                    @endphp
-                    @if ($imageAttachments->isNotEmpty())
-                    <h5 class="text-lg font-semibold text-gray-900 dark:text-white mt-6 mb-2">Gambar Lampiran:</h5>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                        @foreach ($imageAttachments as $attachment)
-                        <a href="{{ Storage::url($attachment->path) }}" target="_blank" class="block">
-                            <img src="{{ Storage::url($attachment->path) }}" alt="{{ $attachment->name }}" class="w-full h-24 object-cover rounded-lg shadow-sm border border-gray-200 dark:border-zinc-700">
-                        </a>
-                        @endforeach
-                    </div>
-                    @endif
-                </x-frontend.complaint.card>
-            </div>
-
-            {{-- Riwayat Status & Catatan dalam Card --}}
-            <x-frontend.complaint.card class="p-6">
-                <h4 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                    <flux:icon.list-bullet class="w-6 h-6 text-green-500 dark:text-green-400" />
-                    Riwayat Laporan & Catatan
-                </h4>
-                <div class="space-y-4">
-                    @forelse ($foundReport->logs->sortByDesc('created_at') as $log)
-                    <div class="p-3 rounded-lg border border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-700">
-                        {{-- Changed from justify-between to flex-col sm:flex-row and added gap-2 --}}
-                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-1 gap-2">
-                            <span class="font-bold text-gray-900 dark:text-white text-base sm:text-lg">
-                                Status: <span class="px-2 py-0.5 rounded-full text-xs {{ implode(' ', $log->new_status->color()) }}">{{ $log->new_status->label() }}</span>
-                            </span>
-                            <span class="text-xs text-gray-600 dark:text-gray-400 sm:text-sm">
-                                {{ $log->created_at->translatedFormat('d F Y, H:i') }} WIB
-                            </span>
-                        </div>
-                        <p class="text-sm text-gray-700 dark:text-gray-300 mb-1">
-                            Oleh: {{ $log->user->name ?? $log->action_by_role ?? 'Sistem' }}
-                            @if($log->user)
-                            @php
-                            $userRole = $log->user->getRoleNames()->first();
-                            $displayRole = $userRole ? \App\Enums\RoleUser::tryFrom($userRole)?->label() ?? $userRole : 'User';
-                            @endphp
-                            ({{ $displayRole }})
-                            @endif
-                        </p>
-                        @if ($log->notes)
-                        <p class="text-sm text-gray-800 dark:text-gray-200">Catatan: {{ $log->notes }}</p>
-                        @endif
-                        @if ($log->attachments->isNotEmpty())
-                            <div class="mt-3">
-                                <p class="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">Lampiran Pengerjaan:</p>
-                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                                    @foreach ($log->attachments as $attachment)
-                                        <a href="{{ Illuminate\Support\Facades\Storage::url($attachment->path) }}" target="_blank" class="block">
-                                            @if (Illuminate\Support\Str::startsWith($attachment->mime_type, 'image'))
-                                                <img src="{{ Illuminate\Support\Facades\Storage::url($attachment->path) }}" class="w-full h-20 object-cover rounded-lg shadow-sm border border-gray-200 dark:border-zinc-700" alt="{{ $attachment->name }}">
-                                            @else
-                                                <div class="w-full h-20 flex flex-col items-center justify-center bg-gray-100 rounded-lg shadow-sm text-gray-500 dark:bg-zinc-700 dark:text-gray-400 border border-gray-200 dark:border-zinc-700">
-                                                    <flux:icon.document class="w-6 h-6 mb-1" />
-                                                    <p class="text-xs text-center px-1 truncate w-full">{{ $attachment->name }}</p>
-                                                </div>
-                                            @endif
-                                        </a>
-                                    @endforeach
-                                </div>
+                {{-- Bagian Konfirmasi Penyelesaian (jika belum dikonfirmasi) --}}
+                <div class="mb-6">
+                    @if ($canConfirm || $isConfirmed)
+                        @if ($canConfirm)
+                            <div
+                                class="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg text-center">
+                                <p class="text-yellow-800 dark:text-yellow-300 font-semibold mb-2">
+                                    Laporan ini dinyatakan selesai oleh Pengelola. Mohon konfirmasi jika sudah sesuai.
+                                </p>
+                                @if ($confirmationDeadlineDaysLeft !== null)
+                                    <p class="text-yellow-700 dark:text-yellow-400 text-sm mb-3">
+                                        @if (abs($confirmationDeadlineDaysLeft) <= 1)
+                                            @php
+                                                $deadline = Carbon::parse($foundReport->completion_deadline);
+                                                $now = Carbon::now();
+                                                $diffInHours = $now->diffInHours($deadline, false);
+                                                $diffInMinutes = $now->diffInMinutes($deadline, false) % 60;
+                                            @endphp
+                                            Batas waktu konfirmasi: <span class="font-bold">{{ abs($diffInHours) }} jam
+                                                {{ abs($diffInMinutes) }} menit lagi</span>
+                                        @else
+                                            Batas waktu konfirmasi: <span
+                                                class="font-bold">{{ round(abs($confirmationDeadlineDaysLeft)) }} hari
+                                                lagi.</span>
+                                        @endif
+                                        (Batas waktu:
+                                        {{ $foundReport->completion_deadline->translatedFormat('d F Y') }})
+                                    </p>
+                                @endif
+                            </div>
+                        @elseif($isConfirmed)
+                            <div
+                                class="mt-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg text-center text-green-800 dark:text-green-300 font-semibold">
+                                Laporan ini telah Anda konfirmasi selesai.
                             </div>
                         @endif
-                    </div>
-                    @empty
-                    <p class="text-center text-gray-500 dark:text-gray-400">Belum ada riwayat status.</p>
-                    @endforelse
+                    @endif
                 </div>
-            </x-frontend.complaint.card>
+
+                {{-- Deskripsi Laporan --}}
+                <div class="mb-6">
+                    <x-frontend.complaint.card class="p-6">
+                        <h4 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                            <flux:icon.document-text class="w-6 h-6 text-orange-500 dark:text-orange-400" />
+                            Deskripsi Laporan
+                        </h4>
+                        <p class="text-gray-700 dark:text-gray-300 leading-relaxed mb-4"><strong>Subjek
+                                Laporan:</strong> {{ $foundReport->subject }}</p> {{-- Added Subjek Laporan --}}
+                        <p class="text-gray-700 dark:text-gray-300 leading-relaxed">{{ $foundReport->description }}</p>
+
+                        {{-- Lampiran Gambar Laporan di dalam Deskripsi --}}
+                        @php
+                            $imageAttachments = $foundReport->attachments->filter(
+                                fn($att) => Str::startsWith($att->mime_type, 'image/'),
+                            );
+                        @endphp
+                        @if ($imageAttachments->isNotEmpty())
+                            <h5 class="text-lg font-semibold text-gray-900 dark:text-white mt-6 mb-2">Gambar Lampiran:
+                            </h5>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                                @foreach ($imageAttachments as $attachment)
+                                    <a href="{{ Storage::url($attachment->path) }}" target="_blank" class="block">
+                                        <img src="{{ Storage::url($attachment->path) }}" alt="{{ $attachment->name }}"
+                                            class="w-full h-24 object-cover rounded-lg shadow-sm border border-gray-200 dark:border-zinc-700">
+                                    </a>
+                                @endforeach
+                            </div>
+                        @endif
+                    </x-frontend.complaint.card>
+                </div>
+
+                {{-- Riwayat Status & Catatan dalam Card --}}
+                <x-frontend.complaint.card class="p-6">
+                    <h4 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                        <flux:icon.list-bullet class="w-6 h-6 text-green-500 dark:text-green-400" />
+                        Riwayat Laporan & Catatan
+                    </h4>
+                    <div class="space-y-4">
+                        @forelse ($foundReport->logs->sortByDesc('created_at') as $log)
+                            <div
+                                class="p-3 rounded-lg border border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-700">
+                                {{-- Changed from justify-between to flex-col sm:flex-row and added gap-2 --}}
+                                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-1 gap-2">
+                                    <span class="font-bold text-gray-900 dark:text-white text-base sm:text-lg">
+                                        Status: <span
+                                            class="px-2 py-0.5 rounded-full text-xs {{ implode(' ', $log->new_status->color()) }}">{{ $log->new_status->label() }}</span>
+                                    </span>
+                                    <span class="text-xs text-gray-600 dark:text-gray-400 sm:text-sm">
+                                        {{ $log->created_at->translatedFormat('d F Y, H:i') }} WIB
+                                    </span>
+                                </div>
+                                <p class="text-sm text-gray-700 dark:text-gray-300 mb-1">
+                                    Oleh: {{ $log->user->name ?? ($log->action_by_role ?? 'Sistem') }}
+                                    @if ($log->user)
+                                        @php
+                                            $userRole = $log->user->getRoleNames()->first();
+                                            $displayRole = $userRole
+                                                ? \App\Enums\RoleUser::tryFrom($userRole)?->label() ?? $userRole
+                                                : 'User';
+                                        @endphp
+                                        ({{ $displayRole }})
+                                    @endif
+                                </p>
+                                @if ($log->notes)
+                                    <p class="text-sm text-gray-800 dark:text-gray-200">Catatan: {{ $log->notes }}
+                                    </p>
+                                @endif
+                                @if ($log->attachments->isNotEmpty())
+                                    <div class="mt-3">
+                                        <p class="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">Lampiran
+                                            Pengerjaan:</p>
+                                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                            @foreach ($log->attachments as $attachment)
+                                                <a href="{{ Illuminate\Support\Facades\Storage::url($attachment->path) }}"
+                                                    target="_blank" class="block">
+                                                    @if (Illuminate\Support\Str::startsWith($attachment->mime_type, 'image'))
+                                                        <img src="{{ Illuminate\Support\Facades\Storage::url($attachment->path) }}"
+                                                            class="w-full h-20 object-cover rounded-lg shadow-sm border border-gray-200 dark:border-zinc-700"
+                                                            alt="{{ $attachment->name }}">
+                                                    @else
+                                                        <div
+                                                            class="w-full h-20 flex flex-col items-center justify-center bg-gray-100 rounded-lg shadow-sm text-gray-500 dark:bg-zinc-700 dark:text-gray-400 border border-gray-200 dark:border-zinc-700">
+                                                            <flux:icon.document class="w-6 h-6 mb-1" />
+                                                            <p class="text-xs text-center px-1 truncate w-full">
+                                                                {{ $attachment->name }}</p>
+                                                        </div>
+                                                    @endif
+                                                </a>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                        @empty
+                            <p class="text-center text-gray-500 dark:text-gray-400">Belum ada riwayat status.</p>
+                        @endforelse
+                    </div>
+                </x-frontend.complaint.card>
             @elseif ($reportNotFound)
-            <div class="flex flex-col items-center justify-center min-h-[400px] p-8 text-center rounded-lg mt-8">
-                <flux:icon.exclamation-triangle class="w-24 h-24 text-red-500 mb-4" />
-                <h2 class="text-xl lg:text-2xl font-semibold text-gray-800 mb-2 dark:text-gray-100">Laporan Tidak Ditemukan</h2>
-                <p class="text-m lg:text-lg text-gray-600 mb-6 dark:text-gray-300">ID Laporan yang Anda masukkan tidak valid atau tidak ada dalam sistem. Mohon periksa kembali.</p>
-            </div>
+                <div class="flex flex-col items-center justify-center min-h-[400px] p-8 text-center rounded-lg mt-8">
+                    <flux:icon.exclamation-triangle class="w-24 h-24 text-red-500 mb-4" />
+                    <h2 class="text-xl lg:text-2xl font-semibold text-gray-800 mb-2 dark:text-gray-100">Laporan Tidak
+                        Ditemukan</h2>
+                    <p class="text-m lg:text-lg text-gray-600 mb-6 dark:text-gray-300">ID Laporan yang Anda masukkan
+                        tidak valid atau tidak ada dalam sistem. Mohon periksa kembali.</p>
+                </div>
             @endif
         </x-frontend.complaint.layout>
     </div>

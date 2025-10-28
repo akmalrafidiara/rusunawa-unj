@@ -15,7 +15,7 @@
                             ? 'bg-gradient-to-tl from-emerald-800 to-emerald-400 border-none text-white'
                             : ($currentStep == $stepNumber
                                 ? 'bg-white dark:bg-zinc-900 border-emerald-600 text-emerald-600'
-                                : 'bg-white dark:bg-zinc-900 border-gray-300 dark:border-gray-600 text-gray-400') }}
+                                : 'bg-white dark:bg-zinc-900 border-gray-300 dark:border-zinc-600 text-gray-400') }}
                     ">
                     {{-- Tampilkan ikon centang jika langkah sudah selesai --}}
                     @if ($currentStep > $stepNumber)
@@ -28,8 +28,8 @@
                 {{-- Garis vertikal, jangan tampilkan di langkah terakhir --}}
                 @if ($stepNumber < 3)
                     <div
-                        class="w-0.5 h-8 mt-2 rounded-full 
-                                {{ $currentStep > $stepNumber ? 'bg-emerald-600' : 'bg-gray-300 dark:bg-gray-600' }}">
+                        class="w-0.5 h-8 mt-2 rounded-full
+                                {{ $currentStep > $stepNumber ? 'bg-emerald-600' : 'bg-gray-300 dark:bg-zinc-600' }}">
                     </div>
                 @endif
             </div>
